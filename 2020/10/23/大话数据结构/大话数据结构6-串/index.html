@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="串（string）又称为字符串，字符串的查找匹配等操作在计算机中非常重要，因此将其单独列出来讲解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大话数据结构6-串">
+<meta property="og:url" content="http://example.com/2020/10/23/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%846-%E4%B8%B2/index.html">
+<meta property="og:site_name" content="快乐星球">
+<meta property="og:description" content="串（string）又称为字符串，字符串的查找匹配等操作在计算机中非常重要，因此将其单独列出来讲解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-23T06:12:25.000Z">
+<meta property="article:modified_time" content="2020-10-23T13:15:08.000Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/10/23/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%846-%E4%B8%B2/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>大话数据结构6-串 | 快乐星球</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">快乐星球</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">每天都要开心鸭~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">20</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">I 定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-%E4%B8%B2%E7%9A%84%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">II 串的抽象数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-%E4%B8%B2%E7%9A%84%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">III 串的模式匹配算法</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/23/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%846-%E4%B8%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="快乐星球">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大话数据结构6-串
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-10-23 14:12:25 / 修改时间：21:15:08" itemprop="dateCreated datePublished" datetime="2020-10-23T14:12:25+08:00">2020-10-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>串（string）又称为字符串，字符串的查找匹配等操作在计算机中非常重要，因此将其单独列出来讲解。</p>
+<a id="more"></a>
+
+<h2 id="I-定义"><a href="#I-定义" class="headerlink" title="I 定义"></a>I 定义</h2><p><strong>串</strong>（string）是由零个或多个字符组成的有限序列，又名字符串。</p>
+<p>一般记为：<code>s=&quot;a1a2...an&quot;</code>, 其中 <code>s</code> 是串的名称，其中 <code>ai</code>可以是字母、数字或其他字符。串中字符的数目称n为串的长度，零个字符的串称为空串（null string）。</p>
+<p>串的大小的比较 可以定义为串中字符对应的编码的大小的比较。常用的编码有：</p>
+<ul>
+<li>ASCII 编码，8位二进制数表示1个字符，一共可以表示256个。</li>
+<li>Unicode 编码，16位2进制数表示一个字符，一共可以表示 65万($2^{16}$) 多个字符。</li>
+</ul>
+<h2 id="II-串的抽象数据类型"><a href="#II-串的抽象数据类型" class="headerlink" title="II 串的抽象数据类型"></a>II 串的抽象数据类型</h2><p>通过抽象数据类型，我们定义串的常用属性和方法，常用的方法包括：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;生成串，复制串，清空串；</span><br><span class="line">Concat(T,S1,S2);      &#x2F;&#x2F;用 T 返回由 S1 与 S2 联接而成的新串。</span><br><span class="line">Index(S,T,pos);     &#x2F;&#x2F;串 S 为主串，返回子串T在主串中的位置(pos位置之后)，如果没有，返回空</span><br><span class="line">SubString(Sub, S, pos, len);    &#x2F;&#x2F;用sub返回串S的第pos 个字符起长度为len的子串</span><br><span class="line">&#x2F;&#x2F;等...</span><br></pre></td></tr></table></figure>
+
+<p>这里，我们举一个 <code>Index()</code> 函数的实现例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* </span><br><span class="line">T 为非空串。若主串 S 中第 pos 个字符之后存在与 T 相等的子串，</span><br><span class="line">则返回第一个这样的子串在 S 中的位置，否则返回0 </span><br><span class="line">*&#x2F;</span><br><span class="line">int Index(String S, String T, int pos)&#123;</span><br><span class="line">    int n,m,i;</span><br><span class="line">    string sub;</span><br><span class="line"></span><br><span class="line">    if(pos &gt; 0)&#123;</span><br><span class="line">        n &#x3D; StrLength(S);       &#x2F;&#x2F;主串的长度</span><br><span class="line">        m &#x3D; StrLength(T);       &#x2F;&#x2F;子串的长度</span><br><span class="line">        i &#x3D; pos;</span><br><span class="line">        while(i &lt;&#x3D; n-m+1)&#123;      &#x2F;&#x2F;如果i后面的主串长度大于子串长度，则可能有解</span><br><span class="line">            SubString(sub,S,i,m);      &#x2F;&#x2F;取主串第i个位置，长度与T相等的子串给sub</span><br><span class="line">            if (StrCompare(sub,T) !&#x3D; 0)     &#x2F;&#x2F;如果两个串不相等</span><br><span class="line">                ++i;</span><br><span class="line">            else</span><br><span class="line">                return i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return 0;       &#x2F;&#x2F;如果无相等的子串，返回0</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="III-串的模式匹配算法"><a href="#III-串的模式匹配算法" class="headerlink" title="III 串的模式匹配算法"></a>III 串的模式匹配算法</h2><p>匹配算法是为了寻找字符串中相同的元素，例如在一篇文章里找一个单词，并统计它的个数。</p>
+<p>最直观的方法称为 <strong>朴素的模式匹配算法</strong>，设主串长度为n，子串长度为m。定义 i（主串的index） 和 j（子串的index），让i从0到遍历到 n-m，子串index不停的从0遍历到m-1。但是这样做法的时间复杂度很好，在最坏的情况下，可以达到 $O(n-m+1)*m$.</p>
+<p>因此，我们介绍一个更加高效的模式匹配算法，称为 <strong>KMP算法</strong>（3个人名首字母）。这种算法的核心思想尽量减少重复的比较，主要从两方面进行考虑：</p>
+<ol>
+<li>主串的重复比较。当我们将子串从第一位与主串的第 i 位数开始进行比较，例如直到比较到第 k 位，发现有不同，此时，主串中第 i 到 k 位的值实际上是已知的，即与子串的第 1 到第 (k-i+1) 相同。因此，不再需要比较这些位的字符，主串的“比较指针”（即指定开始比较的第一个值）由 i 变为 k;</li>
+<li>子串的重复比较。<ol>
+<li>当子串的首字母与后面字符没有重合时，子串的“比较指针”重新跳到1，与上述的主串的第 k 个字符开始比较。</li>
+<li>当子串的首 n 个字母与子串后部的某 n 个字母相同时，若主串中有与后 n个字母相同的部分（全部or部分，设有t个），需要让子串的比较指针跳转到第t+1 的位置。- (通常，子串会通过一个 <code>next</code> 数组来实现上述功能)总结为，前后缀字符一个相等，k = 2，前后缀字符2个相等，k=3, n个值相等k值就为 n+1.</li>
+<li>当子串中有连续的相等的字母，使用2中的方法也会造成重复判断，若有连续相等的字符，直接用首位的 next[1] 去取代后面的 next[j]. （参考 <code>nextval</code> 的代码）</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;next 数组生成代码</span><br><span class="line">void get_next(string T, int *next)&#123;</span><br><span class="line">    int i,j;</span><br><span class="line">    i &#x3D; 1;</span><br><span class="line">    j &#x3D; 0;</span><br><span class="line">    next[1] &#x3D; 0;</span><br><span class="line">    while(i &lt; T[0])&#123;    &#x2F;&#x2F;T[0]中存放的是字符串的长度</span><br><span class="line">        if(j &#x3D;&#x3D; 0 || T[i] &#x3D;&#x3D; T[j])&#123;     &#x2F;&#x2F;T[i] 表示后缀的单个字符</span><br><span class="line">                                        &#x2F;&#x2F;T[j] 表示前缀的单个字符</span><br><span class="line">            ++i;</span><br><span class="line">            ++j;</span><br><span class="line">            next[i] &#x3D; j;</span><br><span class="line">        &#125;else</span><br><span class="line">            j &#x3D; next[j];        &#x2F;&#x2F;若字符不相同，则j值回溯</span><br><span class="line">    &#125;     </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 返回子串T在主串 S 中第 pos 个字符之后的位置。若不存在，则返回0</span><br><span class="line">int Index_KMP(String S, String T, int pos)&#123;</span><br><span class="line">    int i &#x3D; pos;        &#x2F;&#x2F;i用于主串S当前位置的下标值，</span><br><span class="line">                        &#x2F;&#x2F;若pos 不为1,则从pos位置开始匹配</span><br><span class="line">    int j &#x3D; 1;          &#x2F;&#x2F;j用于子串T中当前位置的下标值</span><br><span class="line">    int next[255];      &#x2F;&#x2F;!! 定义一个 next 数组</span><br><span class="line">    get_next(T,next);   &#x2F;&#x2F;!! 用上面的 next 函数对T进行分析，得到 next 数组</span><br><span class="line">    while(i &lt;&#x3D; S[0] &amp;&amp; j &lt;&#x3D; T[0])&#123;      &#x2F;&#x2F;如果i小于S长度，且j小于T的长度，则循环继续</span><br><span class="line">        if(j &#x3D;&#x3D; 0 || S[i] &#x3D;&#x3D; T[j])&#123;     &#x2F;&#x2F;!! 两字母相等则继续比较</span><br><span class="line">            ++i;</span><br><span class="line">            ++j;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            j &#x3D; next[j];      &#x2F;&#x2F;!! j退回合适的位置，i的值不变</span><br><span class="line">        &#125;</span><br><span class="line">    if(j &gt; T[0])</span><br><span class="line">        return i-T[0];</span><br><span class="line">    else</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Remark: 上方加叹号的语句认为是较为关键的语句，即相对朴素算法增加的语句。可以分析到，整个代码的时间复杂度最坏情况为 $O(m+n)$。</p>
+<p>根据上面对子串的分析第三点，我们编写更新后的 <code>next</code> 程序 <code>nextval</code> 程序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 求串T 的next 函数修正值并存入数组 nextval</span><br><span class="line">void get_nextval(String T, int *nextval)&#123;</span><br><span class="line">    int i,j;</span><br><span class="line">    i &#x3D; 1;</span><br><span class="line">    j &#x3D; 0;</span><br><span class="line">    nextval[1] &#x3D; 0;</span><br><span class="line">    while(i &lt; T[0])&#123;        &#x2F;&#x2F;T[0] 为 T 的数组长度</span><br><span class="line">        if(j &#x3D;&#x3D; 0 || T[i] &#x3D;&#x3D; T[j])&#123;</span><br><span class="line">            ++i;</span><br><span class="line">            ++j;</span><br><span class="line">            if(T[i] !&#x3D; T[j])       &#x2F;&#x2F;!! 若当前字符与前缀字符不同</span><br><span class="line">                nextval[i] &#x3D; j;     &#x2F;&#x2F;!! 则当前的 j 为 nextval 在i位置的值</span><br><span class="line"></span><br><span class="line">            else</span><br><span class="line">                nextval[i] &#x3D; nextval[j];    &#x2F;&#x2F;如果与前缀字符相同，</span><br><span class="line">                                        &#x2F;&#x2F;则将前缀字符的 nextval 值赋值给 nextval 在i 位置的值</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">            j &#x3D; nextval[j];     &#x2F;&#x2F;若字符不同，则j回溯</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Remark: KMP 算法确实比较复杂，需要花点时间进一步研究记忆。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/10/22/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%845-%E9%98%9F%E5%88%97/" rel="prev" title="大话数据结构5-队列">
+                  <i class="fa fa-chevron-left"></i> 大话数据结构5-队列
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/10/24/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%847-%E6%A0%911/" rel="next" title="大话数据结构7-树1">
+                  大话数据结构7-树1 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -146,7 +146,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">20</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">21</span></a>
 
   </li>
   </ul>
@@ -194,7 +194,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -292,6 +292,20 @@
       <span class="post-meta-item-text">阅读次数：</span>
       <span id="busuanzi_value_page_pv"></span>
     </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/10/19/Equations%20and%20Figures%20for%20Hexo/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/19/Equations%20and%20Figures%20for%20Hexo/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 </div>
 
         </div>
@@ -307,22 +321,22 @@
 <h2 id="公式显示"><a href="#公式显示" class="headerlink" title="公式显示"></a>公式显示</h2><p>Hexo 默认的渲染器不支持公式显示，因此，需要更改渲染器为支持 Latex 语法的公式渲染器。</p>
 <p><strong>安装新的渲染器</strong></p>
 <p>参考 NexT 的官方文档（<a target="_blank" rel="noopener" href="https://github.com/theme-next/hexo-theme-next/blob/master/docs/zh-CN/MATH.md">link</a>），在 博客的根目录运行如下代码，以卸载原渲染器并安装 pandoc Markdown 渲染器：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked</span><br><span class="line">npm install hexo-renderer-pandoc</span><br></pre></td></tr></table></figure>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">npm</span> uninstall hexo-renderer-marked</span><br><span class="line"><span class="built_in">npm</span> install hexo-renderer-pandoc</span><br></pre></td></tr></table></figure>
 
 <p><strong>更改 NexT 主题配置文件</strong></p>
 <p>渲染器更改后，配置 NexT 的 <code>_config.yml</code> 文件的 <code>math</code> 部分如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mathjax:</span><br><span class="line">  enable: true</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mathjax:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>文档头部添加声明</strong></p>
 <p>最后，在，需要在文档头部声明使用 <code>mathjax</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mathjax: true</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mathjax:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <p>以上，就可以愉快的在文档中使用 <code>$ &quot;行内公式&quot; $</code>  or <code>$$ &quot;公式块&quot; $$</code> 的方式来添加 Latex 语法的公式了。 </p>
 <h2 id="图片点击弹出效果"><a href="#图片点击弹出效果" class="headerlink" title="图片点击弹出效果"></a>图片点击弹出效果</h2><p>由于在文档中插入了较大的图片，为了实现更好的观看效果，使用了 NexT 支持的 <code>Fancybox</code> 来实现图片点击弹出的效果（<a target="_blank" rel="noopener" href="https://github.com/theme-next/theme-next-fancybox3">官方参考link</a>）。 </p>
 <p>通过代码： <code>git clone https://github.com/theme-next/theme-next-fancybox3</code> clone <code>fancybox3</code> 相关代码到本地。</p>
 <p>然后将其放置在NexT 主题文件夹中的 <code>source/lib</code> 文件夹下（如果没有lib文件夹，创建一个）。</p>
 <p>最后，修改 NexT 的 <code>_config.yml</code> 文档的 fancybox 部分：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fancybox: true</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">fancybox:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="阅读量统计"><a href="#阅读量统计" class="headerlink" title="阅读量统计"></a>阅读量统计</h2><p>直接使用 NexT 已经集成的阅读量统计工具 <code>busuanzi</code> 阅读量统计，将 <code>NexT</code> 的配置文件关于 <code>busuanzi_count</code> 的 <code>enable</code> 选项更改为 <code>true</code> 即可。（参考<a target="_blank" rel="noopener" href="http://ibruce.info/2015/04/04/busuanzi">link</a>）发现这个统计对于浏览人数似乎比较准确，但对浏览次数似乎不是很准确。</p>
 
@@ -361,6 +375,7 @@
 
 
       
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -510,6 +525,18 @@
     
 
   
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":"https://smallgreens.github.io/","placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/10/19/Equations%20and%20Figures%20for%20Hexo/",
+      serverURLs: "https://smallgreens.github.io/"
+    }));
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

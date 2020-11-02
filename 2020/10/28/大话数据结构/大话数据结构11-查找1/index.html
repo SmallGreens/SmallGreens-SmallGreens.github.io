@@ -149,7 +149,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">20</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">21</span></a>
 
   </li>
   </ul>
@@ -197,7 +197,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -301,6 +301,20 @@
       <span class="post-meta-item-text">阅读次数：</span>
       <span id="busuanzi_value_page_pv"></span>
     </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/10/28/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8411-%E6%9F%A5%E6%89%BE1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/28/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8411-%E6%9F%A5%E6%89%BE1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 </div>
 
         </div>
@@ -319,10 +333,10 @@
 </ul>
 <p>查找的过程，实际上就是根据给定的某个值，在查找表中确定一个（或多个）其关键字等于给定值的数据元素（或记录）。</p>
 <h2 id="I-顺序表查找"><a href="#I-顺序表查找" class="headerlink" title="I 顺序表查找"></a>I 顺序表查找</h2><p>顺序查找（Sequential Search,也叫线性查找）是最为基本的查找方式，可以使用如下的循环结构进行。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;n 是数组 a 的长度，key 为要寻找的关键字</span><br><span class="line">int Sequential_Search(int *a, int n, int key)&#123;</span><br><span class="line">    for(i &#x3D; 0;i &lt;&#x3D; n;i++)&#123;      </span><br><span class="line">        if (a[i] &#x3D;&#x3D; key)</span><br><span class="line">            return i;</span><br><span class="line">    &#125;</span><br><span class="line">return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//n 是数组 a 的长度，key 为要寻找的关键字</span></span><br><span class="line"><span class="built_in">int</span> Sequential_Search(<span class="built_in">int</span> *a, <span class="built_in">int</span> n, <span class="built_in">int</span> key)&#123;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>;i &lt;= n;i++)&#123;      </span><br><span class="line">        <span class="keyword">if</span> (a[i] == key)</span><br><span class="line">            <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>上述的代码实际上可以进一步优化，因为在循环过程中，我们每一步都需要将 i 与 n 进行比较，而实际上循环还会在一个条件下结束，就是 <code>a[i] == key</code>，那么，能否使用这个条件作为循环条件呢？因此有如下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;有哨兵的顺序查找</span><br><span class="line">int Sequential_Search2(int *a, int n, int key)&#123;</span><br><span class="line">    a[0] &#x3D; key; &#x2F;&#x2F;设置a[0] 的值，我们称之为“哨兵”</span><br><span class="line">    int i &#x3D; n;</span><br><span class="line">    while(a[i] !&#x3D; key)&#123;</span><br><span class="line">        i--;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    return i;   &#x2F;&#x2F;如果return 为 0，说明查找失败</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//有哨兵的顺序查找</span></span><br><span class="line"><span class="built_in">int</span> Sequential_Search2(<span class="built_in">int</span> *a, <span class="built_in">int</span> n, <span class="built_in">int</span> <span class="built_in">key</span>)&#123;</span><br><span class="line">    a[<span class="number">0</span>] = <span class="built_in">key</span>; <span class="comment">//设置a[0] 的值，我们称之为“哨兵”</span></span><br><span class="line">    <span class="built_in">int</span> i = n;</span><br><span class="line">    <span class="keyword">while</span>(a[i] != <span class="built_in">key</span>)&#123;</span><br><span class="line">        i--;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> i;   <span class="comment">//如果return 为 0，说明查找失败</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>如上所示，我们通过将 <code>a[0]</code> 设置为 key, 添加一个“哨兵”，成功将循环的两个结束条件进行了统一，从而减少了每次循环所需要的执行的任务量，提升了代码的效率。</p>
 <p>总的来说，无论上面哪种方式，顺序查找的时间复杂度都为 $O(n)$。</p>
@@ -400,6 +414,7 @@
 
 
       
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -549,6 +564,18 @@
     
 
   
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":"https://smallgreens.github.io/","placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/10/28/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8411-%E6%9F%A5%E6%89%BE1/",
+      serverURLs: "https://smallgreens.github.io/"
+    }));
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

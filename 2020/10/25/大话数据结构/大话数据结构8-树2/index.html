@@ -149,7 +149,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">20</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">21</span></a>
 
   </li>
   </ul>
@@ -197,7 +197,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -301,6 +301,20 @@
       <span class="post-meta-item-text">阅读次数：</span>
       <span id="busuanzi_value_page_pv"></span>
     </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/10/25/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%848-%E6%A0%912/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/25/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%848-%E6%A0%912/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 </div>
 
         </div>
@@ -319,11 +333,11 @@
 
 <p>我们将对二叉树以某种遍历次序使其变为线索二叉树的过程称为线索化，线索化后的二叉树充分利用了存储空间，此外，也将一棵二叉树转变为了一个双向链表，从而更加有利于我们插入删除结点。</p>
 <p>我们以中序遍历为例，线索化的递归函数代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">BiThrTree pre;  &#x2F;&#x2F;全局变量，始终指向刚刚访问过的结点</span><br><span class="line">&#x2F;&#x2F;中序遍历进行中序线索化</span><br><span class="line">void InThreading (BiThrTree p)&#123;</span><br><span class="line">    if(p)&#123;</span><br><span class="line">        InThreading(p-&gt;lchild);     &#x2F;&#x2F;递归左子树线索化</span><br><span class="line">        if(!p-&gt;lchild)&#123;         &#x2F;&#x2F;没有左孩子</span><br><span class="line">            p-&gt;LTag &#x3D; Thread;   &#x2F;&#x2F;前驱线索</span><br><span class="line">            p-&gt;lchild &#x3D; pre;    &#x2F;&#x2F;左孩子指针指向前驱</span><br><span class="line">        &#125;</span><br><span class="line">        if(!pre-&gt;rchild)&#123;           &#x2F;&#x2F;前驱没有右孩子</span><br><span class="line">            pre-&gt;RTag &#x3D; Thread;     &#x2F;&#x2F;后继线索</span><br><span class="line">            pre-rchild &#x3D; p;         &#x2F;&#x2F;前驱右child指针指向后继</span><br><span class="line">        &#125;</span><br><span class="line">        pre &#x3D; p;                    &#x2F;&#x2F;保持 pre 指向p 的前驱</span><br><span class="line">        InThreading(p-&gt;rchild);     &#x2F;&#x2F;递归右子树线索化</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">BiThrTree pre;  <span class="comment">//全局变量，始终指向刚刚访问过的结点</span></span><br><span class="line"><span class="comment">//中序遍历进行中序线索化</span></span><br><span class="line">void InThreading (BiThrTree p)&#123;</span><br><span class="line">    <span class="keyword">if</span>(p)&#123;</span><br><span class="line">        I<span class="function"><span class="title">nThreading</span>(p-&gt;</span>lchild);     <span class="comment">//递归左子树线索化</span></span><br><span class="line">        <span class="function"><span class="title">if</span>(!p-&gt;</span>lchild)&#123;         <span class="comment">//没有左孩子</span></span><br><span class="line">            <span class="function"><span class="title">p</span>-&gt;</span>LTag = Thread;   <span class="comment">//前驱线索</span></span><br><span class="line">            <span class="function"><span class="title">p</span>-&gt;</span>lchild = pre;    <span class="comment">//左孩子指针指向前驱</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="title">if</span>(!pre-&gt;</span>rchild)&#123;           <span class="comment">//前驱没有右孩子</span></span><br><span class="line">            <span class="function"><span class="title">pre</span>-&gt;</span>RTag = Thread;     <span class="comment">//后继线索</span></span><br><span class="line">            pre-rchild = p;         <span class="comment">//前驱右child指针指向后继</span></span><br><span class="line">        &#125;</span><br><span class="line">        pre = p;                    <span class="comment">//保持 pre 指向p 的前驱</span></span><br><span class="line">        I<span class="function"><span class="title">nThreading</span>(p-&gt;</span>rchild);     <span class="comment">//递归右子树线索化</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>通过上述代码可以发现，中序线索化的过程与之前中序遍历的代码几乎一样，只是将中间的执行代码换为了线索化功能。</p>
 <p>有了线索二叉树之后，我们对它进行遍历时就等于操作一个双向链表。类似双向链表，我们给线索二叉树添加一个头结点，并令它的 lchild 域的指针指向二叉树的根结点，rchild 指向二叉树的最后一个结点，then 令二叉树中序遍历序列的第一个结点的 lchild 以及最后一个结点的 rchild 都指向头结点。这样做之后，我们既可以从第一个元素起顺后继遍历，也可以从最后一个元素起顺前驱进行遍历。具体遍历代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;T 指向头结点，头结点左链 lchild 指向根结点，</span><br><span class="line">&#x2F;&#x2F;头结点右链rchild指向中序遍历的最后一个结点</span><br><span class="line">&#x2F;&#x2F; T 为中序遍历二叉线索链表表示的二叉树</span><br><span class="line">Status InOrderTraverse_Thr(BiThrTree T)&#123;</span><br><span class="line">    BiThrTree p;</span><br><span class="line">    p &#x3D; T-&gt;lchild;      &#x2F;&#x2F;p指向根结点</span><br><span class="line">    while(p !&#x3D; T)&#123;      &#x2F;&#x2F;空树或者遍历结束时， p &#x3D;&#x3D; T</span><br><span class="line">        while(p-&gt;LTag &#x3D;&#x3D; Link)  &#x2F;&#x2F;当LTag&#x3D;&#x3D;0时循环到中序序列的第一个结点</span><br><span class="line">            p &#x3D; p-&gt;lchild;</span><br><span class="line">        printf(&quot;%c&quot;,p-&gt;data);   &#x2F;&#x2F;显示结点数据</span><br><span class="line">        while(p-&gt;RTag &#x3D;&#x3D; Thread &amp;&amp; p-&gt;rchild !&#x3D; T)&#123;</span><br><span class="line">            p &#x3D; p-&gt;rchild;</span><br><span class="line">            printf(&quot;%c&quot;,p-&gt;data);</span><br><span class="line">        &#125;</span><br><span class="line">        p &#x3D; p-&gt;rchild;      &#x2F;&#x2F;p进至其右子树根</span><br><span class="line">    &#125;</span><br><span class="line">    return OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//T 指向头结点，头结点左链 lchild 指向根结点，</span></span><br><span class="line"><span class="comment">//头结点右链rchild指向中序遍历的最后一个结点</span></span><br><span class="line"><span class="comment">// T 为中序遍历二叉线索链表表示的二叉树</span></span><br><span class="line">Status InOrderTraverse_Thr(BiThrTree T)&#123;</span><br><span class="line">    BiThrTree p;</span><br><span class="line">    <span class="function"><span class="title">p</span> = T-&gt;</span>lchild;      <span class="comment">//p指向根结点</span></span><br><span class="line">    <span class="keyword">while</span>(p != T)&#123;      <span class="comment">//空树或者遍历结束时， p == T</span></span><br><span class="line">        <span class="function"><span class="title">while</span>(p-&gt;</span>LTag == Link)  <span class="comment">//当LTag==0时循环到中序序列的第一个结点</span></span><br><span class="line">            <span class="function"><span class="title">p</span> = p-&gt;</span>lchild;</span><br><span class="line">        <span class="function"><span class="title">printf</span>(&quot;%c&quot;,p-&gt;</span><span class="keyword">data</span>);   <span class="comment">//显示结点数据</span></span><br><span class="line">        <span class="function"><span class="title">while</span>(p-&gt;</span>RT<span class="function"><span class="title">ag</span> == Thread &amp;&amp; p-&gt;</span>rchild != T)&#123;</span><br><span class="line">            <span class="function"><span class="title">p</span> = p-&gt;</span>rchild;</span><br><span class="line">            <span class="function"><span class="title">printf</span>(&quot;%c&quot;,p-&gt;</span><span class="keyword">data</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="title">p</span> = p-&gt;</span>rchild;      <span class="comment">//p进至其右子树根</span></span><br><span class="line">    &#125;</span><br><span class="line">    return OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="II-树、森林与二叉树的转换"><a href="#II-树、森林与二叉树的转换" class="headerlink" title="II 树、森林与二叉树的转换"></a>II 树、森林与二叉树的转换</h2><p>相对于一般的树，二叉树的结构更加标准化，因此存储读取都可以效率更高，因此我们希望将一般的树转换为二叉树，具体的方法如下：</p>
 <ol>
@@ -385,6 +399,7 @@
 
 
       
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -534,6 +549,18 @@
     
 
   
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":"https://smallgreens.github.io/","placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":null,"visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/10/25/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%848-%E6%A0%912/",
+      serverURLs: "https://smallgreens.github.io/"
+    }));
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

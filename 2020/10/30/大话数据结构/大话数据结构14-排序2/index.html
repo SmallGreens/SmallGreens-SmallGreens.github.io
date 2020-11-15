@@ -14,13 +14,13 @@
 
 
 
-<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="/lib/animate.css/animate.min.css">
-  <link rel="stylesheet" href="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="前面我们介绍了相对基础的 冒泡排序，简单选择排序 和直接插入排序法。在这一篇中，我们介绍4种改进的排序算法：希尔排序，堆排序，归并排序，快速排序。">
@@ -386,10 +386,10 @@
 </ol>
 <p>每个分类的子类中，上面的一个为简单算法，第二个为改进算法。</p>
 <p>此外，我们还从时间复杂度（最好，平均，最坏情况），需要的辅助空间情况，算法的稳定性三个角度进行了分析。结果总结如下：</p>
-<img src="/images/algorithm_performance_comparison.png" width=80% height=80% align=center/>
+<img data-src="/images/algorithm_performance_comparison.png" width=80% height=80% align=center/>
 
 <p>需要注意的是，在比较3种简单算法时，我们提到比较算法的时间复杂度实际上包括两个方面，即 “比较” 和 “移动” 两种操作的运算开销。从这个角度讲，如果整个记录的关键字信息量比较大，我们就更加推崇移动较少的算法。简单选择排序算法虽然在其他角度性能看似最差，但由于它的移动次数较少(三种简单算法的移动次数比较如下)，对于数据记录量不大而关键字信息量大的对象，简单排序具有优势。</p>
-<img src="/images/Algorithm_comparison_simple_movingTimes.png" width=40% height=40% align=center/>
+<img data-src="/images/Algorithm_comparison_simple_movingTimes.png" width=40% height=40% align=center/>
 
 <p><em>部分代码参考: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/guoyaohua/p/8600214.html">郭耀华’s Blog</a>. thx~</em></p>
 
@@ -495,9 +495,10 @@
   </footer>
 
   
-  <script src="/lib/animejs/lib/anime.min.js"></script>
-  <script src="/lib/jquery/dist/jquery.min.js"></script>
-  <script src="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
@@ -564,7 +565,7 @@
       }
     };
     const script = document.createElement('script');
-    script.src = '/lib/mathjax/es5/tex-mml-chtml.js';
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
     script.defer = true;
     document.head.appendChild(script);
   } else {
@@ -581,7 +582,7 @@
 
 <script>
 NexT.utils.loadComments('#valine-comments', () => {
-  NexT.utils.getScript('/lib/valine/dist/Valine.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
       el: '#valine-comments',
       path: "/2020/10/30/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8414-%E6%8E%92%E5%BA%8F2/",

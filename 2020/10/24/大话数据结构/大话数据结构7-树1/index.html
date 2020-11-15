@@ -14,13 +14,13 @@
 
 
 
-<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="/lib/animate.css/animate.min.css">
-  <link rel="stylesheet" href="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="I 定义树是n个结点的有限集合，在任意一棵非空的树中，1- 有且仅有一个特定的 “根” （root）结点；2- 当 $n&gt;1$ 时，其余结点可分为 $m (m&gt;0)$ 个互不相交的有限集合，其中每个集合本身又是一棵树，并且称为根的子树(SubTree)。">
@@ -331,7 +331,7 @@
 <p>树的结点中包含一个数据元素及若干指向其子树的分支，结点拥有的子树称为结点的 <strong>度（degree）</strong>，度为0的结点称为 <strong>叶结点（Leaf）</strong> 或终端结点；度不为0的结点则称为非终端结点 or 分支结点。此外，不是根结点的分支结点也称为 <strong>内部结点</strong>，<strong>树的度</strong> 是树内各结点的度的最大值。</p>
 <p>结点的子树的根 称为该结点的 <strong>孩子(child)</strong>, 相应的，该结点称为 child 的 parent。同一个parent 结点的 child 之间互称 sibling。结点的祖先是从根到该结点所经分支上的所有结点。</p>
 <p>此外，结点的 <strong>层次（Level）</strong> 从根开始定义，根为第一层，根的 child 是第二层。树中结点的最大层次称为树的 <strong>深度（Depth）</strong>。上述的定义可以通过下图直观的表达：</p>
-<img src="/images/treeWithDefinition.jpg" width=50% height=50% align=center/>
+<img data-src="/images/treeWithDefinition.jpg" width=50% height=50% align=center/>
 
 <p>如果树中的结点的个子树看成从左到右是有次序的，不能互换，则称该树为有序树，否则称为无序树。</p>
 <p>森林（Forest）是 $m(m \geq 0)$ 棵互不相交的树的集合。</p>
@@ -378,7 +378,7 @@
 <p>也就是具有一个数据域和两个指针域，两个指针域中分别存储指向结点 left child 和 right child 的指针。我们也称这样的链表为 <strong>二叉链表</strong>。</p>
 <h2 id="V-遍历二叉树"><a href="#V-遍历二叉树" class="headerlink" title="V 遍历二叉树"></a>V 遍历二叉树</h2><p>二叉树的遍历 （traversing binary tree）是指从根结点出发，按照某种 <strong>次序</strong> 依次访问 二叉树中的所有结点，使得每个结点被访问一次且仅被访问一次。</p>
 <p>二叉树的遍历方法主要可以分为4种：</p>
-<img src="/images/Binary_tree_traversal.png" width=50% height=50% align=center/>
+<img data-src="/images/Binary_tree_traversal.png" width=50% height=50% align=center/>
 
 <ol>
 <li>前序遍历：从根结点开始，先遍历左子树，再遍历右子树。</li>
@@ -506,9 +506,10 @@
   </footer>
 
   
-  <script src="/lib/animejs/lib/anime.min.js"></script>
-  <script src="/lib/jquery/dist/jquery.min.js"></script>
-  <script src="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
@@ -575,7 +576,7 @@
       }
     };
     const script = document.createElement('script');
-    script.src = '/lib/mathjax/es5/tex-mml-chtml.js';
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
     script.defer = true;
     document.head.appendChild(script);
   } else {
@@ -592,7 +593,7 @@
 
 <script>
 NexT.utils.loadComments('#valine-comments', () => {
-  NexT.utils.getScript('/lib/valine/dist/Valine.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
       el: '#valine-comments',
       path: "/2020/10/24/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%847-%E6%A0%911/",

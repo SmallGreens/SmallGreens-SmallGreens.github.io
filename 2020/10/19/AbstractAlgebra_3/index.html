@@ -14,13 +14,13 @@
 
 
 
-<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="/lib/animate.css/animate.min.css">
-  <link rel="stylesheet" href="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="环与域-更多内容对于抽象代数来讲，由于群是最基础的结构，群部分的内容通常更加重要，环和域的很多内容都是在群的相关理论的基础上进行一些的更改、变形。 一些典型的环和域的例子有，环：整数环$Z$, 域$F$上的全体多项式集合 $F[x]$ 为环，域 $F$ 上的全体 $n*n$ 的矩阵为环。域：实数域$R$, 有理数域$Q$, 复数域$Z$.">
@@ -442,7 +442,7 @@
 <p><strong>超越元与超越扩张</strong>：若 $\alpha \in E$ 不是 $F$ 上代数元，则称为 $F$ 上 <strong>超越元</strong>，$F(\alpha)$ 称为 $F$ 上 <strong>单超越扩张</strong>。</p>
 </blockquote>
 <p><strong>例子</strong>：$\sqrt{2}$ 是 $Q$ (有理数域) 上代数元，$\pi, e$ 是 $Q$ 上超越元。</p>
-<h2 id="环与域思维导图"><a href="#环与域思维导图" class="headerlink" title="环与域思维导图"></a>环与域思维导图</h2><p><img src="/images/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0-%E7%8E%AF%E4%B8%8E%E5%9F%9F.png"></p>
+<h2 id="环与域思维导图"><a href="#环与域思维导图" class="headerlink" title="环与域思维导图"></a>环与域思维导图</h2><p><img data-src="/images/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0-%E7%8E%AF%E4%B8%8E%E5%9F%9F.png"></p>
 
     </div>
 
@@ -464,8 +464,8 @@
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/10/19/AbstractAlgebra_1/" rel="next" title="抽象代数自学笔记1：基础">
-                  抽象代数自学笔记1：基础 <i class="fa fa-chevron-right"></i>
+                <a href="/2020/10/19/AbstractAlgebra_2/" rel="next" title="抽象代数自学笔记2：群">
+                  抽象代数自学笔记2：群 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -546,9 +546,10 @@
   </footer>
 
   
-  <script src="/lib/animejs/lib/anime.min.js"></script>
-  <script src="/lib/jquery/dist/jquery.min.js"></script>
-  <script src="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
@@ -615,7 +616,7 @@
       }
     };
     const script = document.createElement('script');
-    script.src = '/lib/mathjax/es5/tex-mml-chtml.js';
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
     script.defer = true;
     document.head.appendChild(script);
   } else {
@@ -632,7 +633,7 @@
 
 <script>
 NexT.utils.loadComments('#valine-comments', () => {
-  NexT.utils.getScript('/lib/valine/dist/Valine.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
       el: '#valine-comments',
       path: "/2020/10/19/AbstractAlgebra_3/",

@@ -14,13 +14,13 @@
 
 
 
-<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="/lib/animate.css/animate.min.css">
-  <link rel="stylesheet" href="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="Java 的异常处理机制 通过在程序遇到问题的地方 转交程序控制权予对应的 handler，可以提升程序的鲁棒性。本篇将详细介绍相关的语法与处理过程。此外，本篇还介绍 调试 java 程序的两个工具，断言（assert） 和 日志（logging） 工具。">
@@ -328,7 +328,7 @@
 
 <h2 id="A-异常处理"><a href="#A-异常处理" class="headerlink" title="A. 异常处理"></a>A. 异常处理</h2><p>Java 的异常抛出（throw） 和 捕获（catch）机制，通过可分离于 主程序之外的 异常处理代码来处理异常，从而可以有效的 将 异常检测（发生于业务程序中）和 异常处理进行解耦，从而可以提升了程序的灵活性。</p>
 <h3 id="a-异常的分类"><a href="#a-异常的分类" class="headerlink" title="a. 异常的分类"></a>a. 异常的分类</h3><p>异常都继承了 <code>Throwable</code> 类。具体划分参考下图：</p>
-<img src="/images/ExceptionHierarchy.png" width=50% height=50% align=center/>
+<img data-src="/images/ExceptionHierarchy.png" width=50% height=50% align=center/>
 
 <p><a target="_blank" rel="noopener" href="https://www.javamex.com/tutorials/exceptions/exceptions_hierarchy.shtml">Fig_link</a></p>
 <p>Error 通常是无法处理的异常。例如存储耗尽等问题， 通常由于外部不可控因素引起。</p>
@@ -503,9 +503,10 @@
   </footer>
 
   
-  <script src="/lib/animejs/lib/anime.min.js"></script>
-  <script src="/lib/jquery/dist/jquery.min.js"></script>
-  <script src="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
@@ -572,7 +573,7 @@
       }
     };
     const script = document.createElement('script');
-    script.src = '/lib/mathjax/es5/tex-mml-chtml.js';
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
     script.defer = true;
     document.head.appendChild(script);
   } else {
@@ -589,7 +590,7 @@
 
 <script>
 NexT.utils.loadComments('#valine-comments', () => {
-  NexT.utils.getScript('/lib/valine/dist/Valine.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
       el: '#valine-comments',
       path: "/2020/11/12/Java/CoreJava_ch5_exceptions_assertions/",

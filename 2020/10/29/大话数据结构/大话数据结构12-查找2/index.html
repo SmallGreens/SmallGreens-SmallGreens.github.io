@@ -14,13 +14,13 @@
 
 
 
-<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="/lib/animate.css/animate.min.css">
-  <link rel="stylesheet" href="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="接着上一篇介绍的二叉排序树，这一篇我们首先介绍几种基于二叉排序树的优化树型查找法。接着，介绍了一种更加高效的寻找特定唯一元素的查找方法：散列表查找法。">
@@ -345,7 +345,7 @@
 <p>一个 <strong>2结点</strong> 包含一个元素和两个孩子（或没有孩子）。且与二叉排序树类似，左子树包含的元素小于该元素，右子树包含的元素大于该元素。但不同的是，2结点要不有2个孩子，要不没有孩子，不存在只有1个孩子的情况。</p>
 <p>一个 <strong>3结点</strong> 包含 一小一大两个元素 和 3个孩子（或没有孩子），同 2结点 一样，3结点也是要不有3个孩子，要不没有孩子。3结点 的左子树包含 小于较小元素（根结点中） 的元素，右子树包含 大于较大元素 的元素，中间子树包含介于结点中两个元素大小之间的元素。</p>
 <p>需要注意的是，2-3树 的所有叶子结点都在同一层次上，一个例子如下图所示：<a target="_blank" rel="noopener" href="https://www.slideshare.net/sandpoonia/23-tree">Figure link</a></p>
-<img src="/images/23-tree.jpg" width=50% height=50% align=center/>
+<img data-src="/images/23-tree.jpg" width=50% height=50% align=center/>
 
 <p>与传统的二叉排序树不同的是，为满足2-3树的结构要求，2-3树的数据插入过程可能会对其余的结点产生连锁反应。</p>
 <p>整体上，插入元素可以分为向2结点中插入和向3结点中插入。向2结点插入时可以直接将该2结点变为3结点；向3结点插入时较为复杂，需要将部分元素上移到上一层的根结点中。类似的，删除操作也需要分多种情况进行讨论。</p>
@@ -504,9 +504,10 @@
   </footer>
 
   
-  <script src="/lib/animejs/lib/anime.min.js"></script>
-  <script src="/lib/jquery/dist/jquery.min.js"></script>
-  <script src="/lib/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
@@ -573,7 +574,7 @@
       }
     };
     const script = document.createElement('script');
-    script.src = '/lib/mathjax/es5/tex-mml-chtml.js';
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
     script.defer = true;
     document.head.appendChild(script);
   } else {
@@ -590,7 +591,7 @@
 
 <script>
 NexT.utils.loadComments('#valine-comments', () => {
-  NexT.utils.getScript('/lib/valine/dist/Valine.min.js', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
       el: '#valine-comments',
       path: "/2020/10/29/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8412-%E6%9F%A5%E6%89%BE2/",

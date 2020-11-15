@@ -20,7 +20,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="图（Graph）是由顶点的有穷非空集合和顶点之间边的集合组成的，通常表示为 $G(V,E)$, 其中，$G$ 表示一个图，$V$ 是图 $G$ 中顶点的集合，$E$ 是图 $G$ 中边的集合。">
@@ -349,7 +349,7 @@
 <p><strong>连通图</strong></p>
 <p>在无向图 $G$ 中，如果从顶点 $v$ 到 顶点 $v’$ 有路径，则称 $v$ 和 $v’$ 是连通的。如果对于图中任意两个顶点 $v_i, v_j\in V$, $v_i$ 和 $v_j$ 都是连通的，则称 $G$ 是 <strong>连通图</strong>（Connected Graph）。无向图中的 <strong>极大连通子图</strong> 称为 <strong>连通分量</strong>（Connected Component）。</p>
 <p>在有向图 $G$ 中，如果对于每一对 $v_i, v_j\in V, v_i \neq v_j$, 从 $v_i$ 到 $v_j$ 和从 $v_j$ 到 $v_i$ 都有路径，则称 $G$ 是 <strong>强连通图</strong>。有向图中的 <strong>极大强连通子图</strong> 称做有向图的 <strong>强连通分量</strong>(strongly connected components)。如下图中所示，图中有3个 强连通分量。</p>
-<img data-src="/images/scc-strongly-connected-components.png" width=60% height=60% align=center/>
+<img src="/images/scc-strongly-connected-components.png" width=60% height=60% align=center/>
 
 <p>一个连通图的 <strong>生成树</strong> 是一个极小的连通子图，它含有图中全部的 $n$ 个顶点，但只有足以构成一棵树的 $n-1$ 条边。(Note: 如果一个无向图 $G$ 有 $n$ 个顶点，如果边的数量小于 $n-1$，则一定是非连通图，如果边的数量多于 $n-1$，则必定可以构成一个环)</p>
 <p>对于有向图，如果恰有一个顶点的入度为0，其余顶点的入度均为1，则是一棵 <strong>有向树</strong>。一个有向图的 <strong>生成森林</strong> 由若干棵有向树组成，含有图中全部顶点，但只有足以构成若干棵不相交的有向树的弧。</p>
@@ -358,7 +358,7 @@
 <p>假设有两个图 $G=(V,{E})$ 和 $G’=(V’,{E’})$,如果 $V’\subseteq V$, 且 $E’\subseteq E$, 则称 $G’$ 为 $G$ 的子图（subgraph）。</p>
 <h2 id="II-图的存储结构"><a href="#II-图的存储结构" class="headerlink" title="II 图的存储结构"></a>II 图的存储结构</h2><p>对于图来说，由于它不存在一个类似线性表的头尾，以及树的根结点之类的东西，利用利用传统的顺序存储方式很难存放。虽然链表可以表示图中 顶点 间的关系，但若图的顶点的 度 之间相差很大的话，会使得链表的结点难以设计。因此，对于图，我们使用一些更加特殊的结构来进行存储。</p>
 <h3 id="a-邻接矩阵"><a href="#a-邻接矩阵" class="headerlink" title="a. 邻接矩阵"></a>a. 邻接矩阵</h3><p>考虑到图是由定点和边（或弧）两部分组成的，我们可以考虑将他们分开存储。顶点由于不分大小主次，所以可以用一个一维数组来存储。而边和弧 由于是顶点与顶点间的关系，我们考虑使用二维矩阵的方式存储。因此有了下面的 <strong>邻接矩阵</strong>（Adjacency Matrix） 存储方式。</p>
-<img data-src="/images/Adjacency_matrix_for_graph.png" width=40% height=40% align=center/>
+<img src="/images/Adjacency_matrix_for_graph.png" width=40% height=40% align=center/>
 
 <p>由上图可以发现，矩阵对应的位置为 $a_{ij}$ 为1，说明顶点 $i,j$ 之间有连线。对于无向图来说，它的边数组（矩阵）一定是一个对称矩阵，即 $a_{ij} = a_{ji}$.</p>
 <p>此外，对于 网 的概念，也就是每条边上带有权的图，我们也可以将这些权值存储在adjacency matrix 中。如下所示：</p>
@@ -370,21 +370,21 @@
 <li>图中的顶点使用一个一维数组进行存储，并在数组中添加指向该顶点第一个邻接点的指针。</li>
 <li>图中的每个顶点 $v_i$ 的所有邻接点构成一个线性表，使用单链表进行存储。无向图称为顶点 $v_i$ 的边表，有向图则称为顶点 $v_i$ 作为弧尾的出边表。</li>
 </ul>
-<img data-src="/images/adjacency_list.png" width=60% height=60% align=center/>
+<img src="/images/adjacency_list.png" width=60% height=60% align=center/>
 
 <p>对于有向图，我们也可以对每个顶点 $v_i$ 建立一个链接为 $v_i$ 为弧头的表，称为 有向图的 <strong>逆邻接表</strong>。</p>
 <p>通过邻接表，我们可以快速的计算 顶点的 度 or 出度、入度。</p>
 <h3 id="c-十字链表"><a href="#c-十字链表" class="headerlink" title="c. 十字链表"></a>c. 十字链表</h3><p>对于有向表，为了解决邻接表只能记录图的 <strong>出度</strong> 或 <strong>入度</strong> 的缺点，我们引入 <strong>十字链表</strong>（orthogonal List）。如下图所示，我们重新定义顶点表结构，使得其中同时存储 出弧 和 入弧 的顶点位置。同时，边表结构也重新定义如下，边表中前两个位置同时存储弧头和弧尾的信息，后两个位置则分别存储与前面弧头、弧尾同弧头，和同弧尾的顶点的位置。</p>
-<img data-src="/images/orthogonal_list.png" width=80% height=80% align=center/>
+<img src="/images/orthogonal_list.png" width=80% height=80% align=center/>
 
 <p>可见，十字链表将邻接表和逆邻接表整合在了一起，这样很容易可以求得顶点的出度和入度。此外，它除了结构稍复杂外，创建时的时间复杂度与邻接表是相同的，因此，在有向图的应用中，十字链表是比较推荐的数据结构模型。</p>
 <h3 id="d-邻接多重表"><a href="#d-邻接多重表" class="headerlink" title="d. 邻接多重表"></a>d. 邻接多重表</h3><p>邻接表结构关注的是图的顶点，以顶点为核心拉出一条一条的链表存储它的邻接顶点。但是如果我们更加关注边的操作，邻接表的存储方式就会相对繁琐。</p>
 <p>因此我们设计邻接多重表结构，重点关注边的存储，以类似链表的形式将与顶点关联的边都联系起来。如下图中所示。</p>
-<img data-src="/images/Adjacency+multilists+for+G1.jpg" width=50% height=50% align=center/>
+<img src="/images/Adjacency+multilists+for+G1.jpg" width=50% height=50% align=center/>
 
 <p>（上图与书中描述的邻接多重表相比，表中结点存储的内容相同，但顺序稍有不同。）上图的边表中，边表结点的第二，第三个位置，存储了相连接的两个顶点$v_i,v_j$，第四和第五个位置，则分别存储了一个与顶点 $v_i$ 和 $v_j$ 相连接的其他的边。可以看出，对于邻接多重表，存储关注的重点是边的存储，有多少条边就一共有多少个边结点。</p>
 <h3 id="e-边集数组"><a href="#e-边集数组" class="headerlink" title="e. 边集数组"></a>e. 边集数组</h3><p>类似上面的多重表，另一关注边的存储的图存储结构称为边集数组。它使用两个一维数组分别存储顶点信息和边信息。边信息数组每个数组元素由起点下标、终点下标和权组成。如下图所示。</p>
-<img data-src="/images/边集数组.png" width=60% height=60% align=center/>
+<img src="/images/边集数组.png" width=60% height=60% align=center/>
 
 <p>边集数组同样适合于对边进行操作的处理，而不适合对顶点的操作。（在后面的克鲁斯卡尔（Kruskal）算法中有详细应用介绍）</p>
 <h2 id="III-图的遍历"><a href="#III-图的遍历" class="headerlink" title="III 图的遍历"></a>III 图的遍历</h2><p>我们希望从图中的某一定点出发访遍图中其余顶点，且使每个顶点仅被访问一次，这一过程称为图的遍历（traversing graph）。</p>
@@ -394,7 +394,7 @@
 <p>直观一点讲，深度优先的遍历算法有点类似树的前序遍历算法，先清理完毕根结点的左子树结点，再回溯上去，依次清理未达的结点。</p>
 <h3 id="b-广度优先遍历算法"><a href="#b-广度优先遍历算法" class="headerlink" title="b. 广度优先遍历算法"></a>b. 广度优先遍历算法</h3><p>广度优先遍历（Breadth First Search）,又称为广度优先搜索，简称 BFS。具体的，有点类似树的层序遍历算法，首先选取一个起点，然后根据与该顶点的连接关系，分层遍历。</p>
 <h3 id="c-对比分析"><a href="#c-对比分析" class="headerlink" title="c. 对比分析"></a>c. 对比分析</h3><p>下图，我们可以形象的看出深度优先搜索算法与广度优先搜索算法的区别（虽然画的是树结构，但是原理一样）：</p>
-<img data-src="/images/DFS-VS-BFS.png" width=60% height=60% align=center/>
+<img src="/images/DFS-VS-BFS.png" width=60% height=60% align=center/>
 
 <p>通常来说，这两种算法的时间复杂度是接近的，不同的仅是访问次序的差别。但是对于搜素特定目标顶点的任务，深度优先算法更加适合目标比较明确的情况，而广度优先算法则可以通过扩大遍历范围找到相对最优解的情况。</p>
 
@@ -501,9 +501,8 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   

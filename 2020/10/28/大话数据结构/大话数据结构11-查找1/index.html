@@ -20,7 +20,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="搜索是互联网时代非常重要的一个技术。作者举了搜索引擎的例子，正是通过搜索引擎，使得人们能够更好的利用存储在互联网上的海量的数据。为了更好的抽象搜索的概念，我们引入以下几个定义：">
@@ -357,7 +357,7 @@
 <p>索引，就是把一个关键字与它对应的记录相关联的过程，一个索引由若干个索引项构成。每个索引项至少应包含 关键字 和 其对应的记录在存储器中的位置 等信息。</p>
 <p>索引按照结构可以分为线性索引、树形索引和多级索引。所谓线性索引是将索引项集合组织成线性结构，也称为索引表。这里，介绍3种索引：稠密索引，分块索引和倒排索引。</p>
 <h3 id="a-稠密索引"><a href="#a-稠密索引" class="headerlink" title="a. 稠密索引"></a>a. 稠密索引</h3><p>稠密索引是指在线性索引中，将数据集中每个记录对应一个索引项。并且，索引项按照关键码有序排列，如下图所示。<a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/indexing-in-databases-set-1/">Figure link</a> </p>
-<img data-src="/images/Dense-Index.jpg" width=50% height=50% align=center/>
+<img src="/images/Dense-Index.jpg" width=50% height=50% align=center/>
 
 <p>使用稠密索引法，搜索数据时，可以利用有序表查找首先找到对应的索引项，然后直接抵达目标结果。缺点是是当数据量非常大时，索引数据量也会非常大。</p>
 <h3 id="b-分块索引"><a href="#b-分块索引" class="headerlink" title="b. 分块索引"></a>b. 分块索引</h3><p>为了减少索引的个数，我们可以对数据集进行分块，使其分块有序，然后再对每一块建立索引项，从而减少索引项的个数。</p>
@@ -375,7 +375,7 @@
 </ul>
 <p>因此，上述二叉树的中序遍历的结果就是一个从小到大排列的序列。</p>
 <p>二叉排序树以链式方式存储，因而具有链式存储结构在插入删除操作的高效率的优点。此外，由于数据在二叉树中按特定顺序存储，查找元素时从根结点，最多的次数最多为二叉排序树的层数。但是，由于根结点不确定，二叉排序树的形状因不同根结点的选取差别也很大，如下图所示（<a target="_blank" rel="noopener" href="https://appliedgo.net/balancedtree/">Figure link</a>）：</p>
-<img data-src="/images/BinTreeShapes.png" width=50% height=50% align=center/>
+<img src="/images/BinTreeShapes.png" width=50% height=50% align=center/>
 
 <p>对于上图的左图，查找的时间复杂度约为 $O(logn)$,而对右图中的斜树而言，查找元素的时间复杂度与顺序查找相同，为 $O(n)$。因此，我们希望二叉排序树尽量平衡，以获得更高的查找效率。</p>
 
@@ -482,9 +482,8 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   

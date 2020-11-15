@@ -20,7 +20,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
   <meta name="description" content="Java 的异常处理机制 通过在程序遇到问题的地方 转交程序控制权予对应的 handler，可以提升程序的鲁棒性。本篇将详细介绍相关的语法与处理过程。此外，本篇还介绍 调试 java 程序的两个工具，断言（assert） 和 日志（logging） 工具。">
@@ -328,7 +328,7 @@
 
 <h2 id="A-异常处理"><a href="#A-异常处理" class="headerlink" title="A. 异常处理"></a>A. 异常处理</h2><p>Java 的异常抛出（throw） 和 捕获（catch）机制，通过可分离于 主程序之外的 异常处理代码来处理异常，从而可以有效的 将 异常检测（发生于业务程序中）和 异常处理进行解耦，从而可以提升了程序的灵活性。</p>
 <h3 id="a-异常的分类"><a href="#a-异常的分类" class="headerlink" title="a. 异常的分类"></a>a. 异常的分类</h3><p>异常都继承了 <code>Throwable</code> 类。具体划分参考下图：</p>
-<img data-src="/images/ExceptionHierarchy.png" width=50% height=50% align=center/>
+<img src="/images/ExceptionHierarchy.png" width=50% height=50% align=center/>
 
 <p><a target="_blank" rel="noopener" href="https://www.javamex.com/tutorials/exceptions/exceptions_hierarchy.shtml">Fig_link</a></p>
 <p>Error 通常是无法处理的异常。例如存储耗尽等问题， 通常由于外部不可控因素引起。</p>
@@ -504,9 +504,8 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
 <script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   

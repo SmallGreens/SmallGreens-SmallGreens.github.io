@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="本篇将讨论正则表达式和对象序列化的内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-9_2-正则表达式与序列化">
+<meta property="og:url" content="http://example.com/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="本篇将讨论正则表达式和对象序列化的内容。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-20T02:07:25.000Z">
+<meta property="article:modified_time" content="2020-11-22T05:54:43.660Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java-9_2-正则表达式与序列化 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">A. 正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">a. 基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E5%AF%BB%E6%89%BE%E5%8C%B9%E9%85%8D%E5%80%BC"><span class="nav-number">1.2.</span> <span class="nav-text">b. 寻找匹配值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-%E5%85%B6%E4%BB%96%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">c. 其他操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">B. 序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.1.</span> <span class="nav-text">序列化示例</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java-9_2-正则表达式与序列化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-20 10:07:25" itemprop="dateCreated datePublished" datetime="2020-11-20T10:07:25+08:00">2020-11-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-11-22 13:54:43" itemprop="dateModified" datetime="2020-11-22T13:54:43+08:00">2020-11-22</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本篇将讨论正则表达式和对象序列化的内容。</p>
+<a id="more"></a>
+
+<h2 id="A-正则表达式"><a href="#A-正则表达式" class="headerlink" title="A. 正则表达式"></a>A. 正则表达式</h2><p>正则表达式就是通过定义、使用一些特殊含义的字符，以一个字符串来表示一类具有同样规律的字符串。这里首先介绍 Java 中正则表达式中的特殊字符，其次，介绍 Java 中利用正则表达式对字符串进行匹配的方式。</p>
+<h3 id="a-基本语法"><a href="#a-基本语法" class="headerlink" title="a. 基本语法"></a>a. 基本语法</h3><p>在 Java 的正则表达式中，<code>. * + ? &#123; | ( ) [ \ ^ $</code> 具有特殊含义。</p>
+<ul>
+<li><code>.</code> 匹配任意字符；</li>
+<li><code>*</code> 前面的字符重复任意次；</li>
+<li><code>+</code> 前面的字符重复1次或更多次；</li>
+<li><code>?</code> 前面的字符出现 0 或 1 次；(e.g. <code>be+s?</code> 与 “bee”, “be”, “bees” 匹配)</li>
+<li><code>|</code> 表示 或，例如 “.(oo|ee)f”, 可以匹配 “beef” 或 “woof”。</li>
+<li>Character class, 是用 “[]” 括起来的内容，例如，<code>&quot;[0-9]&quot;</code>。 其中 “-“ 表示 从 左边字符 到右边字符的范围内的所有字符。</li>
+<li>predefined character class, 例如 “\d” (digits), “\p{sc}” Unicode 中的货币符号。（java 中的其他特殊含义字符集，参考书中表格p311）</li>
+<li><code>^</code>, <code>$</code> 分别匹配字符串的开头和结尾；</li>
+<li><code>\</code>, 在特殊符号前加 <code>\</code>, 表明不使用他们的特殊含义。</li>
+<li><code>\Q</code>, <code>\E</code> 包裹字符串，表明内部内容都是字符串内容，没有特殊含义。例如 “\Q($0.99)\E”, 表示字符串 “($0.99)”。</li>
+</ul>
+<h3 id="b-寻找匹配值"><a href="#b-寻找匹配值" class="headerlink" title="b. 寻找匹配值"></a>b. 寻找匹配值</h3><p>判定字符串是否与正则表达式匹配有多种方式，参考下面的代码。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过 Pattern 的静态方法 matches()</span></span><br><span class="line"><span class="built_in">String</span> regex = <span class="string">&quot;[+-]?\\d+&quot;</span>;</span><br><span class="line">CharSequence input = ...;</span><br><span class="line"><span class="function"><span class="title">if</span>(<span class="params">Pattern.matches(regex, input)</span>)</span>&#123;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如要多次使用正则表达式，</span></span><br><span class="line"><span class="comment">// 先将正则表达式进行编译，再进行匹配，效率更高</span></span><br><span class="line">Pattern pattern = Pattern.compile(regex);</span><br><span class="line">Matcher matcher = pattern.matcher(input);</span><br><span class="line"><span class="function"><span class="title">if</span>(<span class="params">matcher.matches()</span>)</span>&#123;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果判断一个 String 的集合类</span></span><br><span class="line">Stream&lt;<span class="built_in">String</span>&gt; strings = ...;</span><br><span class="line">Stream&lt;<span class="built_in">String</span>&gt; res = strings.filter(pattern.asPredicate());</span><br></pre></td></tr></table></figure>
+
+
+<p>如果想寻找 一段字符串/一个文件中 中所有与正则表达式相匹配的内容，可以通过下面的方式进行：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 法1：通过 matcher 对象及 while 循环来寻找</span></span><br><span class="line"><span class="built_in">String</span> input = <span class="params">...</span>;</span><br><span class="line">Matcher matcher = pattern.matcher(input);</span><br><span class="line"><span class="keyword">while</span>(matcher.find())&#123;</span><br><span class="line">   <span class="built_in">String</span> <span class="keyword">match</span> = matcher.<span class="keyword">group</span>();</span><br><span class="line">   int matchStart = matcher.start();   <span class="comment">// 匹配到的字符部分的开头位置</span></span><br><span class="line">   int matchEnd = matcher.end();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 法2：通过 results() 方法返回 Stream&lt;MatchResult&gt; 来处理</span></span><br><span class="line"><span class="built_in">List</span>&lt;<span class="built_in">String</span>&gt; matches = pattern.matcher(input)</span><br><span class="line">   .results()</span><br><span class="line">   .<span class="built_in">map</span>(Matcher<span class="type">::group</span>)</span><br><span class="line">   .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 法3：读取文件内容，使用 scanner 来处理</span></span><br><span class="line">Scanner <span class="keyword">in</span> = <span class="literal">new</span> Scanner(path, <span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">Stream&lt;<span class="built_in">String</span>&gt; words = <span class="keyword">in</span>.findAll(<span class="string">&quot;\\pL+&quot;</span>)</span><br><span class="line">   .<span class="built_in">map</span>(MatchResult<span class="type">::group</span>);</span><br></pre></td></tr></table></figure>
+
+<p>需要说明的是，对于上面的第2个方法，调用 Matcher 对象的 <code>results()</code> 方法，返回 <code>Stream&lt;MatchResult&gt;</code>, 其中 <code>MatchResult</code> 为一个接口，它有方法：<code>group()</code>, <code>start()</code>, <code>end()</code>（note1: 实际上，<code>Matcher</code> 类实现了 <code>MatchResult</code> 接口）(Note2: results() 方法是 java 9 新加入的方法，之前的 <code>Matcher</code> 类没有该方法)。</p>
+<p>对于上面的方法3，Scanner 对象的 <code>findAll()</code> 方法返回  <code>Stream&lt;MatchResult&gt;</code>。</p>
+<p><code>group()</code>: Matcher 类对象的 <code>group()</code> 方法返回匹配到的 <strong>括号中的内容</strong> （就是寻找正则表达式中有括号的内容，然后在目标中寻找该内容并返回）。 <code>group(n)</code> 表示返回第 n 个括号所匹配到的内容，(Note: <code>group(0)</code> 返回整个输入。) 此外，我们在 括号中还可以加上标号 例如 <code>(?&lt;currency&gt;[A-Z]&#123;3&#125;)</code>, 然后在寻找时 可以使用 <code>matcher.group(&quot;currency&quot;);</code> 方法来寻找对应 label中的表达式在目标字符串中的匹配。 (<code>matcher</code> 为 <code>Matcher</code> 类的实例)</p>
+<h3 id="c-其他操作"><a href="#c-其他操作" class="headerlink" title="c. 其他操作"></a>c. 其他操作</h3><p>将 字符串 依据特定的分隔符进行切割，可以使用下述方法：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">String input = <span class="string">&quot;1, 2, 3&quot;</span>; <span class="regexp">//</span> 待处理的字符串</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 最简单写法</span><br><span class="line">String[] tokens = input.split(<span class="string">&quot;\\s*,\\s*&quot;</span>);   <span class="regexp">//</span> 表示 旁边可能有空格的逗号</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 将正则表达式编译后，提高匹配效率</span><br><span class="line">Pattern commas = Pattern.compile(<span class="string">&quot;\\s*,\\s*&quot;</span>);</span><br><span class="line">String[] tokens = commas.split(input);  <span class="regexp">//</span> 输出 [<span class="string">&quot;1&quot;</span>, <span class="string">&quot;2&quot;</span>, <span class="string">&quot;3&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 使用流处理，实现 lazily 执行</span><br><span class="line">Stream&lt;String&gt; tokens = commas.splitAsStream(input);</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 处理文件，使用 scanner 处理</span><br><span class="line">Scanner <span class="keyword">in</span> = new Scanner(path, <span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line"><span class="keyword">in</span>.useDelimiter(<span class="string">&quot;\\s*,\\s*&quot;</span>);</span><br><span class="line">Stream&lt;String&gt; tokens = <span class="keyword">in</span>.tokens();</span><br></pre></td></tr></table></figure>
+
+<p>根据正则表达式，寻找到特定的字段后进行替换，可以使用如下几种方式：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span> 将旁边可能有 空格 的 逗号全部替换为 没有空格的 逗号</span><br><span class="line"><span class="regexp">//</span> 最简单的方式</span><br><span class="line">String res = input.replaceAll(<span class="string">&quot;\\s*,\\s*&quot;</span>, <span class="string">&quot;,&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 提前进行编译正则表达式</span><br><span class="line">Pattern commas = Pattern.compile(<span class="string">&quot;\\s*,\\s*&quot;</span>);</span><br><span class="line">Matcher matcher = commas.matcher(input);</span><br><span class="line">String res = matcher.repalceAll(<span class="string">&quot;,&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 额外的两个复杂些的例子</span><br><span class="line"><span class="regexp">//</span> 更加复杂的正则表达式</span><br><span class="line">String res = <span class="string">&quot;3:45&quot;</span>.replaceAll(</span><br><span class="line">   <span class="string">&quot;(\\d&#123;1,2&#125;):(?&lt;minutes&gt;\\d&#123;2&#125;)&quot;</span>,</span><br><span class="line">   <span class="string">&quot;$1 hours and $&#123;minutes&#125; minutes&quot;</span>);</span><br><span class="line">   <span class="regexp">//</span> res 为 <span class="string">&quot;3 hours and 45 minutes&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 使用函数进行匹配对象的处理</span><br><span class="line">String res = Pattern.compile(<span class="string">&quot;\\pL&#123;4,&#125;&quot;</span>)</span><br><span class="line">   .matcher(<span class="string">&quot;Mary has a little lamb&quot;</span>)</span><br><span class="line">   .replaceAll(m -&gt; m.group().toUpperCase());</span><br><span class="line">   <span class="regexp">//</span> 得到结果为 <span class="string">&quot;MARY has a LITTLE LAMB&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在进行模式匹配的时候，我们还可以通过添加 flag 的方式，设定匹配的模式，例如：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在匹配的时候忽略大小写，并且使用 Unicode 字符集</span></span><br><span class="line"><span class="built_in">Pattern</span> pattern = <span class="built_in">Pattern</span>.compile(regex, <span class="built_in">Pattern</span>.CASE_INSENSITIVE | <span class="built_in">Pattern</span>.UNICODE_CHARACTER_CLASS);</span><br><span class="line"><span class="comment">// 或者在写正则表达式的时候，在头部使用 flags 进行说明</span></span><br><span class="line"><span class="built_in">String</span> regex = <span class="string">&quot;(iU:expression)&quot;</span>;   <span class="comment">// i 表示不区分大小写；U 表示 unicode 字符集</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="B-序列化"><a href="#B-序列化" class="headerlink" title="B. 序列化"></a>B. 序列化</h2><p>序列化在计算机科学的数据处理中，是指将数据结构或对象状态转换成可取用格式，以留待后续在相同或另一台计算机环境中，能恢复原先状态的过程。</p>
+<h3 id="序列化示例"><a href="#序列化示例" class="headerlink" title="序列化示例"></a>序列化示例</h3><p>一个类的对象必须实现了 <code>Serializable</code> 接口才能进行序列化，此外，还要求该类中所有的变量都是基本数据类型或者 已经是可序列化的 类的引用。(Note： Serializable 是一个 marker 接口，只做标记使用，内部没有方法。)</p>
+<p>数组和集合类都是可序列化的对象。</p>
+<p>下面，通过一组代码展示序列化与反序列化的过程：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将对象输出到序列。通过 ObjectOutputStream</span></span><br><span class="line">ObjectOutputStream out = <span class="keyword">new</span> <span class="type">ObjectOutputStream</span>(</span><br><span class="line">   FIles.<span class="keyword">new</span><span class="type">OutputStream</span>(path));</span><br><span class="line">Employee peter = <span class="keyword">new</span> <span class="type">Employee</span>(<span class="string">&quot;peter&quot;</span>, <span class="number">90000</span>);</span><br><span class="line">out.writeObject(peter);    <span class="comment">// 将对象写出为序列化内容</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取序列化内容, 通过 ObjectInputStream</span></span><br><span class="line">ObjectInputStream <span class="keyword">in</span> = <span class="keyword">new</span> <span class="type">ObjectInputStream</span>(</span><br><span class="line">   Files.<span class="keyword">new</span><span class="type">InputStream</span>(path));</span><br><span class="line">Employee e1 = (Employee)<span class="keyword">in</span>.readObject();</span><br></pre></td></tr></table></figure>
+
+<p>在序列化的过程中，对象的类名以及 所有实例变量的名字和值都会保存，基本数据类型的值被直接存储为 二进制数据，对象会接着调用 <code>writeObject()</code> 进行存储。</p>
+<p>此外，在序列化对象时，还会额外保存对象类的版本信息 在 <code>serialVersionUID</code> 中。</p>
+<p>需要注意的是，在序列化的时候，每一个对象会获得一个 序列号 （serial number），当进行序列化时，会先判断这个对象的序列号是否之前出现过，如果为重复的对象，则只会在序列化文件中写入序列号而不再重复对该对象进行序列化（保证了同一个对象的唯一性）。</p>
+<p>如果不希望对某个实例变量进行序列化（例如存储 cache 内容的类），则使用 transient 修饰符进行修饰。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/19/Java/CoreJava_ch9_Input&Output/" rel="prev" title="Java-9_1-输入输出处理">
+                  <i class="fa fa-chevron-left"></i> Java-9_1-输入输出处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

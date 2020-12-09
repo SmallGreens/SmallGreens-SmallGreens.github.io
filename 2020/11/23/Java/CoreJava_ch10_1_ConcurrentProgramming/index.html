@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="并发编程适用于执行时需要长等待的任务（例如网络任务），通过并发编程，可以让这类任务在等待时让出处理器。现今，大多数计算系统已为多处理器或多核系统，并发编程的任务则是尽量让所有的处理器核心都保持忙碌，而不是停住等待耗时程序。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-10_1-并发编程">
+<meta property="og:url" content="http://example.com/2020/11/23/Java/CoreJava_ch10_1_ConcurrentProgramming/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="并发编程适用于执行时需要长等待的任务（例如网络任务），通过并发编程，可以让这类任务在等待时让出处理器。现今，大多数计算系统已为多处理器或多核系统，并发编程的任务则是尽量让所有的处理器核心都保持忙碌，而不是停住等待耗时程序。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-23T02:07:25.000Z">
+<meta property="article:modified_time" content="2020-11-25T08:17:55.952Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/11/23/Java/CoreJava_ch10_1_ConcurrentProgramming/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java-10_1-并发编程 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-%E5%B9%B6%E5%8F%91%E4%BB%BB%E5%8A%A1%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">A. 并发任务基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E6%89%A7%E8%A1%8C%E5%99%A8%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.1.</span> <span class="nav-text">a. 执行器服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-Runnable-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.</span> <span class="nav-text">b. Runnable 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-Callable-%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.3.</span> <span class="nav-text">c. Callable 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-%E4%B8%80%E6%AC%A1%E6%80%A7%E5%90%91%E6%89%A7%E8%A1%8C%E5%99%A8%E6%9C%8D%E5%8A%A1%E4%BC%A0%E5%85%A5%E5%A4%9A%E4%B8%AA%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.4.</span> <span class="nav-text">d. 一次性向执行器服务传入多个任务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-%E5%BC%82%E6%AD%A5%E8%AE%A1%E7%AE%97"><span class="nav-number">2.</span> <span class="nav-text">B. 异步计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E5%AF%B9%E8%B1%A1%E6%9E%84%E5%BB%BA"><span class="nav-number">2.1.</span> <span class="nav-text">a. 对象构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">b. 常用方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">3.</span> <span class="nav-text">C. 线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E5%8F%AF%E8%A7%81%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">a. 可见性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E5%86%92%E9%99%A9%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98%EF%BC%88race-condition%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">b. 冒险竞争问题（race condition）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-%E5%AE%89%E5%85%A8%E7%9A%84%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%AD%96%E7%95%A5"><span class="nav-number">3.3.</span> <span class="nav-text">c. 安全的并发编程策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#D-Java-%E5%BA%93%E7%9A%84%E5%B9%B6%E8%A1%8C%E8%BF%90%E7%AE%97%E6%94%AF%E6%8C%81"><span class="nav-number">4.</span> <span class="nav-text">D. Java 库的并行运算支持</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E6%B5%81%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E5%B9%B6%E8%A1%8C%E8%BF%90%E7%AE%97"><span class="nav-number">4.1.</span> <span class="nav-text">a. 流和数组的并行运算</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Streams"><span class="nav-number">4.1.1.</span> <span class="nav-text">Streams</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Arrays"><span class="nav-number">4.1.2.</span> <span class="nav-text">Arrays</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-Java-%E6%8F%90%E4%BE%9B%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">4.2.</span> <span class="nav-text">b. Java 提供的线程安全的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91-Hash-Map"><span class="nav-number">4.2.1.</span> <span class="nav-text">并发 Hash Map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97"><span class="nav-number">4.2.2.</span> <span class="nav-text">阻塞队列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%9B%86%E5%90%88%E7%B1%BB"><span class="nav-number">4.2.3.</span> <span class="nav-text">其他线程安全的集合类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E5%AD%90%E5%9E%8B%E7%9A%84%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-number">4.2.4.</span> <span class="nav-text">原子型的计数器</span></a></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/23/Java/CoreJava_ch10_1_ConcurrentProgramming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java-10_1-并发编程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-23 10:07:25" itemprop="dateCreated datePublished" datetime="2020-11-23T10:07:25+08:00">2020-11-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-11-25 16:17:55" itemprop="dateModified" datetime="2020-11-25T16:17:55+08:00">2020-11-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/23/Java/CoreJava_ch10_1_ConcurrentProgramming/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/23/Java/CoreJava_ch10_1_ConcurrentProgramming/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>并发编程适用于执行时需要长等待的任务（例如网络任务），通过并发编程，可以让这类任务在等待时让出处理器。现今，大多数计算系统已为多处理器或多核系统，并发编程的任务则是尽量让所有的处理器核心都保持忙碌，而不是停住等待耗时程序。</p>
+<a id="more"></a>
+
+<p>本书只会介绍应用层的一些实现技巧，对于更加底层的并发实现，推荐书籍 <em>Java Concurrency in Practice</em> (Author: Brian Goetz, et.al)。</p>
+<h2 id="A-并发任务基础"><a href="#A-并发任务基础" class="headerlink" title="A. 并发任务基础"></a>A. 并发任务基础</h2><p>在计算机系统中，线程（thread）是由操作系统提供的最小的 <strong>顺序执行程序</strong> 的机制，从底层上，一般多个线程并发执行，通过使用不同的处理器/处理器核心 或者 同一核心的不同时间片段来实现。</p>
+<h3 id="a-执行器服务"><a href="#a-执行器服务" class="headerlink" title="a. 执行器服务"></a>a. 执行器服务</h3><p>Java 会通过 <em>executor service</em> 来自动安排程序执行所使用的 线程。常用的有两种执行器服务：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// newCachedThreadPool() 没有线程数量限制</span></span><br><span class="line"><span class="comment">// 当所有线程都在忙碌时自动生成新的线程</span></span><br><span class="line"><span class="comment">// 适合大量短生命周期，长等待的小型任务。</span></span><br><span class="line">ExecutorService exec = <span class="module-access"><span class="module"><span class="identifier">Executors</span>.</span></span><span class="keyword">new</span><span class="constructor">CachedThreadPool()</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// newFixedThreadPool() 规定线程池的线程数量</span></span><br><span class="line"><span class="comment">// 适合计算密集型程序，或者需要限制资源消耗的服务</span></span><br><span class="line">ExecutorService exec = <span class="module-access"><span class="module"><span class="identifier">Executors</span>.</span></span><span class="keyword">new</span><span class="constructor">FixedThreadPool(<span class="params">nthreads</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>使用固定线程数量时，线程的数量可以参考系统可供使用的处理器个数，可以通过下述方案获的该值：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">int</span> processors = <span class="module-access"><span class="module"><span class="identifier">Runtime</span>.</span></span>get<span class="constructor">Runtime()</span>.available<span class="constructor">Processors()</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="b-Runnable-接口"><a href="#b-Runnable-接口" class="headerlink" title="b. Runnable 接口"></a>b. Runnable 接口</h3><p>在 Java 中，想让程序能够并发执行，可以让待执行的任务所在的类实现 <code>Runnable</code> 接口，并将需要并发执行的任务写在 <code>Run()</code> 方法中。具体操作如下：</p>
+<figure class="highlight nim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// <span class="type">Runnable</span> 为 functional <span class="keyword">interface</span>，可以使用 lambda 表达式</span><br><span class="line"><span class="type">Runnable</span> task = () -&gt; <span class="meta">&#123;....&#125;</span>;</span><br><span class="line"><span class="type">ExecutorService</span> exec = ...;</span><br><span class="line">exec.excute(task);</span><br></pre></td></tr></table></figure>
+
+<h3 id="c-Callable-接口"><a href="#c-Callable-接口" class="headerlink" title="c. Callable 接口"></a>c. Callable<V> 接口</h3><p>Runnable 执行任务时没有返回值，如果想执行并发任务时拥有返回值，则可以使用 <code>Callable&lt;V&gt;</code> 接口，实现其中的 <code>call()</code> 方法。Callable 接口返回一个 类型为 V 的值：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public<span class="built_in"> interface </span>Callable&lt;V&gt;&#123;</span><br><span class="line">   V call() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将 Callable 对象交给执行器服务的方法如下：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ExecutorSerivce exec = ...<span class="comment">;</span></span><br><span class="line">Callable&lt;V&gt; task = ...<span class="comment">;</span></span><br><span class="line">Future&lt;V&gt; result = excutor.submit(task)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
+<p>上述程序中可以看到，Callable 中 Task 递交给 执行器执行，得到的返回值为 <code>Future&lt;V&gt;</code> 类型（名字意思是会在未来某时得到值）。</p>
+<p><code>Future&lt;V&gt;</code> 类的对象通过 <code>get()</code> 方法得到其中的值。<code>get()</code> 方法的执行依赖于该 <code>Future&lt;T&gt;</code> 对象对应的 <code>Callable&lt;T&gt;</code> 对象的 <code>call()</code> 方法的执行。<code>get()</code> 方法会一直处于阻塞（block）状态直到 得到 excutor 的返回值或者达到规定的时长（timeout has been reached, 此时抛出 <code>TimeoutException</code>）。而如果 <code>call()</code> 方法抛出异常，<code>get()</code> 方法会抛出一个 <code>ExecutionException</code> 来包裹 <code>call()</code> 方法抛出的异常。</p>
+<p><code>Future&lt;V&gt;</code> 类的对象的 <code>cancel(boolean mayInterruptIfRunning)</code> 方法可以尝试取消 任务。如果任务还没有开始执行，该任务就不会被 excutor service 安排。如果已经开始执行，并且 <code>mayInterruptIfRunning</code> 为 <code>true</code>，任务会被中断。</p>
+<h3 id="d-一次性向执行器服务传入多个任务"><a href="#d-一次性向执行器服务传入多个任务" class="headerlink" title="d. 一次性向执行器服务传入多个任务"></a>d. 一次性向执行器服务传入多个任务</h3><p>如果一个任务含有多个子任务，我们可以使用 excutor service 的 <code>invokeAll()</code> 方法一次性输入所有的待执行任务，方法如下：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 统计多个文件中某个单词的出现次数，并求和</span></span><br><span class="line"><span class="keyword">String</span> <span class="keyword">word</span> = ...;</span><br><span class="line">Set&lt;Path&gt; paths = ...;</span><br><span class="line">List&lt;Callable&lt;<span class="keyword">long</span>&gt;&gt; tasks = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span>(Path p : paths) tasks.add(</span><br><span class="line">   () -&gt; &#123;<span class="keyword">return</span> number of ocurrences of <span class="keyword">word</span> in p&#125;);</span><br><span class="line">List&lt;Future&lt;<span class="keyword">long</span>&gt;&gt; results = executor.invokeAll(tasks);</span><br><span class="line">   <span class="comment">// invoke() 操作会一直阻塞，直到所有任务执行完毕</span></span><br><span class="line"><span class="keyword">long</span> total = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(Future&lt;<span class="keyword">long</span>&gt; result : results) total += result.<span class="built_in">get</span>();</span><br></pre></td></tr></table></figure>
+
+<p>类似的，excutor 还有 <code>invokeAny()</code> 方法，它会在调用的 任务集合 中任意一个任务执行完毕的时候执行返回。</p>
+<h2 id="B-异步计算"><a href="#B-异步计算" class="headerlink" title="B. 异步计算"></a>B. 异步计算</h2><!-- 
+这一章笔记改动较大，原文中逻辑比较混乱（可能是作者只是重点介绍个概念，不太在意 completableFuture 的使用方法的系统性讲解。）
+-->
+
+<p><strong>回调函数</strong>：就是将函数执行的主动权交给子线程中的任务，当子线程中的任务执行完毕后，子线程会通知主线程，主线程因而可以在第一时间使用子线程的计算结果进行计算。<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_31930499/article/details/80654472">关于回调函数的参考</a></p>
+<p>前面的 <code>Future&lt;V&gt;</code> 对象在等待结果的时候，会阻塞进程。Java 8 中引入了带有回调机制的 Furure 的改进版: <code>CompletableFuture</code> 类。该类通过回调机制，不会阻塞主线程来等待支线程的执行结果。</p>
+<h3 id="a-对象构建"><a href="#a-对象构建" class="headerlink" title="a. 对象构建"></a>a. 对象构建</h3><p>获得 <code>CompletableFuture</code> 类的对象大致有如下几种方法：</p>
+<ol>
+<li>实例方法返回值为 <code>CompletableFuture</code> 类的对象。例如 <code>HttpClient</code> 类的 <code>sendAsync()</code> 方法。</li>
+</ol>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HttpClient<span class="built_in"> client </span>= HttpClient.newHttpClient();</span><br><span class="line">HttpRequest request = HttpRequest.newBuilder(new URI(urlString)).<span class="builtin-name">GET</span>()</span><br><span class="line">   .build();</span><br><span class="line">CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; f = client.sendAsync(</span><br><span class="line">   request, BodyHandler.asString());</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用 <code>CompletableFuture</code> 类的静态方法 <code>supplyAsync()</code> or <code>runAsync()</code> （<a target="_blank" rel="noopener" href="https://ducmanhphan.github.io/2020-02-10-How-to-use-CompletableFuture-Callable-in-Java/">Ref</a>）</li>
+</ol>
+<p><code>runAsync()</code> 使用 <code>Runnable</code> 接口的对象作为参数，<code>supplyAsync()</code> 使用 <code>Supplier&lt;T&gt;</code> 接口对象作为参数（与 <code>Callable&lt;T&gt;</code> 的区别是 <code>Supplier&lt;T&gt;</code> 不会抛出一个 checked exception）。参考下方代码：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture&lt;<span class="built_in">String</span>&gt; f = CompletableFuture.supplyAsync(</span><br><span class="line">   () -&gt; &#123;<span class="built_in">String</span> result; Compute the result...; <span class="keyword">return</span> reslut;&#125;),</span><br><span class="line">   excutor);</span><br></pre></td></tr></table></figure>
+
+<p>Note: 上述的 excutor 参数可以空缺，系统会调用默认的 excutor （excutor returned by <code>ForkJoinPool.commonPool()</code>）。</p>
+<h3 id="b-常用方法"><a href="#b-常用方法" class="headerlink" title="b. 常用方法"></a>b. 常用方法</h3><p><code>CompletableFuture</code> 提供了一系列的回调方法用于处理 Callable线程中得到的返回值，常用的有 <code>thenAccept()</code>, <code>thenApply()</code> 参考下面代码：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// thenAccept(), 返回 void</span></span><br><span class="line">CompletableFuture&lt;String&gt; f = ...;</span><br><span class="line">f.<span class="keyword">then</span><span class="constructor">Accept((String <span class="params">s</span>)</span> -&gt; process the result s...);</span><br><span class="line"></span><br><span class="line"><span class="comment">// thenApply(), T-&gt;U, 返回 U 类型</span></span><br><span class="line"><span class="comment">// readPage() 函数，返回 CompletableFuture&lt;String&gt; 类型的值</span></span><br><span class="line"><span class="comment">// 该例子返回网页内容中的 网址链接</span></span><br><span class="line">CompletableFuture&lt;String&gt; contents = read<span class="constructor">Page(<span class="params">url</span>)</span>;</span><br><span class="line">CompletableFuture&lt;List&lt;URI&gt;&gt; links = contents.<span class="keyword">then</span><span class="constructor">Apply(Parser::<span class="params">getLinks</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// f为函数，处理 future对象 CompletableFuture&lt;T&gt;</span></span><br><span class="line"><span class="comment">// thenApplyAsync(f), 让 f 在另一个线程中执行</span></span><br><span class="line">CompletableFuture&lt;U&gt; future.<span class="keyword">then</span><span class="constructor">ApplyAsync(<span class="params">f</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>CompletableFuture</code> 类还提供了一些方法同时处理多于一个任务的结果。例如： <code>thenCombine()</code> (同时处理两个任务的结果)， <code>allOf</code> (同时处理多个任务的结果)。</p>
+<h2 id="C-线程安全"><a href="#C-线程安全" class="headerlink" title="C. 线程安全"></a>C. 线程安全</h2><p>线程安全问题主要是由于不同线程中使用了相同的变量，从而可能引起值的更新错误、变量的可见性问题。</p>
+<h3 id="a-可见性问题"><a href="#a-可见性问题" class="headerlink" title="a. 可见性问题"></a>a. 可见性问题</h3><p>参考下方的代码：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> static boolean <span class="keyword">done</span> = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 预期目标：goodbye 程序在 hellos 打印 1000次 &quot;Hello i&quot; 之前</span></span><br><span class="line"><span class="comment">// 一直累加 数字。最后在 goodbye 执行完毕后，打印 &quot;Goodbye i&quot;.</span></span><br><span class="line">public static void main(String<span class="literal">[]</span> args)&#123;</span><br><span class="line">   Runnable hellos = <span class="literal">()</span> -&gt; &#123;</span><br><span class="line">      <span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">1</span>; i &lt; <span class="number">1000</span>; i++)</span><br><span class="line">         <span class="module-access"><span class="module"><span class="identifier">System</span>.</span></span>out.println(<span class="string">&quot;Hello &quot;</span> + i);</span><br><span class="line">      <span class="keyword">done</span> = <span class="literal">true</span>;</span><br><span class="line">   &#125;;</span><br><span class="line">   Runnable goodbye = <span class="literal">()</span> -&gt; &#123;</span><br><span class="line">      <span class="built_in">int</span> i = <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">while</span>(!<span class="keyword">done</span>) i++;</span><br><span class="line">      <span class="module-access"><span class="module"><span class="identifier">System</span>.</span></span>out.println(<span class="string">&quot;Goodbye &quot;</span> + i);</span><br><span class="line">   &#125;;  </span><br><span class="line">   Executor executor = <span class="module-access"><span class="module"><span class="identifier">Executors</span>.</span></span><span class="keyword">new</span><span class="constructor">CachedThreadPool()</span>;</span><br><span class="line">   executor.execute(hellos);</span><br><span class="line">   executor.execute(goodbye);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述程序的实际效果是，Hello + i 打印1000遍之后，程序仍然无法终止。原因是在 <code>hellos</code> 中对 done 变量的更改无法反映到 <code>goodbye</code> task中。</p>
+<p>我们称这种问题为可见性问题，即 done 这一变量，在task <code>hellos</code> 中的更新 对 <code>goodbye</code> task不可见。</p>
+<p>造成上述问题的原因是 现代编译器、虚拟机会在编译程序时进行优化，部分优化措施可能引发上述问题。可能引发问题的优化主要包括下述两个方面：</p>
+<ol>
+<li>由于内存相对处理器，读写速度太慢，所以虚拟机在执行程序时会将用到的变量数据 载入到高速缓存（cache）中，以提升执行效率。但这也造成了实际程序使用的是原数据的一份拷贝，当处理完毕后才会写回内存。</li>
+<li>编译器会在不影响实际程序语义逻辑前提下，对执行步骤进行重排列。例如，声明两个 变量后对他们求和，处理器可能颠倒声明的顺序，或者将变量声明的过程做并行处理。</li>
+</ol>
+<p>例如上面的 <code>while(!done) i++;</code> ，由于 while 循环中并不修改 done 的值，编译器在优化过程中可能会对代码执行顺序进行重排，从而前述代码编译后为 <code>if(!done) while(true) i++;</code>。</p>
+<p>通常有如下几种方案处理可见性问题，可以使得变量的更改对所有tasks可见：</p>
+<ol>
+<li>final 类型的变量在 初始化后，对所有线程可见；</li>
+<li>static 变量在初始化后，对所有线程可见；</li>
+<li>volatile 类型的变量的变化对所有线程可见；</li>
+<li>可通过同步锁（lock）实现变量的安全更新。</li>
+</ol>
+<p>对于上述简单的问题，可以通过声明 done 变量为 volatile 类型来处理：<code>private static voltaile boolean done;</code>。</p>
+<h3 id="b-冒险竞争问题（race-condition）"><a href="#b-冒险竞争问题（race-condition）" class="headerlink" title="b. 冒险竞争问题（race condition）"></a>b. 冒险竞争问题（race condition）</h3><p>当有多个tasks对同一个变量进行更改，可能出现 race condtion 问题，如下：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> voltaile <span class="built_in">int</span> <span class="keyword">count</span> = <span class="number">0</span>;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">count</span> ++;   <span class="comment">// Task 1</span></span><br><span class="line">...</span><br><span class="line"><span class="keyword">count</span> ++;   <span class="comment">// Task 2</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>上述代码可能发生问题，因为，实际上 <code>count ++</code> 在实际的程序执行中，并不是最小的执行单元（operation is not atomic）。编译器会将其分为两步来执行：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">register</span> = count + <span class="number">1</span><span class="comment">;</span></span><br><span class="line"><span class="attr">count</span> = register<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
+<p>因而，上述的两个tasks更新 count 的值的程序，可能发生如下问题：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">int</span> count = <span class="number">0</span>;    // intial value</span><br><span class="line"><span class="attribute">register1</span> = count + <span class="number">1</span>;  // register<span class="number">1</span> == <span class="number">1</span></span><br><span class="line"><span class="attribute">register2</span> = count + <span class="number">1</span>;  // register<span class="number">2</span> == <span class="number">1</span></span><br><span class="line"><span class="attribute">count</span> = register<span class="number">2</span>;</span><br><span class="line"><span class="attribute">count</span> = register<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，虽然两个task都执行了一次 <code>count++</code>, 但是 count 的值并没有如预期变为2，它的值仍然是1。</p>
+<p>如果想上述的程序变为线程安全的，则必须保证 <code>count++</code> 在任意一个task中都能够完整的顺序执行完毕（这一部分的代码也称为 critical section），构成一个等效的 operation atomic。这一思路，可以通过添加 lock 进行保护，得以实现。</p>
+<h3 id="c-安全的并发编程策略"><a href="#c-安全的并发编程策略" class="headerlink" title="c. 安全的并发编程策略"></a>c. 安全的并发编程策略</h3><p>除了上面的数据可见性，安全性问题，对于 Java 来说，在并发程序中被分享使用的数据 也无法通过系统的垃圾回收机制进行自动的回收。</p>
+<p>为了解决上述问题，我们提供下述几种策略：</p>
+<ol>
+<li>Confinement。限制不同 task 之间共享数据。例如上面的计数程序，可以的做法就是仅仅在一个 task 中做计数处理，直到计数task处理完毕后，将结果交由另一个 task 处理。</li>
+<li>Immutability。在不同的任务之间 分享 不可更改的对象是安全的。例如通过一个task 生成一个不可更改的 数据 collection，然后在另一个 task 中将第一个task 生成的数据 collection 吸收组合生成另一个不可更改的 数据 collection。一些具体的技巧包括：<ol>
+<li>在对象 construction 之后就不再进行更改，可以将实例对象声明为 final 类型；</li>
+<li>不要 泄露可以更改的状态，例如通过 non-private 方法可以更改对象的一些内部状态，需要禁止这一行为；</li>
+<li>通过 传递对象的 copy 来实现内容的传递，而不是直接传递引用。</li>
+</ol>
+</li>
+<li>Locking。通过 lock 可以保证数据一次仅仅能被一个任务获取。在 Java 中，Java 并发库（concurrency library）中提供了一些能够保证并发操作安全的数据结构。此外，我们也可以自己通过 lock 来实现并发安全的类。<ol>
+<li>Note：在可能的情况下，并不推荐使用 locking。首先，它很容易发生错误，其次它强制部分程序不能并发执行，也会降低了并发程序的优势，降低程序效率。</li>
+</ol>
+</li>
+<li>Partition。我们可以将数据分块处理，每一块数据可以并发的操作，Java 中的 streams 库就是使用的这个思路。</li>
+</ol>
+<h2 id="D-Java-库的并行运算支持"><a href="#D-Java-库的并行运算支持" class="headerlink" title="D. Java 库的并行运算支持"></a>D. Java 库的并行运算支持</h2><h3 id="a-流和数组的并行运算"><a href="#a-流和数组的并行运算" class="headerlink" title="a. 流和数组的并行运算"></a>a. 流和数组的并行运算</h3><p>Java 的 stream 库以及 Arrays 类都在内部集成了并行算法。</p>
+<h4 id="Streams"><a href="#Streams" class="headerlink" title="Streams"></a>Streams</h4><p>例子如下：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">long</span> result = coll.parallelStream().filter(s -&gt; s.startWith(<span class="string">&quot;A&quot;</span>).<span class="keyword">count</span>());</span><br></pre></td></tr></table></figure>
+<p>具体的，在实现中，stream会被分割为多段，分别进行 filter 操作，并在最后将结果进行组合。</p>
+<p>对于 parallel 的流操作，需要注意以下几点：</p>
+<ol>
+<li>并行流操作适用于数据量较大，或者计算量较大的场景，对于小数据量的场景，无法体现出其优势，没有必要使用 parallelStream；</li>
+<li>数据需要存放在内存中；</li>
+<li>流需要能够被有效的进行分割，具体的，对于背后使用 array或者 平衡二叉树的流，并行算法可以很好的提升效率；而对于背后是 链表实现，或是 Stream.iterate 生成的流，则不适合。</li>
+</ol>
+<h4 id="Arrays"><a href="#Arrays" class="headerlink" title="Arrays"></a>Arrays</h4><p>例子如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="module-access"><span class="module"><span class="identifier">Arrays</span>.</span></span>parallel<span class="constructor">SetAll(<span class="params">values</span>, <span class="params">i</span> -&gt; <span class="params">i</span>%10)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>类似的，数组的并行处理也是通过分块来实现的。</p>
+<p>其他的并行算法还包括 <code>parallelSort()</code>, <code>parallelPrefix()</code>。</p>
+<p>我们也可以将数组变为 parallel stream 来实现更加复杂的并行处理：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">long</span> <span class="keyword">sum</span> = IntStream.of(values).parallel().<span class="keyword">sum</span>();</span><br></pre></td></tr></table></figure>
+
+<h3 id="b-Java-提供的线程安全的数据结构"><a href="#b-Java-提供的线程安全的数据结构" class="headerlink" title="b. Java 提供的线程安全的数据结构"></a>b. Java 提供的线程安全的数据结构</h3><p>在 Java 的 <code>java.util.concurrent</code> 包中，提供了一系列线程安全的集合类。</p>
+<p>一个需要注意的是，对于这些线程安全的集合类，他们提供的 iterators 具有 弱一致性（weekly consistent），也就是说，迭代器（iterator）中记录的元素是 construct 该迭代器时集合中的元素，后续对集合进行的更改不一定（may or may not）会在迭代器中进行反应。</p>
+<p>需要注意的是，线程安全的类并不是所有的方法都是线程安全的，想要保障线程安全，需要调用他们的特定方法。下面介绍一些具体的线程安全的集合类。</p>
+<h4 id="并发-Hash-Map"><a href="#并发-Hash-Map" class="headerlink" title="并发 Hash Map"></a>并发 Hash Map</h4><p><code>ConcurrentHashMap</code> 是线程安全的 hash map。它通过提供下述更新集合元素的方法来实现安全的多线程操作：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentHashMap&lt;<span class="keyword">String</span>, <span class="keyword">long</span>&gt; <span class="built_in">map</span> = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line"><span class="comment">// compute 方法，利用key值 word 更新 map中的条目</span></span><br><span class="line"><span class="built_in">map</span>.compute(<span class="keyword">word</span>, (k, v) -&gt;  v == null ? <span class="number">1</span> : <span class="number">1</span> + v);</span><br><span class="line"><span class="comment">// merge 方法，更新 key 值为 word 的条目</span></span><br><span class="line"><span class="built_in">map</span>.merge(<span class="keyword">word</span>, <span class="number">1L</span>, Long::sum);</span><br></pre></td></tr></table></figure>
+
+<p>此外，还有 <code>putIfAbsent()</code>, <code>computeIfAbsent()</code>, <code>computeIfPresent()</code> 等方法来实现线程安全的操作。</p>
+<p>对于上述线程安全的方法，实现的原理是 在程序中 上述方法会被当做原子型方法来处理（atomic），也就是执行上述方法的时候，不会被其他线程打断。</p>
+<p>由于上述方法为 atomic，所以在上述方法中传入的计算过程不能太长，不能为长耗时工作，否则会严重影响系统效率。</p>
+<p>除了单个元素的更新查询方法， <code>ConcurrentHashMap</code> 还提供一些大型的操作方法，包括 search， reduce， forEach 方法，这些方法实现线程安全的原理是获得一个元素集合的 snapshot，然后在获取的这个 snapshot 上进行执行。 </p>
+<p>需要注意的是，对于 <code>ConcurrentHashMap</code> 类，同样有 put() 等与 <code>HashMap</code> 相同的方法， 但是这些方法不是线程安全的方法。</p>
+<h4 id="阻塞队列"><a href="#阻塞队列" class="headerlink" title="阻塞队列"></a>阻塞队列</h4><p>在 Java.util.concurrent 包中，还提供了线程安全的队列类型，为 阻塞队列（blocking queue），具体包括实现类 <code>LinkedBlockingQueue</code>(利用链表实现), <code>ArrayBlockingQueue</code>(利用循环数组实现)。</p>
+<p>阻塞队列的工作原理是，生产者（producer）负责向队列中添加元素，消费者（consumer）从队列中取用元素。当队列满或者队列为空时，队列的操作会被阻塞。队列通过这样的方法来实现生产和消耗的平衡。具体的方法参考书中表格10-3。</p>
+<p>使用阻塞队列的一个注意点是设定好 consumer 终止的条件。一个方法是添加 last item 的指示符，当consumer 读取到 last item 的指示符后，consumer 便不再等待而阻塞队列。</p>
+<h4 id="其他线程安全的集合类"><a href="#其他线程安全的集合类" class="headerlink" title="其他线程安全的集合类"></a>其他线程安全的集合类</h4><p><code>ConcurrentSkipListMap</code> 是一个并发安全的，且可以按照顺序遍历 key 值的 Map 类（类似 HashMap 和 TreeMap）。</p>
+<p><code>CopyOnWriteArrayList</code>, <code>CopyOnWriteArraySet</code> 通过让所有的执行元素变化的操作 复制 这个集合的方法来实现线程安全。</p>
+<p>没有直接的线程安全的 set 提供，但是可以通过 <code>ConcurrentHashMap</code> 的静态方法 <code>newKeySet()</code>, 构造线程安全的 set。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set&lt;String&gt; words = <span class="module-access"><span class="module"><span class="identifier">ConcurrentHashMap</span>.</span></span><span class="keyword">new</span><span class="constructor">KeySet()</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>newKeySet()</code>构建的 <code>Set&lt;K&gt;</code> 实际上是一个被包裹了的 <code>ConcurrentHashMap&lt;K, Boolean&gt;</code>, 所有的 key 值都设为 <code>Boolean.TRUE</code>。</p>
+<h4 id="原子型的计数器"><a href="#原子型的计数器" class="headerlink" title="原子型的计数器"></a>原子型的计数器</h4><p>特别的，对于 计数器，java.util.concurrent.atomic 包中提供了一些线程安全的计数器。</p>
+<p><code>AtomicLong</code>, 保证一个线程安全的 类似long 型整数的值。一些方法举例如下：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 更新，累加1  incrementAndGet()</span></span><br><span class="line">public static AtomicLong nextNumber = <span class="keyword">new</span> <span class="constructor">AtomicLong()</span>;</span><br><span class="line"><span class="comment">// In some thread ...</span></span><br><span class="line">long id = nextNumber.increment<span class="constructor">AndGet()</span>;   <span class="comment">// nextNumber + 1,并返回更新后的值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于更加复杂的更新策略，使用 accumulateAndGet()</span></span><br><span class="line">public static AtomicLong largest = <span class="keyword">new</span> <span class="constructor">AtomicLong()</span>;</span><br><span class="line">largest.accumulate<span class="constructor">AndGet(<span class="params">x</span> -&gt; Math.<span class="params">max</span>(<span class="params">x</span>, <span class="params">observed</span>)</span>); <span class="comment">// 将observed 与 x 中较大的值返回给 largest</span></span><br></pre></td></tr></table></figure>
+<p><code>AtomicLong</code> 还有方法包括 <code>getAndUpdate()</code>(返回更新前的值), <code>getAndAccumulate()</code>(返回更新前的值) …</p>
+<p>对于有大量线程同时使用 atomic 值的情况，系统的性能会由于 实现的 乐观性变得低效（理解（may not right）：对数进行更新时的逻辑是这样的，首先获取数 A 的值，然后计算更新先放在临时B处，此时，比较之前获取的A的值与现在的A 值是否相同，如果相同，说明没有线程冲突，将B中的值更新到 A 中，否则，重复上面的行为）。为解决上述问题，可以使用 <code>LongAdder</code>, <code>LongAccumulator</code>, <code>DoubleAdder</code>, <code>DoubleAccumulator</code> 作为累加器。</p>
+<p><code>LongAdder</code> 等的实现原理是通过为不同task 提供不同的数块用于各自的更新，最后求和来得到总的累加值。</p>
+<p><code>LongAdder</code> 的方法有：<code>increment()</code>, 加一操作；<code>add()</code>, 加一个特定值；<code>sum()</code>, 求和，即求所有线程的累加值。</p>
+<p><code>LongAccumulator</code> 的方法有：<code>accumulate()</code>加操作; <code>get()</code> 获取当前值。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/20/Java/CoreJava_ch9_2_RegularExpression&Serialization/" rel="prev" title="Java-9_2-正则表达式与序列化">
+                  <i class="fa fa-chevron-left"></i> Java-9_2-正则表达式与序列化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/24/Java/CoreJava_ch10_2_ConcurrentProgramming/" rel="next" title="Java-10_2-并发编程">
+                  Java-10_2-并发编程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/11/23/Java/CoreJava_ch10_1_ConcurrentProgramming/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

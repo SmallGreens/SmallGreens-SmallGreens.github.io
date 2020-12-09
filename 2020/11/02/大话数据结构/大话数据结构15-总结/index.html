@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="上两周，读完了《大话数据结构》这本书。记录了14篇学习文档。这里，首先，我将每章中觉得重要的内容在这里做一下总结，然后，在总结的基础上，脱离细节，做一下宏观上的分析，最后，以思维导图的形式，做一个汇总。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大话数据结构15-总结">
+<meta property="og:url" content="http://example.com/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="上两周，读完了《大话数据结构》这本书。记录了14篇学习文档。这里，首先，我将每章中觉得重要的内容在这里做一下总结，然后，在总结的基础上，脱离细节，做一下宏观上的分析，最后，以思维导图的形式，做一个汇总。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.png">
+<meta property="article:published_time" content="2020-11-02T04:12:25.000Z">
+<meta property="article:modified_time" content="2020-11-02T11:40:55.391Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.png">
+
+
+<link rel="canonical" href="http://example.com/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>大话数据结构15-总结 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">I. 算法与数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E9%83%A8%E5%88%86"><span class="nav-number">1.1.</span> <span class="nav-text">a. 数据结构部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E7%AE%97%E6%B3%95%E9%83%A8%E5%88%86"><span class="nav-number">1.2.</span> <span class="nav-text">b. 算法部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">c. 总结</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大话数据结构15-总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-11-02 12:12:25 / 修改时间：19:40:55" itemprop="dateCreated datePublished" datetime="2020-11-02T12:12:25+08:00">2020-11-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>上两周，读完了《大话数据结构》这本书。记录了14篇学习文档。这里，首先，我将每章中觉得重要的内容在这里做一下总结，然后，在总结的基础上，脱离细节，做一下宏观上的分析，最后，以思维导图的形式，做一个汇总。</p>
+<a id="more"></a>
+
+<h2 id="I-算法与数据结构"><a href="#I-算法与数据结构" class="headerlink" title="I. 算法与数据结构"></a>I. 算法与数据结构</h2><h3 id="a-数据结构部分"><a href="#a-数据结构部分" class="headerlink" title="a. 数据结构部分"></a>a. 数据结构部分</h3><p><strong>Chap1-时间复杂度</strong>: 核心内容是算法的时间复杂度的分析，也就是大 O 算法。分析算法的 大O 复杂度其实不难，因为只需要关注最主要的高次项的影响，低次项可以简单的忽略处理。此外，要记住 大O算法 复杂度的排序。 </p>
+<p>$$O(log(n))&lt; O(n)&lt; O(nlog(n))&lt; O(n^2)$$</p>
+<p><strong>Chap2-顺序存储结构</strong>: 顺序表结构也就是数组结构，它是一种读写方便，增删麻烦的存储结构。对于C语言来说，一定要非常关心数组的溢出问题。（Java 语言有自动的边界检查机制，似乎不存在这样的问题 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/479701/does-java-have-buffer-overflows">refLink</a> ）</p>
+<p><strong>Chap3-链表</strong>: 链表是一种链式的存储结构，通过让每个存储元素都拥有数据域和指向下个元素的地址域，它不再要求数据在连续的物理空间上存储。它的好处是增删方便，但缺点是读写不便。</p>
+<p>需要注意的概念是头指针和头结点，头结点是为了方便（使得增删操作更加一致），链表中常常添加的一个额外结点，它的数据域为空或存储链表相关信息（例如链表长度），它的地址域则指向链表第一个数据结点。而头指针则是指向链表的第一个结点-如果链表有头结点，则指向头结点，如果没有头结点，则指向第一个数据结点。</p>
+<p><strong>Chap4-栈</strong>: 栈是一种特殊的线性表，它的特点是 “后进先出”（LIFO）。栈的应用很多，例如对于递归类型的程序，就是通过栈来进行操作：最外层的递归程序先进栈，但最后执行。</p>
+<p><strong>Chap5-队列</strong>: 队列是一种特殊的线性表，它的特点是只允许在一端进行插入操作，在另一端进行删除操作。简单讲，就是“先进先出”（FIFO）。同样的，队列可以使用 <strong>数组</strong> 或 <strong>链表</strong> 进行存储。用数组存储时，为提升效率，需要使用循环队列结构。</p>
+<p><strong>Chap6-串</strong>: 即 String，核心内容是 String 的模式匹配算法。其中较为高级的叫做 KMP 算法，它的核心思想是减少重复的比对，具体包括：1-主串中指示比较进行的 index 不回退；2- 子串中指示的 index 根据一个生成的 next 数组作为 “比较指针” 跳动的依据。</p>
+<p><strong>Chap7-树</strong>: 树是一种一对多的数据结构，每个节点可以有多个子结点，但最多只能有一个 parent 结点（根结点无parent）。</p>
+<p>核心内容是对二叉树（Binary Tree，度最大为2的树）的分析。首先是它的 <strong>遍历(及生成)方法</strong>，分为前序、中序、后序三种递归遍历方法，以及层序遍历法。<strong>线索二叉树</strong> - 二叉树的链表化。 <strong>赫夫曼树</strong> - 最优二叉树，带权路径长度（WPL）最小的二叉树，生成方法是：重复进行将最小的权值的两个结点合并的操作。</p>
+<p><strong>Chap8-图</strong>: 图是一种多对多的数据结构，实际上可以看作是两个集合：1- vertex 的集合，2- edge 的集合。图可以分为有向图和无向图。根据图中任两点间是否有 path，定义连通图。</p>
+<p>图的存储核心是边的存储，因为边 涉及到两 顶点之间的关系。按照存储所使用的存储空间结构（顺序表or链表）引出最基础的两种存储方式：<strong>邻接矩阵</strong>（2阶矩阵） 和 <strong>邻接表</strong> 存储。进一步的，邻接表针对有向图的升级为 <strong>十字链表</strong>- 链表结点同时存储弧头和弧尾信息。更换另一种思路，以边为核心进行存储，有 数组形式的- <strong>边集数组</strong> 和 链表形式的 <strong>邻接多重表</strong>。</p>
+<p>图的遍历（traverse）分为深度优先算法（类似树的前序算法）和广度优先算法（类似树的层序遍历算法）。</p>
+<p>连通网的 <strong>最小生成树</strong>（n个顶点，n-1条边），常用的有 Prim算法（逐步扩大顶点集合） 和 Kruskal算法（逐步扩大边集合）。</p>
+<p>图中两点间的 <strong>最短路径</strong>，常用的有 Dijkstra算法（由近及远查找源点 到每个点的最短路径） 和 Floyd算法（宏观地对邻接矩阵进行演化）。</p>
+<p>有向无环图的应用包括 AOV网的拓扑排序，及 AOE网 的关键路径查找。</p>
+<h3 id="b-算法部分"><a href="#b-算法部分" class="headerlink" title="b. 算法部分"></a>b. 算法部分</h3><p><strong>Chap9-查找</strong>: 查找可以分为下面几类：</p>
+<ol>
+<li>顺序表查找；（时间复杂度为$O(n)$.）</li>
+<li>有序表查找；（折半查找，插值查找，斐波那契查找..不同的是查找时的划分点不同）</li>
+<li>线性索引查找；（数据量大时，建立索引表来查数据。）</li>
+<li>二叉排序树；（二叉排序树的中序遍历序列，就是从小到大的排序序列。）<ol>
+<li>平衡二叉树（AVL树）；（平衡的二叉树查找效率最高）</li>
+<li>多路查找树（B树）；（每个结点可以存储多个元素，include：2-3树，2-3-4树 ..）</li>
+</ol>
+</li>
+<li>散列表（哈希表）查找。（重点是散列函数的构造和处理散列冲突的方法。）</li>
+</ol>
+<p><strong>Chap10-排序</strong>: 排序算法大致可以分为如下几类：</p>
+<ol>
+<li>交换排序<ol>
+<li>冒泡法，遍历比较，通过交换，将小数“冒泡” or 大数“沉底”。</li>
+<li>升级版：快排，分治处理，每组选择一个 pivot 值，将小于它的值放在数组前方，大于的放在后方。</li>
+</ol>
+</li>
+<li>插入排序<ol>
+<li>从数组最前端开始，通过插入数据，增长数组，直到遍历完毕。具体的，插入就是从待插入数组尾开始遍历，遍历的元素如果比待插入数据大，就向后移动一位，直到找到所关注的数据的待插入的位置为止。</li>
+<li>希尔排序：分治法，按等距k 将数组分为 n/k 组，每一组施行插入排序。</li>
+</ol>
+</li>
+<li>选择排序<ol>
+<li>简单选择，首先寻找整个数组中最小的数，放在数组第一个，然后寻找次小的，放在第二个，… 直到外循环遍历完整个数组。</li>
+<li>堆排序：设计了一个堆结构（一种二叉树），更容易的找出数组中的最大/最小元素。</li>
+</ol>
+</li>
+<li>归并排序。-分治思想。</li>
+</ol>
+<p>最后，关于排序算法的稳定性，不是指时间复杂度的变化小，而是指 大小相同的元素 的顺序 是否与原数组中顺序相同。</p>
+<h3 id="c-总结"><a href="#c-总结" class="headerlink" title="c. 总结"></a>c. 总结</h3><p>回顾整本书，作者按顺序介绍了3种大的数据结构：线性表；树；图。每一种结构，都有很多分类，变形。例如线性表，包括队列，栈。此外，数据在计算机中的存储空间是否连续，决定了数据结构以数组还是链表的形式存储，最终又产生了很多的分支和细节的内容。</p>
+<p>介绍完数据结构之后，是算法的介绍。所谓算法，其实就是寻找高效的数据查找、数据排序的方法。从算法的介绍中，我们可以发现，之所以数据结构与算法连在一起讲，是因为算法性能的提升，常常需要依赖于特定的数据结构。例如排序二叉树，就是利用了二叉树的特性，将算法的思想，与数据在计算机中的实际存储结构相结合联系。最终达到提高效率的目的。</p>
+<p><img src="/images/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/10/30/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8414-%E6%8E%92%E5%BA%8F2/" rel="prev" title="大话数据结构14-排序2">
+                  <i class="fa fa-chevron-left"></i> 大话数据结构14-排序2
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/04/Java/CoreJava4Impa_note1/" rel="next" title="Java-1-基础语法">
+                  Java-1-基础语法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

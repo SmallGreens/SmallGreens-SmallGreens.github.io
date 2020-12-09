@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="主要参考书籍 《计算机网络：自顶向下方法》的第二章关于网络应用层的介绍。对网络应用层的常用协议：HTTP，FTP，邮件协议，DNS 以及 P2P的两种协议 进行了简单学习。最后介绍了套接字编程，直观地展现了运输层协议TCP与UDP的区别。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络应用层知识点概述">
+<meta property="og:url" content="http://example.com/2020/12/09/Network/ApplicationLayerBrief/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="主要参考书籍 《计算机网络：自顶向下方法》的第二章关于网络应用层的介绍。对网络应用层的常用协议：HTTP，FTP，邮件协议，DNS 以及 P2P的两种协议 进行了简单学习。最后介绍了套接字编程，直观地展现了运输层协议TCP与UDP的区别。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/HTTP_cookie.png">
+<meta property="og:image" content="http://example.com/images/FTP工作原理.jpg">
+<meta property="og:image" content="http://example.com/images/email-protocol.png">
+<meta property="og:image" content="http://example.com/images/DNS_service_3level.png">
+<meta property="og:image" content="http://example.com/images/DNS_service.png">
+<meta property="og:image" content="http://example.com/images/peertopeer-internet-telephony.png">
+<meta property="article:published_time" content="2020-12-09T01:07:25.000Z">
+<meta property="article:modified_time" content="2020-12-09T12:29:30.982Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/HTTP_cookie.png">
+
+
+<link rel="canonical" href="http://example.com/2020/12/09/Network/ApplicationLayerBrief/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>网络应用层知识点概述 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%8E%9F%E7%90%86%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 原理概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Web-%E5%92%8C-HTTP"><span class="nav-number">2.</span> <span class="nav-text">2. Web 和 HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%A6%82%E5%86%B5"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 概况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E9%9D%9E%E6%8C%81%E7%BB%AD%E8%BF%9E%E6%8E%A5%E5%92%8C%E6%8C%81%E7%BB%AD%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 非持续连接和持续连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-HTTP-%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 HTTP 报文格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E7%94%A8%E6%88%B7%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E4%BA%A4%E4%BA%92-cookie"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 用户与服务器的交互- cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-Web-%E7%BC%93%E5%AD%98"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 Web 缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE-FTP"><span class="nav-number">3.</span> <span class="nav-text">3. 文件传输协议-FTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-FTP%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%9B%9E%E7%AD%94"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 FTP命令与回答</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">4. 电子邮件协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%8F%91%E9%80%81-SMTP-%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 发送- SMTP 协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E8%AE%BF%E9%97%AE-POP3-IMAP"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 访问- POP3&#x2F;IMAP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%BA%92%E8%81%94%E7%BD%91%E7%9A%84%E7%9B%AE%E5%BD%95%E6%9C%8D%E5%8A%A1-DNS"><span class="nav-number">5.</span> <span class="nav-text">5. 互联网的目录服务- DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-DNS-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BB%93%E6%9E%84"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 DNS 服务器结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%9C%AC%E5%9C%B0-DNS-%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 本地 DNS 服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-DNS-%E8%AE%B0%E5%BD%95%E5%92%8C%E6%8A%A5%E6%96%87"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 DNS 记录和报文</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-P2P"><span class="nav-number">6.</span> <span class="nav-text">6. P2P</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-P2P-%E6%96%87%E4%BB%B6%E5%88%86%E5%8F%91"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 P2P 文件分发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%A3%E5%88%97%E8%A1%A8"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 分布式散列表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%A5%97%E6%8E%A5%E5%AD%97%E7%BC%96%E7%A8%8B"><span class="nav-number">7.</span> <span class="nav-text">7. 套接字编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-UDP-%E5%A5%97%E6%8E%A5%E5%AD%97%E7%BC%96%E7%A8%8B"><span class="nav-number">7.1.</span> <span class="nav-text">7.1 UDP 套接字编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-TCP-%E5%A5%97%E6%8E%A5%E5%AD%97%E7%BC%96%E7%A8%8B"><span class="nav-number">7.2.</span> <span class="nav-text">7.2 TCP 套接字编程</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/09/Network/ApplicationLayerBrief/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          网络应用层知识点概述
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-12-09 09:07:25 / 修改时间：20:29:30" itemprop="dateCreated datePublished" datetime="2020-12-09T09:07:25+08:00">2020-12-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/09/Network/ApplicationLayerBrief/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/09/Network/ApplicationLayerBrief/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <!-- 主要参考书籍 《计算机网络-自顶向下方法》-->
+
+<p>主要参考书籍 《计算机网络：自顶向下方法》的第二章关于网络应用层的介绍。对网络应用层的常用协议：HTTP，FTP，邮件协议，DNS 以及 P2P的两种协议 进行了简单学习。最后介绍了套接字编程，直观地展现了运输层协议TCP与UDP的区别。</p>
+<a id="more"></a>
+
+<h2 id="1-原理概述"><a href="#1-原理概述" class="headerlink" title="1. 原理概述"></a>1. 原理概述</h2><p>应用程序体系结构（application architecture）主要分为两种：客户-服务器体系结构 和 对等体系结构(P2P)。</p>
+<p>由于一个计算机上通常可以同时运行多个程序，为实现计算机网络应用程序进程间的通信，应用程序使用称为 socket 的程序接口向网络发送和接收报文（实际上一般就是 IP + 端口的形式）。</p>
+<p>应用层程序需要依赖传输层服务，共有两种传输层服务：</p>
+<ul>
+<li>TCP：是一种面向连接的服务（就是每次通讯之前客户机-服务器对应进程之间首先通过通信握手建立全双工的TCP连接）；并且，TCP 服务还能够保证数据的可靠传输-顺序不变，数据不丢失、冗余；TCP服务还拥有拥塞控制机制。</li>
+<li>UDP：是一种不提供不必要服务的轻量级传输协议，不需要建立连接，直接传输，但不保证传输的可靠性。</li>
+</ul>
+<p>由于 TCP 和 UDP 协议都没有做安全上的处理-也就是二者在网络中都是明文传输的。为实现传输的安全性，出现了一种 TCP 协议的加强版- SSL（secure sockets layer - 安全套接字层）。具体地，首先应用层进程向 SSL 套接字发送明文数据，SSL 进行加密后传递给 TCP 套接字，该内容被接收方的 TCP 套接字接收，传给接收方的 SSL 套接字，进行解密后传输给接收方应用程序接口。</p>
+<p>应用层协议对应用所交换的报文的格式、语法、含义进行了规定。本书将介绍5种重要的应用层协议：web（Http）、文件传输（FTP）、电子邮件（SMTP）、目录服务（DNS）、P2P。</p>
+<h2 id="2-Web-和-HTTP"><a href="#2-Web-和-HTTP" class="headerlink" title="2. Web 和 HTTP"></a>2. Web 和 HTTP</h2><h3 id="2-1-概况"><a href="#2-1-概况" class="headerlink" title="2.1 概况"></a>2.1 概况</h3><p>HTTP 协议即超文本传输协议（HyperText Transfer Protocol），它是 web 的核心协议。HTTP协议由两个程序实现：客户程序和服务器程序。</p>
+<p>HTTP协议使用 TCP 协议作为它的传输层协议。</p>
+<p>HTTP是一个无状态协议（atateless prototype），也就是服务器不存储任何关于用户的状态信息，两次连接之间相互独立，不受影响。</p>
+<h3 id="2-2-非持续连接和持续连接"><a href="#2-2-非持续连接和持续连接" class="headerlink" title="2.2 非持续连接和持续连接"></a>2.2 非持续连接和持续连接</h3><p>根据一连串 HTTP 请求是分别使用单独的 TCP 连接还是全部使用相同的 TCP连接，我们将 HTTP应用程序分为非持续连接和持续连接。通常来说，持续连接可以提升效率，因为每一次重新 TCP 连接需要一次额外的握手时间。</p>
+<p>书中称，HTTP使用流水线方式实现了 持续连接。但火狐的一个教程文档中称, 由于流水线方式在实际应用中难以推行， HTTP/1.1 中并没有很好地实现该功能（<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP">Ref</a>）。</p>
+<h3 id="2-3-HTTP-报文格式"><a href="#2-3-HTTP-报文格式" class="headerlink" title="2.3 HTTP 报文格式"></a>2.3 HTTP 报文格式</h3><p>HTTP 的请求和相应格式如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请求</span></span><br><span class="line">GET/ HTTP/<span class="number">1.1</span></span><br><span class="line">Host: developer:mozilla.org</span><br><span class="line">Accept-Language: CN</span><br><span class="line"></span><br><span class="line"><span class="comment">// 响应</span></span><br><span class="line">HTTP/<span class="number">1.1</span> <span class="number">200</span> OK</span><br><span class="line">Date: Sat, <span class="number">09</span> ...</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Tue, <span class="number">01</span> Dec,...</span><br><span class="line">Etag: ...</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: <span class="number">29769</span></span><br><span class="line">Content-Type: text/html</span><br><span class="line"></span><br><span class="line">(data.... entity body)</span><br></pre></td></tr></table></figure>
+
+<p>请求时常用的除了 GET 方法还有 POST 方法。通常提交表单使用 POST 方法。当然，一些不敏感的 提交信息，也可以使用 GET 方法提交。</p>
+<p>响应时，常见的状态码有：</p>
+<ul>
+<li>200 OK，请求成功。</li>
+<li>301 Moved Permanently. 请求对象已经被永久转移，新的 URL 定义在相应头中，浏览器可以直接自动获取新的 URL。</li>
+<li>400 Bad Request。通用差错代码。表示请求不能被服务器理解。</li>
+<li>404 Not Found。请求的文档不在服务器上。</li>
+</ul>
+<h3 id="2-4-用户与服务器的交互-cookie"><a href="#2-4-用户与服务器的交互-cookie" class="headerlink" title="2.4 用户与服务器的交互- cookie"></a>2.4 用户与服务器的交互- cookie</h3><p>由于 HTTP 服务是无状态的，为实现对用户的记录，可以使用 cookie 实现。一个典型的 cookie 使用流程如下图所示。</p>
+<!--
+![https://isister.cc/posts/Ultimate-Guide-To-Http-Cookies/](/images/HTTP_cookie.png)
+-->
+<img src="/images/HTTP_cookie.png" width=50% height=50% align=center/>
+
+
+
+<p>具体的，cookie 有4个组件：</p>
+<ul>
+<li>在 HTTP 响应报文的头中带有 cookie；</li>
+<li>在 HTTP 请求报文中也会带有一个 cookie 信息；</li>
+<li>用户端系统中有一个 cookie 文件，由浏览器进行管理保存；</li>
+<li>Web站点后端数据库中存有用户对应的cookie。</li>
+</ul>
+<p>服务器通过 cookie 可以获得对应用户的信息从而可以记录其行为。（当然，也正是由于其可以追踪用户行为，存在一些隐私方面的争议）</p>
+<h3 id="2-5-Web-缓存"><a href="#2-5-Web-缓存" class="headerlink" title="2.5 Web 缓存"></a>2.5 Web 缓存</h3><p>Web 缓存（cache）也叫代理服务器（proxy server）。通常是由 ISP 提供的，用于保存网络终端系统最近请求过的响应对象副本，可以大大提升访问速率，降低网络带宽升级成本。在学校，公司等场景中，应用很广泛。</p>
+<p>具体流程是浏览器建立一个到 Web 缓存器的 TCP 连接，并向 Web 缓存器发送一个 HTTP 请求； Web缓存器检查该请求，看在本地是否有该请求的响应副本，如果有，直接返回该副本给客户浏览器；如果Web 缓存器上没有该请求响应的缓存，则Web缓存器会建立一个通向最终请求服务器的 TCP连接，收到响应后，在本地保存一份副本后，再将其发送给客户浏览器。- 可以看出，Web 缓存器既是客户机，又可看做一种服务器。</p>
+<p>Web 缓存器存在副本可能不是最新的问题，这时，可以使用条件 GET 方法，实现高效的副本更新。具体地：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--请求头添加一句 If-Modified-Since --&gt;</span></span><br><span class="line">GET/ ...(资源地址).. HTTP/1.1</span><br><span class="line">Host: www. ... (网址)</span><br><span class="line">If-Modified-Since: xxxx (日期_为上次缓存中:Last-Modified字段的值)</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--如果没有变动，服务器返回 Not Modified--&gt;</span></span><br><span class="line">HTTP/1.1 304 Not Modified</span><br><span class="line">Date: ....(当前时间)</span><br><span class="line">Server: ...</span><br></pre></td></tr></table></figure>
+
+<p>此外，通过使用 内容分发网络（content distribution network: CDN）, Web 缓存技术正得到更广泛的应用。</p>
+<h2 id="3-文件传输协议-FTP"><a href="#3-文件传输协议-FTP" class="headerlink" title="3. 文件传输协议-FTP"></a>3. 文件传输协议-FTP</h2><p>FTP协议用于文件传输。客户机可以通过一个在主机注册了的用户名和密码从主机读取和写入文件。与 HTTP 协议类似，传输层使用TCP 协议，以确保可靠的信息传输。</p>
+<p>但不同于 HTTP 协议只使用一个 TCP 连接，FTP协议使用两个并行的 TCP连接来传输文件，一个是 控制连接（control connection），一个是数据连接（data connection）。控制连接用于两主机间的控制信息的传输，如用户标识、口令、读取请求等。而数据连接用于数据传输。</p>
+<!--
+![https://slidesplayer.com/slide/11526196/](/images/FTP工作原理.jpg)
+-->
+
+<img src="/images/FTP工作原理.jpg" width=50% height=50% align=center/>
+
+
+<p>具体地，控制连接贯穿了整个用户会话期间，期间，每当用户通过控制连接发起文件读写请求，会建立一个数据连接，文件传输完毕后再关闭该数据连接，因此，数据连接是非连续的。</p>
+<p>不同于 HTTP协议是无状态的，FTP 协议在整个会话期间内保留用户的状态（state）。</p>
+<h3 id="3-1-FTP命令与回答"><a href="#3-1-FTP命令与回答" class="headerlink" title="3.1 FTP命令与回答"></a>3.1 FTP命令与回答</h3><p>常见的命令如下：</p>
+<ul>
+<li>USER username: 向服务器传送用户名；</li>
+<li>PASS password;</li>
+<li>LIST: 请求服务器的文件列表，列表会通过数据连接传输；</li>
+<li>RETR filename: get 远程主机中的文件；</li>
+<li>STOR filename: put 本地文件到远程主机上。</li>
+</ul>
+<p>常见的响应报文如下：</p>
+<ul>
+<li>331 Username OK, password required.</li>
+<li>125 Data connection already oepn, tranfer starting.</li>
+<li>425 Can’t open data connection.</li>
+<li>452 Error writing file.</li>
+</ul>
+<h2 id="4-电子邮件协议"><a href="#4-电子邮件协议" class="headerlink" title="4. 电子邮件协议"></a>4. 电子邮件协议</h2><p>电子邮件的发送大致按照下述流程进行，发件人在邮箱中写完邮件，通过用户代理（邮箱软件or 浏览器）发送给邮件服务器（通常由 ISP 等提供），邮件服务器通过 SMTP 协议发送该邮件到收件人邮件服务器，收件人在方便的时候，通过用户代理从他的邮件服务器上取回邮件，进行阅读。参考下图：</p>
+<!-- 
+![https://www.dialwebhosting.com/blog/email-hosting/what-protocols-send-receive-email-with-the-mail-server](/images/email-protocol.png)
+-->
+
+<img src="/images/email-protocol.png" width=70% height=70% align=center/>
+
+
+<p>整体来说，邮件协议主要分为收发两部分。</p>
+<h3 id="4-1-发送-SMTP-协议"><a href="#4-1-发送-SMTP-协议" class="headerlink" title="4.1 发送- SMTP 协议"></a>4.1 发送- SMTP 协议</h3><p>SMTP（simple mail transfer protocol） 是邮件发送协议，由于邮件服务器既可以发送也可以接受邮件，邮件服务器既是 SMTP 协议的客户端，也是服务器端。</p>
+<p>SMTP 协议基于 TCP 传输协议。</p>
+<p>SMTP 协议一般不使用中间邮件服务器中转邮件。当目标邮件服务器不能正常接受邮件时，发送服务器可以将邮件暂存在邮件队列中，等待一段时间后再重新发送。</p>
+<p>与 HTTP 协议不同，SMTP 是一个 推协议（push protocol）（HTTP 协议主要是一个 拉协议（pull protocol），从服务器上拉取资源）。</p>
+<h3 id="4-2-访问-POP3-IMAP"><a href="#4-2-访问-POP3-IMAP" class="headerlink" title="4.2 访问- POP3/IMAP"></a>4.2 访问- POP3/IMAP</h3><p>当邮件抵达收件方服务器后，收件人的用户代理（user-agent） 需要从服务器上取回邮件，这通常使用 POP3(post office protocol -version 3), 或者 IMAP(internet mail access protocol)协议。</p>
+<p>POP3协议是一个非常简单的邮件访问协议，它主要进行三个阶段的工作：</p>
+<ol>
+<li>认证- authorization；即发送用户名密码给邮件服务器，进行用户认证；</li>
+<li>事务处理：认证完成后，用户可以取回报文，在本地进行阅读以及进行删除标记等操作；</li>
+<li>更新阶段：客户发出 quit 命令后，POP3 会话终止，这时，邮件服务器会删除那些阶段2中被标记为删除的报文。</li>
+</ol>
+<p>IMAP 协议相对 POP3 协议最大的进步是允许在邮件服务器中建立文件夹，从而可以在任何一个终端中获取带有文件夹信息的邮件内容。</p>
+<p>最后，由于浏览器的广泛使用，人们也常常是由浏览器进行收发邮件，这时，浏览器作为邮件服务代理，通过 HTTP 协议与邮箱服务器进行通信。</p>
+<h2 id="5-互联网的目录服务-DNS"><a href="#5-互联网的目录服务-DNS" class="headerlink" title="5. 互联网的目录服务- DNS"></a>5. 互联网的目录服务- DNS</h2><p>DNS （Domain Name System）也是一种应用层协议（当然，与HTTP 等不同的是，它不直接面向终端用户），它用于处理域名到 IP 地址的映射。</p>
+<p>所有的 DNS 请求和回答报文都使用 UDP协议进行传输（端口53）。</p>
+<h3 id="5-1-DNS-服务器结构"><a href="#5-1-DNS-服务器结构" class="headerlink" title="5.1 DNS 服务器结构"></a>5.1 DNS 服务器结构</h3><p>为防止单个 DNS 服务器故障引起网络服务故障，DNS 服务采用了分布式的设计方案，按照3层结构进行设计。如下图所示：</p>
+<p><img src="/images/DNS_service_3level.png" alt="https://ithelp.ithome.com.tw/m/articles/10210481"></p>
+<p>具体地，root DNS 服务器用于提供顶级域服务器的地址，顶级域服务器（top level domain，TLD）提供权威 DNS 服务器的地址，authoritative DNS 服务器则提供具体的服务器的地址（可能还有子级系统，这部分由 authoritative DNS server 负责查询）。一个简单的网络访问流程如下图所示。</p>
+<p><img src="/images/DNS_service.png" alt="https://ithelp.ithome.com.tw/m/articles/10210481"></p>
+<h3 id="5-2-本地-DNS-服务器"><a href="#5-2-本地-DNS-服务器" class="headerlink" title="5.2 本地 DNS 服务器"></a>5.2 本地 DNS 服务器</h3><p>通常每个 ISP (例如大学，公司，居民区) 都有一个本地 DNS 服务器（local DNS server），他不属于上述的 DNS 层次服务结构。</p>
+<p>本地 DNS 服务主要提供DNS代理查询和DNS缓存服务。通过DNS缓存，可以减少DNS查询次数，提升访问速度。</p>
+<h3 id="5-3-DNS-记录和报文"><a href="#5-3-DNS-记录和报文" class="headerlink" title="5.3 DNS 记录和报文"></a>5.3 DNS 记录和报文</h3><p>DNS 分布式数据库中存储的资源记录（resource record - RR）通常由4个字段组成：Name, Value, Type, TTL（TTL为对应资源记录项的生存时间，不深入讨论）。根据 Type 不同，记录可分为下面4种：</p>
+<ul>
+<li>Type = A, 则要求 Name 是主机名，Value 是主机对应的 IP 地址，即name-value 为一个标准的主机-IP 映射。</li>
+<li>Type = NS, name 为一个域（例如：foo.com）, value 则是知道该域中主机 IP 地址的 authoritative DNS server 的主机名。这个记录用于沿链路查询 IP 地址。</li>
+<li>Type = CNAME, value 为 别名，name 为主机对应的规范名。</li>
+<li>Type = MX, value 为别名，name 为邮件服务器的规范主机名。</li>
+</ul>
+<p>Note: 在申请个人域名的时候，需要填写上述的DNS 资源记录。</p>
+<h2 id="6-P2P"><a href="#6-P2P" class="headerlink" title="6. P2P"></a>6. P2P</h2><p>应用层协议中，除了使用 客户-服务器 的体系结构，还有一类使用 P2P 的结构 - 即不区分客户与服务器，每个参与者都是一个对等方，他们彼此间可以直接通信。</p>
+<p>两种典型的基于 P2P 设计的应用为：1-文件分发、2-分布在对等方社区中的分布式数据库。 </p>
+<h3 id="6-1-P2P-文件分发"><a href="#6-1-P2P-文件分发" class="headerlink" title="6.1 P2P 文件分发"></a>6.1 P2P 文件分发</h3><p>最流行的 P2P 文件共享协议是 BitTorrent 协议。</p>
+<p>在 BitTorrent 协议中，参与一个特定文件分发的所有对等方的集合被称为一个 torrent。这个文件会被分解为长度相等的文件块（chunk，典型长度为 256 KB），每个对等方可以从其他对等方下载块，也可以上传块给其他对等方。</p>
+<p>BitTorrent 协议中，一个文件会伴有一个追踪器（track），新加入该文件共享的对等方向该追踪器注册自己（并定时通知该track自己仍然在 torrent 中），并从 track 中获取一些对等方建立并行的 TCP 连接来进行文件传输（称所有建立 TCP 连接的对等方为邻近对等方）。</p>
+<p>BitTorrent 中，每个对等方会与4个流入速率最高的对等方连接，这4个对等方称为 unchoked。此外，每过 30s，每个对等方会随机选择一个邻近的对等方进行数据传输，如果传输的速率高于之前的4个稳定连接的对等方，则更新之前的4个连接（因此，任意时刻，每个对等方保持与5个其他对等方的连接）。</p>
+<p>此外，在传输文件块的时候，会依据 <strong>稀缺优先</strong>（rarest first） 的原则，最优先传输最为稀缺的chunk。</p>
+<h3 id="6-2-分布式散列表"><a href="#6-2-分布式散列表" class="headerlink" title="6.2 分布式散列表"></a>6.2 分布式散列表</h3><p>分布式散列表（Distributed Hash Table，DHT）是一种存储与 P2P 网络中的数据库，该数据库只存储键值对类型的数据。</p>
+<p>DHT 的原理是这样的，我们为连接在 P2P 网络中的每个对等方分配一个标识符（$0 到 2^n-1$），并且将键值通过散列函数进行数值化，并将 key-value 对存储到与键值的最近的对等方中（最邻近后继的对等方）。</p>
+<p><img src="/images/peertopeer-internet-telephony.png" alt="https://www.slideshare.net/kundan10/peertopeer-internet-telephony"></p>
+<p>如果P2P 的网络很大，从一个对等方出发，我们难以直接寻找到对应 key 的存储单元，这时候，我们使用 环形DHT + 捷径的方式，在查找速度和连接量之间取得平衡。</p>
+<p>DHT 一个重要的应用是 BitTorrent 中使用的分布式追踪器（Kademlia DHT）, 在 BitTorrent 中，track 通常不存储在一个统一的服务器中，而是以分布式的形式存储在所有对等方中，其键是 torrent 的标识符，值为torrent 中所有参与对等方的 IP 地址。</p>
+<h2 id="7-套接字编程"><a href="#7-套接字编程" class="headerlink" title="7. 套接字编程"></a>7. 套接字编程</h2><p>在之前的章节中，我们提到，网络应用程序是进程之间的通信，而应用程序直接接触的网络对象对各自计算机中的套接字，客户的套接字再连接目标服务器的套接字进行通信。</p>
+<h3 id="7-1-UDP-套接字编程"><a href="#7-1-UDP-套接字编程" class="headerlink" title="7.1 UDP 套接字编程"></a>7.1 UDP 套接字编程</h3><p>使用 Python 代码展示一个简单的套接字程序。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># UDPClient.py</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># socket, python 中处理套接字相关的包</span></span><br><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># 服务器名（也可以是 IP） 和端口号，用于连接服务器对应的套接字</span></span><br><span class="line">serverName = <span class="string">&#x27;hostname&#x27;</span></span><br><span class="line">serverPort = <span class="number">12000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新建客户端套接字，两个参数：AF_INET 表示使用 IPv4 地址， SOCK_DGRAM 表示使用 UDP 协议</span></span><br><span class="line">clientSocket = socket(AF_INET, SOCK_DGRAM)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 客户从键盘输入字符（设计的该程序是客户端输入小写字符，然后由服务器转为大写字符后返回）</span></span><br><span class="line">message = raw_input(<span class="string">&#x27;Input lowercase snetence: &#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送数据到服务器对应套接字（使用IP + 端口号确定）</span></span><br><span class="line">clientSocket.sendto(message, (serverName, serverPort))</span><br><span class="line"></span><br><span class="line"><span class="comment"># modifiedMessage 接收返回的信息，serverAddress 接收服务器的地址和端口号</span></span><br><span class="line"><span class="comment"># 缓存长度 2048</span></span><br><span class="line">modifiedMessage, serverAddress = clientSocket.recvfrom(<span class="number">2048</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span> modifiedMessage</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭服务器套接字</span></span><br><span class="line">clientSocket.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># UDPServer.py</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line">serverPort = <span class="number">12000</span></span><br><span class="line">serverSocket = socket(AF_INET, SOCK_DGRAM)</span><br><span class="line"><span class="comment"># 将服务器套接字与对应端口绑定</span></span><br><span class="line">serverSocket.bind((<span class="string">&#x27;&#x27;</span>, serverPort))</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Ther server is ready to receive&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 死循环，等到从客户端到来的数据</span></span><br><span class="line"><span class="keyword">while</span> true:</span><br><span class="line">    <span class="comment"># 将接收的信息放到 message 中，clientAddress 保存客户端的地址和端口号</span></span><br><span class="line">    message, clientAddress = serverSocket.recvfrom(<span class="number">2048</span>)</span><br><span class="line">    modifiedMessage = message.upper()</span><br><span class="line">    <span class="comment"># 发送修改完毕的信息</span></span><br><span class="line">    serverSocket.sendto(modifiedMessage, clientAddress)</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-TCP-套接字编程"><a href="#7-2-TCP-套接字编程" class="headerlink" title="7.2 TCP 套接字编程"></a>7.2 TCP 套接字编程</h3><p>对于 TCP 套接字编程，需要注意的是，TCP 的服务器端需要提供两个套接字，一个称为 serverSocket，用于接收所有客户端的握手请求；另一个套接字为 connection socket，用于握手完毕后，与特定的客户端套接字进行数据传输。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># TCPClient.py</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line">serverName = <span class="string">&#x27;servername&#x27;</span></span><br><span class="line">serverPort = <span class="number">12000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新建客户端套接字，两个参数：AF_INET 表示使用 IPv4 地址， SOCK_STREAM 表示使用 TCP 协议</span></span><br><span class="line">clientSocket = socket(AF_INET, SOCK_STREAM)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 相比UDP 的客户端程序，需要额外一步，首先与 TCP 服务器建立连接</span></span><br><span class="line">clientSocket.connect(serverName, serverPort)</span><br><span class="line"></span><br><span class="line">message = raw_input(<span class="string">&#x27;Input lowercase snetence: &#x27;</span>)</span><br><span class="line"><span class="comment"># 建立连接完成后，不在需要添加目的服务器地址+端口，直接 send 数据</span></span><br><span class="line">clientSocket.send(message)</span><br><span class="line">modifiedMessage = clientSocket.recv(<span class="number">1024</span>)</span><br><span class="line"><span class="built_in">print</span> modifiedMessage</span><br><span class="line">clientSocket.close()</span><br><span class="line"></span><br><span class="line"><span class="comment"># TCPServer.py</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line">serverPort = <span class="number">12000</span></span><br><span class="line">serverSocket = socket(AF_INET, SOCK_STREAM)</span><br><span class="line">serverSocket.bind((<span class="string">&#x27;&#x27;</span>, serverPort))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 serverSocket 来监听来自客户端的TCP 连接请求，参数1表示请求连接的最大数为1</span></span><br><span class="line">serverSocket.listen(<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Ther server is ready to receive&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 死循环，serverSocket 建立连接完成</span></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    <span class="comment"># serverSocket 握手完成，建立一个数据传输连接 connectionSocket，</span></span><br><span class="line">    <span class="comment"># addr 中存放客户端 socket 的 IP + 端口</span></span><br><span class="line">    connectionSocket, addr = serverSocket.accept()</span><br><span class="line">    message = connectionSocket.recv(<span class="number">1024</span>)</span><br><span class="line">    capitalizedMessage = message.upper()</span><br><span class="line">    connectionSocket.send(capitalizedMessage)</span><br><span class="line">    <span class="comment"># 用于传输的连接传输完成后关闭，等待 serverSocket 再次建立 TCP 连接</span></span><br><span class="line">    connectionSocket.close()</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/24/Java/CoreJava_ch10_2_ConcurrentProgramming/" rel="prev" title="Java-10_2-并发编程">
+                  <i class="fa fa-chevron-left"></i> Java-10_2-并发编程
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/12/09/Network/ApplicationLayerBrief/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

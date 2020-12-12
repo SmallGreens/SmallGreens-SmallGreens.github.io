@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="1. 概述运输层协议的任务是为不同主机的 应用进程 之间提供 逻辑通信（logic communication）。具体的过程是：在发送端，运输层将应用程序进程需要发送的数据包装成 报文段（segment），然后将他们传递给网络层，由网络层将其封装为一个数据报后向目的地发送，接收端网络层接收到该数据后，首先发送给运输层，运输层再将该数据处理后交给对应的应用程序（端系统中的具体进程）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络运输层概述">
+<meta property="og:url" content="http://example.com/2020/12/12/Network/Transport_layer_brief/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="1. 概述运输层协议的任务是为不同主机的 应用进程 之间提供 逻辑通信（logic communication）。具体的过程是：在发送端，运输层将应用程序进程需要发送的数据包装成 报文段（segment），然后将他们传递给网络层，由网络层将其封装为一个数据报后向目的地发送，接收端网络层接收到该数据后，首先发送给运输层，运输层再将该数据处理后交给对应的应用程序（端系统中的具体进程）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/UDP-header.png">
+<meta property="og:image" content="http://example.com/images/methodOfReliableDataTransfer.png">
+<meta property="og:image" content="http://example.com/images/TCPSegmentHeader-1.png">
+<meta property="article:published_time" content="2020-12-12T01:07:25.000Z">
+<meta property="article:modified_time" content="2020-12-12T07:53:34.221Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/UDP-header.png">
+
+
+<link rel="canonical" href="http://example.com/2020/12/12/Network/Transport_layer_brief/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>网络运输层概述 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%A4%9A%E8%B7%AF%E5%88%86%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">2. 多路复用与多路分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%97%A0%E8%BF%9E%E6%8E%A5%E8%BF%90%E8%BE%93%EF%BC%9AUDP"><span class="nav-number">3.</span> <span class="nav-text">3. 无连接运输：UDP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E7%9A%84%E8%BF%90%E8%BE%93%EF%BC%9ATCP"><span class="nav-number">4.</span> <span class="nav-text">4. 面向连接的运输：TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-TCP-%E7%9A%84%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 TCP 的报文段结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E5%BA%8F%E5%8F%B7%E5%92%8C%E7%A1%AE%E8%AE%A4%E5%8F%B7"><span class="nav-number">4.1.1.</span> <span class="nav-text">a. 序号和确认号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E5%AD%97%E6%AE%B5%E4%BB%A5%E5%8F%8A%E6%A0%87%E5%BF%97%E5%AD%97%E6%AE%B5"><span class="nav-number">4.1.2.</span> <span class="nav-text">b. 首部长度字段以及标志字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-%E6%8E%A5%E6%94%B6%E7%AA%97%E5%8F%A3%E5%AD%97%E6%AE%B5"><span class="nav-number">4.1.3.</span> <span class="nav-text">c. 接收窗口字段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E5%BE%80%E8%BF%94%E6%97%B6%E9%97%B4%E4%BC%B0%E8%AE%A1%E4%B8%8E%E8%B6%85%E6%97%B6"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 往返时间估计与超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-TCP-%E7%9A%84%E6%8B%A5%E5%A1%9E%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 TCP 的拥塞处理机制</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/12/Network/Transport_layer_brief/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          网络运输层概述
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-12-12 09:07:25 / 修改时间：15:53:34" itemprop="dateCreated datePublished" datetime="2020-12-12T09:07:25+08:00">2020-12-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/12/Network/Transport_layer_brief/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/12/Network/Transport_layer_brief/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>运输层协议的任务是为不同主机的 <strong>应用进程</strong> 之间提供 <strong>逻辑通信</strong>（logic communication）。具体的过程是：在发送端，运输层将应用程序进程需要发送的数据包装成 <strong>报文段</strong>（segment），然后将他们传递给网络层，由网络层将其封装为一个数据报后向目的地发送，接收端网络层接收到该数据后，首先发送给运输层，运输层再将该数据处理后交给对应的应用程序（端系统中的具体进程）。</p>
+<a id="more"></a>
+
+<p>从上面的描述看出，运输层协议运行在端系统中（也就是客户机或服务器中）。</p>
+<p>网络层协议负责 <strong>主机</strong> 之间的逻辑通信，通常使用 IP 协议。IP 服务是一种 <strong>不可靠的服务</strong>（unreliable service），不确保保留顺序的，并且完整的交付数据。</p>
+<p>运输层协议将主机之间的交付拓展到进程之间的交付，被称为 <strong>运输层的多路复用</strong>（transport-layer multiplexing）与 <strong>多路分解</strong>（demultiplexing）。（实际上就是多路应用层数据复用一个网络层的传输链路）</p>
+<p>UDP协议提供最基础的 进程间的数据交付，以及差错检查服务。</p>
+<p>TCP协议 则额外提供 1- 可靠的数据传输； 2- 拥塞控制 的服务。</p>
+<h1 id="2-多路复用与多路分解"><a href="#2-多路复用与多路分解" class="headerlink" title="2. 多路复用与多路分解"></a>2. 多路复用与多路分解</h1><p>所谓的多路复用其实就是运输层协议控制的到各个进程的 报文段 共用一个网络层。具体地，运输层协议通过 端口号 来确定需将报文段给到具体的套接字。</p>
+<p>因此，在报文段的头部会带有源端口号字段(source port number field) 和目的端口号字段(destination port number field)，用来唯一标识一个 源系统 和 目的系统中的套接字。</p>
+<p><strong>端口号</strong> 是一个 16比特的数，其大小在 0-65535之间。0-1023 范围的端口号称为周知端口号（well-known port number）-限制使用，保留给如 HTTP 等常用的应用层协议。</p>
+<p>通常的，对于客户端，我们可以依靠运输层自动地分配端口号进行网络数据的传输（例如浏览器发送网络请求，我们不需要特意地去给它分配固定的端口号）。而服务器端，则需要分配一个特定的端口号。</p>
+<p>对于 UDP协议 和 TCP协议，如上篇介绍的，UDP协议的服务器只需要一个套接字来负责接收数据，因此只需要1个二元组（目的 IP地址 和目的端口号）来确定套接字。而TCP协议使用多个套接字：1个用于负责连接握手的套接字 和 与具体用户间建立的数据传输套接字，因此，TCP协议需要一个4元组（目的 IP和端口号，源IP和端口号）来确定套接字。</p>
+<p>需要注意的是，虽然运输层协议实际上对接的是套接字，但不同的套接字不一定对应不同的进程。例如 Web 服务器，经常会只使用一个进程，而为每个客户的连接创建一个具有新连接套接字的线程（可以当做是轻量级的子进程）。</p>
+<h1 id="3-无连接运输：UDP"><a href="#3-无连接运输：UDP" class="headerlink" title="3. 无连接运输：UDP"></a>3. 无连接运输：UDP</h1><p>相较于能够可靠传输数据的 TCP协议，UDP协议仍然被广泛使用（DNS服务，网络流媒体传输，网络电话等），主要由于以下几点原因：</p>
+<ol>
+<li>应用层对何时传输数据的可控性更高- 从发送接收控制角度来说：因为 TCP协议提供了拥塞控制机制，数据的传输的具体时间可能受到网络状况的影响。从传输延迟角度来说，由于 TCP 协议的多次握手，实际需要更多次的网络请求和相应，从而物理上需要更多的传输时间。</li>
+<li>相较于 TCP 协议，UDP 协议不保存连接状态，从而可以支持更多的活跃用户。</li>
+<li>分组头部的开销更小（TCP 报文需要至少20个字节的首部开销，而UDP协议仅需要8个字节）。</li>
+</ol>
+<p>UDP协议只提供复用、分解 和差错检测功能。具体的实现是通过以下的 UDP头部来实现的：</p>
+<p><img src="/images/UDP-header.png" alt="https://www.geeksforgeeks.org/user-datagram-protocol-udp/"></p>
+<p>其中，长度字段指明了UDP报文段包括头部在内的以字节为单位的长度。</p>
+<p>检验和字段提供一个对数据传输正确性的检验机制。使用下述算法：将UDP报文段中所有的数据以16个比特为单位相加（如果溢出的话，进行<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34902437/article/details/87938913">回卷</a>）,得到和之后，将该和取反码（按位取反），得到的结果即为检验和（checksum）。</p>
+<p>在接收方，可以将所有的16位字节包括检验和相加，如果数据传输过程中没有出现差错，则结果一定是 <code>1111111111111111</code>。</p>
+<p>在运输层添加差错检验，体现了计算机网络设计中的 端到端原则(end-end principle) <a target="_blank" rel="noopener" href="http://blog.sciencenet.cn/home.php?mod=space&uid=237587&do=blog&id=224869">RefLink</a>：也就是尽量保持网络传输层次（底层）的简洁，尽量将具体的实现功能放置到接近应用的层次（顶层）。</p>
+<h1 id="4-面向连接的运输：TCP"><a href="#4-面向连接的运输：TCP" class="headerlink" title="4. 面向连接的运输：TCP"></a>4. 面向连接的运输：TCP</h1><p>首先从抽象层面上介绍实现数据可靠传输的方法<a target="_blank" rel="noopener" href="https://www.cnblogs.com/chz-blogs/p/9381010.html">RefLink</a>。</p>
+<p><img src="/images/methodOfReliableDataTransfer.png"></p>
+<p>TCP 协议被称为面向连接（connection-oriented）的协议，它通过三次握手建立客户端与服务器之间的连接，然后通过差错检测、重传、累积确认、定时器、序号和确认号等机制来实现数据的可靠传输。</p>
+<h2 id="4-1-TCP-的报文段结构"><a href="#4-1-TCP-的报文段结构" class="headerlink" title="4.1 TCP 的报文段结构"></a>4.1 TCP 的报文段结构</h2><p>TCP报文段的结构如下所示：</p>
+<p><img src="/images/TCPSegmentHeader-1.png" alt="https://www.geeksforgeeks.org/services-and-segment-structure-in-tcp/"></p>
+<h3 id="a-序号和确认号"><a href="#a-序号和确认号" class="headerlink" title="a. 序号和确认号"></a>a. 序号和确认号</h3><p>序号（sequence number） 和 确认号（acknowledgement number） 用于对发送的 TCP 报文进行编号和确认。例如，主机 A 需要发送500,000 个字节的文件给主机 B，规定的 最大报文长度（MSS）为 1000 字节，则发送的第一个报文序号为0，第二个报文序号为 1000，第三个为 2000，依次类推（因此实际上，系统隐式的为每个字节进行了按1递增的编号）。确认号则是主机 A 期望从主机 B 收到的下一个字节的序号。</p>
+<p>需要注意的是，TCP 协议一般采用累积确认（cummulative acknowledgement）的机制，即只确认流中至第一个丢失字节为止的字节。例如，接收方A 接收到的字节编号为：0-535，和 900-1000，则接收方A只确认 0-535的数据，发送给 发送方 B 的确认号是 536。</p>
+<h3 id="b-首部长度字段以及标志字段"><a href="#b-首部长度字段以及标志字段" class="headerlink" title="b. 首部长度字段以及标志字段"></a>b. 首部长度字段以及标志字段</h3><p>首部长度字段（header length field）占用4个比特，用来规定TCP 协议头（首部）的长度。（如上图所示，TCP 协议头部长度可变，20字节到60字节）</p>
+<p>6个标志字段中，ACK 位用于标识上面的 确认号字段中的值是否有效。</p>
+<p>RST、SYN、FIN 位则用于连接的建立和拆除。主机A要与主机B建立 TCP连接：</p>
+<ol>
+<li>第一步：主机A（客户机）会发送一个特殊的不包含应用层数据的 TCP 报文段- 称为 SYN 报文段，该报文段的 SYN 位被置为 1。此外，该报文的序号字段中会随机选择一个初始序号（client_isn）。</li>
+<li>第二步：主机B（服务器）接收到第一步中A 发送的 SYN 报文段后，为该TCP连接分配 TCP 缓存和相关变量，并向主机 A 发送允许连接的报文字段。该报文段中的 SYN 位为1，确认号字段为 (client_isn + 1), 最后，服务器选择自己的初始序号 server_isn 放置在序号字段中。该允许来接的报文段也称为 SYNACK 报文段。</li>
+<li>第三步：主机A收到来自主机B 的 SYNACK 报文段后，也进行连接缓存和变量的配置。客户机A还会发出第三个报文段，对第二步中服务器发送的报文段进行确认（确认号字段中值为：server_isn + 1）, 由于连接已经建立，该报文段的 SYN 位被设置为 0。此外，第三次的报文段开始允许携带客户到服务器的相关应用层数据。</li>
+</ol>
+<p>当然，客户机请求的服务不一定存在于接收到 TCP 连接请求的服务器上，例如请求的端口号为80，但服务器上在80端口并没有设置任何服务，此时，服务器会返回一个 TCP 报文段，将 RST 位设置为1，以告知客户机，所请求的服务不存在。</p>
+<p>当所有连接完毕后，系统需要关闭相应的 TCP 连接，这时候，客户机会发送一个 TCP 报文段，将 FIN 位设置为1，告知服务器，要停止 TCP 连接。服务器接收到该报文段后，返回确认报文，并且再发送一个 服务器的终止连接报文段，同样将 FIN 位设置为1。最后，客户端确认服务器发送的终止连接报文段，连接结束。</p>
+<h3 id="c-接收窗口字段"><a href="#c-接收窗口字段" class="headerlink" title="c. 接收窗口字段"></a>c. 接收窗口字段</h3><p>用于 TCP连接使用缓存来进行数据的暂存，如果发送方发送速率过快，则可能导致缓存溢出。因此 TCP 协议提供了流量控制服务（flow-control service）来保证不出现缓存溢出。（注意与 拥塞控制（congestion control）区分，后者是用于处理网络拥塞而引起的问题）</p>
+<p>在 TCP头部字段中，接收窗口 （window size）用于处理流量控制。具体地，接收方通过该字段 告诉发送方当前还有多少缓存空间可用。 </p>
+<h2 id="4-2-往返时间估计与超时"><a href="#4-2-往返时间估计与超时" class="headerlink" title="4.2 往返时间估计与超时"></a>4.2 往返时间估计与超时</h2><p>TCP协议规定了超时/重传 的方式来处理报文段丢失的问题。</p>
+<p>在 TCP协议中，使用 EstimatedRTT 来表示平均往返时间（也就是从主机A到主机B 的平均传输往返时间）。会通过采样往返时间（SampleRTT）更新该时间：</p>
+<p>$$EstimatedRTT = (1- \alpha)\cdot EstiamtedRTT + \alpha \cdot SampleRTT$$</p>
+<p>通常 $\alpha$ 取 0.125。</p>
+<p>此外，使用 DevRTT 描述采样往返时间偏离平均往返时间的程度:</p>
+<p>$$DevRTT = (1-\beta)\cdot DevRTT + \beta \cdot |SampleRTT - EstimatedRTT|$$</p>
+<p>在 TCP协议中，根据上述两个时间规定超时时间，可以使用下述公式：</p>
+<p>$$TimeoutInterval = EstimatedRTT + 4\cdot DevRTT$$</p>
+<p>通常推荐的 TimeoutInterval 初始值为1 秒，如果出现超时，会将该值进行加倍。当系统计算并更新 EstimatedRTT 后，TimeoutInterval 则由上述公式进行确认。</p>
+<p>具体的，在实际的系统中，TCP协议还有很多协调可靠传输和系统开销的优化细节。例如使用单一的重传定时器（而不是给所有的报文段各配置一个定时器）等。</p>
+<h2 id="4-3-TCP-的拥塞处理机制"><a href="#4-3-TCP-的拥塞处理机制" class="headerlink" title="4.3 TCP 的拥塞处理机制"></a>4.3 TCP 的拥塞处理机制</h2><p>网络拥塞可能导致数据的传输失败，TCP协议在网络拥塞时会对发送法进行遏制，来缓解网络拥塞情况。</p>
+<p>一般的讲，网络拥塞的控制分为两类：</p>
+<ol>
+<li>端到端拥塞控制。在这种方式中，网络层不会为运输层的拥塞控制提供支持，端系统只能通过对网络行为的观察（例如分组丢失和延迟）来判断是否出现拥塞。</li>
+<li>网络辅助的拥塞控制。在这种方式中，网络层构件（即路由器）会向发送方提供关于网络中拥塞状态的显式反馈信息。例如书中提及的一种 ATM ABR 拥塞控制形式- 允许路由器显式的通知发送方，该路由器输出链路上支持的传输速率。</li>
+</ol>
+<p>TCP 使用端到端的拥塞控制机制。也就是通过实际的传输现象来判断是否出现了拥塞。具体地，TCP协议 将下面两个事件认定为 网络拥塞：1- 出现超时；2- 收到来自接收方的3个冗余ACK。</p>
+<p>出现拥塞后，TCP协议通过控制拥塞窗口（congestion window）变量来限制发送速率。具体地，TCP使用TCP拥塞控制算法（TCP congestion control algorithm），包括3个部分：慢启动；拥塞避免；快速恢复<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/59656144">RefLink</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/09/Network/ApplicationLayerBrief/" rel="prev" title="网络应用层概述">
+                  <i class="fa fa-chevron-left"></i> 网络应用层概述
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/12/12/Network/Transport_layer_brief/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

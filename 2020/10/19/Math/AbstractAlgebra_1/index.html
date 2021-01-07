@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="动机首先说说外因，电力电子专业主要分为两个大的方向，第一是偏向硬件的方向，例如拓扑结构的更新，EMC问题的处理；另一个则是控制方向，包括电机控制，电池充电控制，新能源并网电流控制等。虽然说由于行业的特点，在偏强电领域，人们更加关注可靠性和稳定性，最为传统的PID算法仍然在工业中广泛使用，但对于学术研究而言，初等的传统控制早已经玩不出什么新鲜花样了，因此，更先进的一些现代控制算法大受学术界追捧。然而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="抽象代数自学笔记1：基础">
+<meta property="og:url" content="http://example.com/2020/10/19/Math/AbstractAlgebra_1/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="动机首先说说外因，电力电子专业主要分为两个大的方向，第一是偏向硬件的方向，例如拓扑结构的更新，EMC问题的处理；另一个则是控制方向，包括电机控制，电池充电控制，新能源并网电流控制等。虽然说由于行业的特点，在偏强电领域，人们更加关注可靠性和稳定性，最为传统的PID算法仍然在工业中广泛使用，但对于学术研究而言，初等的传统控制早已经玩不出什么新鲜花样了，因此，更先进的一些现代控制算法大受学术界追捧。然而">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-19T07:20:25.000Z">
+<meta property="article:modified_time" content="2020-10-19T12:31:12.000Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="抽象代数">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/10/19/Math/AbstractAlgebra_1/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>抽象代数自学笔记1：基础 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">52</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA"><span class="nav-number">1.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%A6%E7%B1%8D%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">书籍选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">基础介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%9F"><span class="nav-number">3.0.1.</span> <span class="nav-text">域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF"><span class="nav-number">3.0.2.</span> <span class="nav-text">环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BE%A4"><span class="nav-number">3.0.3.</span> <span class="nav-text">群</span></a></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/19/Math/AbstractAlgebra_1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          抽象代数自学笔记1：基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-10-19 15:20:25 / 修改时间：20:31:12" itemprop="dateCreated datePublished" datetime="2020-10-19T15:20:25+08:00">2020-10-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/10/19/Math/AbstractAlgebra_1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/19/Math/AbstractAlgebra_1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>首先说说外因，电力电子专业主要分为两个大的方向，第一是偏向硬件的方向，例如拓扑结构的更新，EMC问题的处理；另一个则是控制方向，包括电机控制，电池充电控制，新能源并网电流控制等。虽然说由于行业的特点，在偏强电领域，人们更加关注可靠性和稳定性，最为传统的PID算法仍然在工业中广泛使用，但对于学术研究而言，初等的传统控制早已经玩不出什么新鲜花样了，因此，更先进的一些现代控制算法大受学术界追捧。然而，控制理论作为数学领域的一个分支，在描述、研究多维动态系统的运动特性、稳定性的过程中，一定会使用到例如泛函分析，李群李代数等较为高级的数学工具。然而，这部分工具对于普通的工科学生来说通常是不具备的, 因此我一直希望有机会可以深入的研究一下这部分内容。</p>
+<a id="more"></a>
+
+<p>当然，对我自己而言，也一直希望能够沉下心来学习一些现代的数学工具，如龚昇老师（可以看看龚老先生的<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Wx411k7Zh">数学基础选讲</a>）所讲，高级的东西，应该反而是更加简单的，因为它们常常是更高层次的总结与归纳。我相信通过学习更近代的一些数学，开拓自己的一些视野，可以给自己提供一些不同的思维角度。抽象代数，作为现代代数学的入门知识，虽然相对没有特别直接的应用，但作为很多后续知识的重要基础，我觉得还是非常有必要学习一下的。</p>
+<p>最后，看了一篇介绍数学体系的文章，<a target="_blank" rel="noopener" href="http://sparkandshine.net/mit-mathematical-formalism/">MIT牛人解说数学体系</a> 感觉很不错，从一个工程人的角度宏观的看了一下当代的数学框架。我认为这种更加宏观的认识，对一个人顺利形成自己的知识体系非常重要。但在当下的高校教育中（尤其是工科），我们通常很少强调这种知识体系的形成，老师学生都太过被动的教与学，没有有意识的去把这些知识串联成一个框架。实际上，这种结构化、系统化的思维方法，无论在什么领域、行业都是非常重要的，所以也希望自己在以后的学习中多加注重这一点。</p>
+<h1 id="书籍选择"><a href="#书籍选择" class="headerlink" title="书籍选择"></a>书籍选择</h1><p>这次的学习对于书籍的选择太过匆忙，我首先是搜了b站上相关的课程视频，找到了石生明老师的近世代数课程（<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av67246836/">link</a>）,然后找到了他对应的书籍 《近世代数初步》(石生明)，想着一般看视频一般看书的。但是在办公室看视频也不方便，视频时间也确实比较长，因此就仅看了书，我认为，这本书对于自学并不是十分友好。首先，书的章节安排顺序与教授的顺序是不同的（我看了前面几节课），讲课是从域的部分引出，但是书籍确是按照群、环域的顺序讲解（or 或许是我的书籍版本不对？）。此外，就是书比较短小精炼，这是国内书籍的好处，但是也相对的，对于理解的支撑内容相对较少，对于自学、初学者压力较大。因此，选择一本适合自己学习的书还是非常重要的。</p>
+<h1 id="基础介绍"><a href="#基础介绍" class="headerlink" title="基础介绍"></a>基础介绍</h1><p>抽象代数实际上研究的是一个 <strong>集合 + 运算规则</strong> 的代数系统，具体的，分为三个典型的代数结构：</p>
+<h3 id="域"><a href="#域" class="headerlink" title="域"></a>域</h3><p>域上面定义有两套运算规则，分别称为 “乘法” 和 “加法”，且域对于这些运算规则封闭。运算规则具有的特性具体定义如下：</p>
+<ul>
+<li>加法：<ul>
+<li>交换律。</li>
+<li>结合律。</li>
+<li>零元素，使得 $a + 0 = a$.</li>
+<li>负元素，对于任意 $a\in F$ , 存在$b$，使得 $a + b = 0$。</li>
+</ul>
+</li>
+<li>乘法：<ul>
+<li>交换律。</li>
+<li>结合律。</li>
+<li>单位元素，1， $1a = a$;</li>
+<li>逆元素，对于集合中非零元素a，集合中一定有b，使得：$ab = 1$。</li>
+</ul>
+</li>
+<li>乘法对加法的分配律。$a (b + c) = ab + ac$.</li>
+</ul>
+<p>此外，对于域，它的上述零元素，负元素，单位元，逆元都唯一。且加法有消去律，乘法消去律需改为：$ab = ac$, 若 $a \neq 0$, 则 $b = c$。</p>
+<h3 id="环"><a href="#环" class="headerlink" title="环"></a>环</h3><p>类似于域，当我们把一个集合称之为环，它的上面也定义两套运算系统 “乘法” 和 “加法”，只是它的乘法相比域要弱一些，不一定满足交换律且元素不一定有逆元。环也对于这些运算封闭，具体的：</p>
+<ul>
+<li>加法：<ul>
+<li>交换律。</li>
+<li>结合律。</li>
+<li>零元素，使得 $a + 0 = a$.</li>
+<li>负元素，对于任意 $a \in F$ , 存在b，使得 $a + b = 0$。</li>
+</ul>
+</li>
+<li>乘法：<ul>
+<li>结合律。</li>
+<li>单位元素，1， $1a = a$;</li>
+</ul>
+</li>
+<li>乘法对加法的分配律（改）。$a (b + c) = ab + ac$ 及 $(b + c)a = ba + ca$. </li>
+</ul>
+<p><strong>注意</strong>：1- 环中不一定要多于两个元素，2- 环的乘法不要求满足交换律，3- 不一定对所有非零元素都有逆元素。例子：零环-环中只有一个元素0；全体n阶方阵。<br>对于环，它的零元素，负元素，单位元唯一。且有加法消去律，但乘法没有消去律。（例如矩阵：$AB = A0$, 0为0矩阵，不满足消去律）</p>
+<p>此外，环上还定义有 <strong>零因子</strong>:</p>
+<ul>
+<li>R 是环，$a\in R$ 且 $a \neq 0$,若有 $b\neq 0$, 使得 $ab = 0$ (或 $ba = 0$), 则称 a 是 R 中的一个左（或右）<strong>零因子</strong>。</li>
+<li>而域不存在零因子。</li>
+</ul>
+<h3 id="群"><a href="#群" class="headerlink" title="群"></a>群</h3><p>群是最为基本的一个代数结构，它在定义的集合上只有一个运算，称之为“乘法”，且对该运算封闭，它的乘法运算满足：</p>
+<ul>
+<li>乘法结合律。</li>
+<li>有单位元e，使得 ae = ea = a. </li>
+<li>有逆元素，对每个 $a\in G$，有$b\in G$，使得 ab = ba = e, 称b为a的一个逆元素。</li>
+</ul>
+<p>对于群，它的单位元，逆元唯一；且它群满足乘法消去律。</p>
+<p>此外，对于基础的群，添加或者去除一些群的运算性质，我们有一些其他的“群”:</p>
+<ul>
+<li><strong>交换群</strong>：群 G 满足交换律时，称 G 为<strong>交换群</strong>，这是也可以把乘法运算记为加法，并称 G 为加法群。</li>
+<li><strong>半群</strong>：非空集合 <strong>S</strong> 上的乘法满足结合律，则称为<strong>半群</strong>；</li>
+<li><strong>幺半群</strong>：非空集合 <strong>S</strong> 上的乘法满足结合律，且有单位元，则称为<strong>幺半群</strong>。</li>
+</ul>
+<p>对于群，环域更多的详细内容，会在系列 2，3中介绍。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag"># 抽象代数</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/10/19/Math/AbstractAlgebra_3/" rel="prev" title="抽象代数自学笔记3：环与域">
+                  <i class="fa fa-chevron-left"></i> 抽象代数自学笔记3：环与域
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/10/19/Math/AbstractAlgebra_2/" rel="next" title="抽象代数自学笔记2：群">
+                  抽象代数自学笔记2：群 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/10/19/Math/AbstractAlgebra_1/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

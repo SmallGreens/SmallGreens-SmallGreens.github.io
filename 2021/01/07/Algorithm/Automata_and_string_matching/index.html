@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="有限状态自动机（FSM- Finite State Machine，又称为 Finite-State Automation，下面简称为 自动机），是表示有限个状态以及这些状态之间的转移和动作行为的数学计算模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有限状态自动机">
+<meta property="og:url" content="http://example.com/2021/01/07/Algorithm/Automata_and_string_matching/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="有限状态自动机（FSM- Finite State Machine，又称为 Finite-State Automation，下面简称为 自动机），是表示有限个状态以及这些状态之间的转移和动作行为的数学计算模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/kmp_fsm.png">
+<meta property="og:image" content="http://example.com/images/state_transformation.png">
+<meta property="article:published_time" content="2021-01-07T04:18:28.000Z">
+<meta property="article:modified_time" content="2021-01-07T06:54:35.761Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/kmp_fsm.png">
+
+
+<link rel="canonical" href="http://example.com/2021/01/07/Algorithm/Automata_and_string_matching/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>有限状态自动机 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">52</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">1. 有限状态机基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8-FSM-%E6%80%9D%E6%83%B3%E7%90%86%E8%A7%A3-KMP-%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">2. 使用 FSM 思想理解 KMP 算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%BE%8B%E5%AD%90-%E8%A1%A8%E7%A4%BA%E6%95%B0%E5%80%BC%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">3.</span> <span class="nav-text">3. 例子: 表示数值的字符串</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/07/Algorithm/Automata_and_string_matching/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          有限状态自动机
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-01-07 12:18:28 / 修改时间：14:54:35" itemprop="dateCreated datePublished" datetime="2021-01-07T12:18:28+08:00">2021-01-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/07/Algorithm/Automata_and_string_matching/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/07/Algorithm/Automata_and_string_matching/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>有限状态自动机（FSM- Finite State Machine，又称为 Finite-State Automation，下面简称为 自动机），是表示有限个状态以及这些状态之间的转移和动作行为的数学计算模型。</p>
+<a id="more"></a>
+
+<p>自动机在计算科学，<a target="_blank" rel="noopener" href="http://web.mit.edu/6.111/volume2/www/f2019/index.html">电子硬件编程</a> (e.g.FPGA) 等领域被广泛运用。</p>
+<h1 id="1-有限状态机基础"><a href="#1-有限状态机基础" class="headerlink" title="1. 有限状态机基础"></a>1. 有限状态机基础</h1><p>对于自动机，它有下列几个要素 <a target="_blank" rel="noopener" href="https://computationstructures.org/videos/fsm/lecture.pdf">Ref</a>：</p>
+<ol>
+<li>状态- states；</li>
+<li>输入- inputs；</li>
+<li>输出- output；</li>
+<li>转移规则- transition rules；</li>
+<li>输出规则- output rules。</li>
+</ol>
+<p>总结来说，它是一种顺序（sequential）进行的计算模型，它的每一个跳转动作由 <strong>当前状态</strong>、<strong>输入</strong> 和 <strong>转移规则</strong> 决定。此外，自动机还有两个特殊状态，分别为 <strong>起始状态</strong> 和 <strong>终止状态</strong>。</p>
+<h1 id="2-使用-FSM-思想理解-KMP-算法"><a href="#2-使用-FSM-思想理解-KMP-算法" class="headerlink" title="2. 使用 FSM 思想理解 KMP 算法"></a>2. 使用 FSM 思想理解 KMP 算法</h1><p>对于著名的 KMP 算法，在确定模式串的指针跳转方式时，就可以使用 自动机的思想来分析。</p>
+<p>在 KMP 算法中，使用两个指针来确定主串和模式串的下一个比较字符，主串指针很简单，只需要每次移动一位，一直向前移动即可。而模式串的匹配指针移动则较为复杂。</p>
+<p>下图中，通过自动机的方法，给出了模式串指针指针跳转的机制-使用自动机的语言来将，就是状态与状态之间的转移规则。</p>
+<p><img src="/images/kmp_fsm.png"></p>
+<p>这里对上图进行具体的解释：</p>
+<p><strong>状态</strong>：图中共有6个状态，具体表示从字符串头开始，当前已经匹配到的字符数。</p>
+<p><strong>输入</strong>：这里用字符c 指代，实际上就是当前主串指针指向的字符。</p>
+<p><strong>转移规则</strong>，转移规则分为匹配和不匹配两种情况，如下：</p>
+<ul>
+<li>匹配：当状态 j 的时候，有 <code>c == pat.charAt(j)</code> 转移到 j + 1 状态；</li>
+<li>不匹配：状态 j 的时候，<code>c != pat.charAt(j)</code>，则将字串的 <code>pat[1, j-1] + c</code> (即模式串去除首字符的前 j 个字符，加上输入的字符 c 构成的字串) 放入自动机中，最终输出的跳转状态即为状态 j 时输入 c 的跳转状态。</li>
+</ul>
+<p><strong>解释1：不匹配时的转移规则</strong>：当状态 j 的时候，输入与模式串的第 j + 1 个字符不匹配，则需要确认 <code>pat[0, j-1] + c</code> 构成的字串的后缀子串中，有没有与 <code>pat[0, j-1]</code> 前缀子串完全匹配的。这时候，我们认为到 <code>pat[0, j-1]</code> 部分的状态都具有了完整的转移规则。</p>
+<p>因此，我们将 字串的 <code>pat[1, j-1] + c</code> （长度与 <code>pat[0, j-1]</code> 相同）放入自动机中，一定可以获得一个完整的、确定的转移状态，我们记为 <code>X&#39;</code>。此时，如果 字串 <code>pat[1, j-1] + c</code> 的某个后缀子串与 <code>pat[0, j-1]</code> 的一个前缀子串相同，则 <code>X&#39;</code> 就是这个前缀子串完全输入后最终的转移到的状态。</p>
+<p><strong>Trick</strong>：在实际操作中，在每一步状态转移的同时，我们会保存模式串从 位置1到当前状态对应字符 这区间的子串 放入自动机的转移情况，即在状态 j 时，我们同时存储 <code>pat[1, j-1]</code> 输入状态机的最终转移状态（记为状态 <code>X</code>），从而提升遇到非匹配情况时的转移效率。</p>
+<p><strong>解释2：关于在模式串中未出现的字符</strong>：上述状态机中没有涉及输入遇到模式串中没有的字符的情况，其实可以在上述 dfa 数组中添加一行 “其他字符”，处理也很简单，全部填入 0 即可。因为如果遇到了模式串中不存在的字符，上述 <strong>不匹配时的转移规则</strong> 中提到的前后缀子串匹配的情况就不可能出现（因<code>pat[0, j-1] + c</code> 中 c 字符没有在 模式串中出现）。</p>
+<p><em>参考文档：</em></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.clloz.com/programming/front-end/js/2020/07/24/fsm-kmp/">中文博客-状态机和KMP算法</a></li>
+<li><a target="_blank" rel="noopener" href="http://people.cs.pitt.edu/~aus/cs1501/KMP_algorithm.pdf">MIT-tutorial on Knuth-Morris-Pratt Algorithm</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.coursera.org/lecture/algorithms-part2/knuth-morris-pratt-TAtDr">使用fsa理解KMP-视频讲解-from coursera</a></li>
+</ol>
+<p><em>此外，用 “部分匹配表” 方法处理 KMP 模式串的指针跳转：</em></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html">字符串匹配的KMP算法-阮一峰的博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://courses.csail.mit.edu/6.006/spring11/lectures/lec18-extra.pdf">MIT-slides-Linear Time String Matching</a></li>
+</ol>
+<h1 id="3-例子-表示数值的字符串"><a href="#3-例子-表示数值的字符串" class="headerlink" title="3. 例子: 表示数值的字符串"></a>3. 例子: 表示数值的字符串</h1><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/">LeetCode-表示数值的字符串</a></p>
+<blockquote>
+<p>请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串 <code>&quot;+100&quot;、&quot;5e2&quot;、&quot;-123&quot;、&quot;3.1416&quot;、&quot;-1E-16&quot;、&quot;0123&quot;</code> 都表示数值，但 <code>&quot;12e&quot;、&quot;1a3.14&quot;、&quot;1.2.3&quot;、&quot;+-5&quot;</code>及<code>&quot;12e+5.4&quot;</code> 都不是。</p>
+</blockquote>
+<p><strong>思路</strong>：使用自动机的思想来处理。编写代码之前，我们首先需要确立状态量和 状态量之间的转移规则。</p>
+<p>状态量：我们将字符串按照数值量的组成部分进行划分：</p>
+<ol>
+<li>起始的空格</li>
+<li>符号位</li>
+<li>整数部分</li>
+<li>左侧有整数的小数点</li>
+<li>左侧无整数的小数点（根据前面的第二条额外规则，需要对左侧有无整数的两种小数点做区分）</li>
+<li>小数部分</li>
+<li>字符 e</li>
+<li>指数部分的符号位</li>
+<li>指数部分的整数部分</li>
+<li>末尾的空格</li>
+</ol>
+<p>当前处理到的部分称为当前的状态（<em>比较：前面kmp部分的状态是当前匹配到的字符的数量</em>），输入量则为输入字符串中下一个遍历到的字符。</p>
+<p>上述状态中，「<strong>初始状态</strong>」应当为状态 1，而「<strong>接受状态</strong>」的集合则为状态 3、状态 4、状态 6、状态 9 以及状态 10。</p>
+<p>在下述情况下输出 <code>false</code>:</p>
+<ol>
+<li>接收到的输入 无法使得当前状态转移到任何一个确定的状态；</li>
+<li>字符串遍历完毕，但停留状态不是 <strong>接受状态</strong>。</li>
+</ol>
+<p>具体的转移规则参看下方状态转移图（<em>其中少了一根线，起始空格可以转移到整数部分</em>）：</p>
+<p><img src="/images/state_transformation.png"></p>
+<p>根据上方的状态以及状态转移规则，我们可以编写程序，在编写的程序中，我们使用 Map 存储状态转移规则。 下面的代码为Leetcode 官方题解(<em>添加部分注释及少量修改</em>)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// annotations added by Matt</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;State, Map&lt;CharType, State&gt;&gt; transfer;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isNumber</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        initialization();</span><br><span class="line">        <span class="keyword">int</span> length = s.length();</span><br><span class="line">        State state = State.STATE_INITIAL;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历字符串</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">            CharType type = toCharType(s.charAt(i));</span><br><span class="line">            <span class="keyword">if</span> (!transfer.get(state).containsKey(type)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                state = transfer.get(state).get(type);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> state == State.STATE_INTEGER </span><br><span class="line">        || state == State.STATE_POINT </span><br><span class="line">        || state == State.STATE_FRACTION </span><br><span class="line">        || state == State.STATE_EXP_NUMBER </span><br><span class="line">        || state == State.STATE_END;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initialization</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// transfer 存储状态转移规则。状态转移需要：当前状态，输入量，输出状态</span></span><br><span class="line">        transfer = <span class="keyword">new</span> HashMap&lt;State, Map&lt;CharType, State&gt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：初始空格</span></span><br><span class="line">        Map&lt;CharType, State&gt; initialMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_SPACE, State.STATE_INITIAL);</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_INTEGER);</span><br><span class="line">            put(CharType.CHAR_POINT, State.STATE_POINT_WITHOUT_INT);</span><br><span class="line">            put(CharType.CHAR_SIGN, State.STATE_INT_SIGN);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_INITIAL, initialMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：符号位</span></span><br><span class="line">        Map&lt;CharType, State&gt; intSignMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_INTEGER);</span><br><span class="line">            put(CharType.CHAR_POINT, State.STATE_POINT_WITHOUT_INT);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_INT_SIGN, intSignMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：整数部分</span></span><br><span class="line">        Map&lt;CharType, State&gt; integerMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_INTEGER);</span><br><span class="line">            put(CharType.CHAR_EXP, State.STATE_EXP);</span><br><span class="line">            put(CharType.CHAR_POINT, State.STATE_POINT);</span><br><span class="line">            put(CharType.CHAR_SPACE, State.STATE_END);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_INTEGER, integerMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：小数点（左有整数）</span></span><br><span class="line">        Map&lt;CharType, State&gt; pointMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_FRACTION);</span><br><span class="line">            put(CharType.CHAR_EXP, State.STATE_EXP);</span><br><span class="line">            put(CharType.CHAR_SPACE, State.STATE_END);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_POINT, pointMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：小数点（左无整数）</span></span><br><span class="line">        Map&lt;CharType, State&gt; pointWithoutIntMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_FRACTION);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_POINT_WITHOUT_INT, pointWithoutIntMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：小数部分</span></span><br><span class="line">        Map&lt;CharType, State&gt; fractionMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_FRACTION);</span><br><span class="line">            put(CharType.CHAR_EXP, State.STATE_EXP);</span><br><span class="line">            put(CharType.CHAR_SPACE, State.STATE_END);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_FRACTION, fractionMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：e 字符</span></span><br><span class="line">        Map&lt;CharType, State&gt; expMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_EXP_NUMBER);</span><br><span class="line">            put(CharType.CHAR_SIGN, State.STATE_EXP_SIGN);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_EXP, expMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：指数符号</span></span><br><span class="line">        Map&lt;CharType, State&gt; expSignMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_EXP_NUMBER);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_EXP_SIGN, expSignMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态：指数部分数字</span></span><br><span class="line">        Map&lt;CharType, State&gt; expNumberMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_NUMBER, State.STATE_EXP_NUMBER);</span><br><span class="line">            put(CharType.CHAR_SPACE, State.STATE_END);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_EXP_NUMBER, expNumberMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态： 结尾空格</span></span><br><span class="line">        Map&lt;CharType, State&gt; endMap = <span class="keyword">new</span> HashMap&lt;CharType, State&gt;() &#123;&#123;</span><br><span class="line">            put(CharType.CHAR_SPACE, State.STATE_END);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        transfer.put(State.STATE_END, endMap);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断输入的字符类型</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CharType <span class="title">toCharType</span><span class="params">(<span class="keyword">char</span> ch)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ch &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; ch &lt;= <span class="string">&#x27;9&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> CharType.CHAR_NUMBER;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ch == <span class="string">&#x27;e&#x27;</span> || ch == <span class="string">&#x27;E&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> CharType.CHAR_EXP;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ch == <span class="string">&#x27;.&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> CharType.CHAR_POINT;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ch == <span class="string">&#x27;+&#x27;</span> || ch == <span class="string">&#x27;-&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> CharType.CHAR_SIGN;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ch == <span class="string">&#x27; &#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> CharType.CHAR_SPACE;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> CharType.CHAR_ILLEGAL;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 状态量</span></span><br><span class="line">    <span class="class"><span class="keyword">enum</span> <span class="title">State</span> </span>&#123;</span><br><span class="line">        STATE_INITIAL,</span><br><span class="line">        STATE_INT_SIGN,</span><br><span class="line">        STATE_INTEGER,</span><br><span class="line">        STATE_POINT,</span><br><span class="line">        STATE_POINT_WITHOUT_INT,</span><br><span class="line">        STATE_FRACTION,</span><br><span class="line">        STATE_EXP,</span><br><span class="line">        STATE_EXP_SIGN,</span><br><span class="line">        STATE_EXP_NUMBER,</span><br><span class="line">        STATE_END,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输入的字符类型</span></span><br><span class="line">    <span class="class"><span class="keyword">enum</span> <span class="title">CharType</span> </span>&#123;</span><br><span class="line">        CHAR_NUMBER,</span><br><span class="line">        CHAR_EXP,</span><br><span class="line">        CHAR_POINT,</span><br><span class="line">        CHAR_SIGN,</span><br><span class="line">        CHAR_SPACE,</span><br><span class="line">        CHAR_ILLEGAL,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/06/tools/git_tutorial/" rel="prev" title="git使用方法总结">
+                  <i class="fa fa-chevron-left"></i> git使用方法总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2021/01/07/Algorithm/Automata_and_string_matching/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

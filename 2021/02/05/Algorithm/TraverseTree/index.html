@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="二叉树遍历是经典的算法题目，最传统的方案是使用递归的方式进行遍历，特点是代码非常简洁。当然，除了递归方案，二叉树也可以使用 迭代的方法进行遍历。具体的，包括两种思路，一种是使用程序栈模拟递归过程，第二种是利用叶子结点 的 null 子节点模拟线索二叉树完成遍历（Morries 方法）。本文将对他们进行总结归纳。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="非递归方法遍历二叉树">
+<meta property="og:url" content="http://example.com/2021/02/05/Algorithm/TraverseTree/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="二叉树遍历是经典的算法题目，最传统的方案是使用递归的方式进行遍历，特点是代码非常简洁。当然，除了递归方案，二叉树也可以使用 迭代的方法进行遍历。具体的，包括两种思路，一种是使用程序栈模拟递归过程，第二种是利用叶子结点 的 null 子节点模拟线索二叉树完成遍历（Morries 方法）。本文将对他们进行总结归纳。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/PreOrder_NoneRecur.png">
+<meta property="og:image" content="http://example.com/images/MorriesPostOrder.png">
+<meta property="article:published_time" content="2021-02-05T04:18:28.000Z">
+<meta property="article:modified_time" content="2021-02-05T14:52:33.664Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="树">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/PreOrder_NoneRecur.png">
+
+
+<link rel="canonical" href="http://example.com/2021/02/05/Algorithm/TraverseTree/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>非递归方法遍历二叉树 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">23</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">57</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A8%A1%E6%8B%9F%E9%80%92%E5%BD%92%E6%A0%88%E8%A7%A3%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">1. 模拟递归栈解法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Morris-%E8%A7%A3%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">2. Morris 解法</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/05/Algorithm/TraverseTree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          非递归方法遍历二叉树
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-05 12:18:28 / 修改时间：22:52:33" itemprop="dateCreated datePublished" datetime="2021-02-05T12:18:28+08:00">2021-02-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/02/05/Algorithm/TraverseTree/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/02/05/Algorithm/TraverseTree/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>二叉树遍历是经典的算法题目，最传统的方案是使用递归的方式进行遍历，特点是代码非常简洁。当然，除了递归方案，二叉树也可以使用 迭代的方法进行遍历。具体的，包括两种思路，一种是使用程序栈模拟递归过程，第二种是利用叶子结点 的 null 子节点模拟线索二叉树完成遍历（Morries 方法）。本文将对他们进行总结归纳。</p>
+<a id="more"></a>
+
+<p>LeetCode 上三种遍历的题目如下，可以用来测试：</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/binary-tree-preorder-traversal/">LeetCode前序遍历</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/binary-tree-inorder-traversal/">LeetCode中序遍历</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/binary-tree-postorder-traversal/">LeetCode后序遍历</a></p>
+<h1 id="1-模拟递归栈解法"><a href="#1-模拟递归栈解法" class="headerlink" title="1. 模拟递归栈解法"></a>1. 模拟递归栈解法</h1><p>仔细分析二叉树遍历递归的过程，我们发现可以 在迭代中使用 stack 来模拟系统栈，从而对递归进行模拟。</p>
+<p>下面代码展示了 <strong>前序遍历</strong> 的过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line">    </span><br><span class="line">    Deque&lt;TreeNode&gt; stack = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</span><br><span class="line">    stack.push(root);</span><br><span class="line">    <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">        TreeNode tmp = stack.pop();</span><br><span class="line">        res.add(tmp.val);</span><br><span class="line">        <span class="keyword">if</span>(tmp.right != <span class="keyword">null</span>) stack.push(tmp.right);    <span class="comment">// 先push左节点，再push右节点</span></span><br><span class="line">        <span class="keyword">if</span>(tmp.left != <span class="keyword">null</span>) stack.push(tmp.left);    </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体过程如下图所示：</p>
+<img src="/images/PreOrder_NoneRecur.png" width=70% heigth=70% alt="见参考文献3"/>
+
+<p><strong>中序遍历</strong> 相对逻辑上复杂一些，它需要首先输入最右边的结点，因此，要保证最右边的结点位于栈顶。具体的流程参看下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    Deque&lt;TreeNode&gt; stack = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</span><br><span class="line">    TreeNode cur = root;</span><br><span class="line">    <span class="comment">// 这里判断条件添加了一个 cur != null</span></span><br><span class="line">    <span class="comment">// 用于从左子树回溯到根，stack 中元素被 pop 完毕后，再遍历右子树</span></span><br><span class="line">    <span class="keyword">while</span>(!stack.isEmpty() || cur != <span class="keyword">null</span>)&#123;    </span><br><span class="line">        <span class="comment">// 最左边元素全部压栈  </span></span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="keyword">null</span>)&#123;</span><br><span class="line">            stack.push(cur);</span><br><span class="line">            cur = cur.left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 将 pop 出来的结点暂存</span></span><br><span class="line">        TreeNode tmp = stack.pop();</span><br><span class="line">        res.add(tmp.val);</span><br><span class="line">        <span class="comment">// 遍历刚pop 出来结点的右子树</span></span><br><span class="line">        <span class="keyword">if</span>(tmp.right != <span class="keyword">null</span>) cur = tmp.right;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>后序遍历</strong> 后序遍历是先遍历完左右子树，最后回到根结点。这一点上其实和 前序遍历有些类似 - 前序遍历是 中左右 的顺序，而 后序遍历可以看作是 “中右左” 的反顺序。</p>
+<p>具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line">    Deque&lt;TreeNode&gt; stack1 = <span class="keyword">new</span> ArrayDeque&lt;&gt;();    <span class="comment">// 按 中右左 的顺序遍历-- 反过来就是后序遍历</span></span><br><span class="line">    Deque&lt;Integer&gt; stack2 = <span class="keyword">new</span> ArrayDeque&lt;&gt;();     <span class="comment">// 使用 栈结构实现反序</span></span><br><span class="line">    stack1.push(root);</span><br><span class="line">    <span class="keyword">while</span>(!stack1.isEmpty())&#123;</span><br><span class="line">        TreeNode tmp = stack1.pop();</span><br><span class="line">        stack2.push(tmp.val);</span><br><span class="line">        <span class="keyword">if</span>(tmp.left != <span class="keyword">null</span>) stack1.push(tmp.left);</span><br><span class="line">        <span class="keyword">if</span>(tmp.right != <span class="keyword">null</span>) stack1.push(tmp.right);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    res.addAll(stack2);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述方法中使用了两个栈， 而另一种 <strong>后序遍历</strong> 则通过添加一个 cur 指针标记当前退出的结点，来减少一个栈的使用，因此更加推荐：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    Deque&lt;TreeNode&gt; stack = <span class="keyword">new</span> ArrayDeque&lt;&gt;()&#123;&#123;push(root);&#125;&#125;;</span><br><span class="line">    TreeNode cur = root;</span><br><span class="line">    <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">        <span class="comment">// 当前的栈顶结点</span></span><br><span class="line">        TreeNode peek = stack.peek();</span><br><span class="line">        <span class="comment">// step1: 先将最左侧结点全部压栈</span></span><br><span class="line">        <span class="keyword">if</span>(peek.left != <span class="keyword">null</span> &amp;&amp; peek.left != cur &amp;&amp; peek.right != cur) stack.push(peek.left);</span><br><span class="line">        <span class="comment">// step3: 处理右节点</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(peek.right != <span class="keyword">null</span> &amp;&amp; peek.right != cur) stack.push(peek.right);</span><br><span class="line">        <span class="comment">// step2: 弹出最左侧结点，并将 cur 指向这个退出的结点</span></span><br><span class="line">        <span class="comment">// step4: 弹出右节点，并将 cur 指向这个退出的结点</span></span><br><span class="line">        <span class="keyword">else</span> res.add((cur = stack.pop()).val);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-Morris-解法"><a href="#2-Morris-解法" class="headerlink" title="2. Morris 解法"></a>2. Morris 解法</h1><p>不同于递归遍历和模拟栈遍历方法， Morris 遍历方法可以仅使用 <code>O(1)</code> 的空间复杂度对 二叉树进行遍历。由于不能使用 栈作为辅助空间，Morris 方法使用了 线索二叉树 (threaded binary tree) 的概念来辅助树的遍历。当然，Morris 方法不需要为每个结点额外分配空间指向其前驱（predecessor） 和 后继（successor），而是利用叶子结点中的左右空指针来实现到 后继结点 的跳转。</p>
+<p>Morris方法的中序和 前序遍历较为简单，后序遍历则比较复杂。具体介绍如下：</p>
+<p><strong>中序遍历</strong> 首先以中序遍历为例子，介绍整个遍历思路。在遍历过程中，维护两个 指针，cur1 指针为指向当前所遍历结点的指针， cur2 指针则用于寻找当前节点的 中序遍历之前驱结点（参考线索二叉树的相关概念 – 具体就是左子树中的最右边的结点）。</p>
+<p><strong>初始状态</strong>：cur1 指向根结点。</p>
+<p>然后只要 cur1 不为空，就继续遍历，遍历过程如下：</p>
+<ul>
+<li>若 cur1 的左孩子为空：处理当前节点，cur1 指向 cur1.right。</li>
+<li>若 cur1 的左孩子不为空，则使用 cur2 找到 cur1 中序遍历的前驱结点（即左子树的最右边的结点）：<ul>
+<li>若 cur2 的右孩子为空，则将 cur2 的右孩子设为 cur1 – 建立连接。然后 cur1 指向 cur1.left;</li>
+<li>若 cur2 的右孩子不为空（为 cur1），说明当前 cur1 的右孩子已经全部遍历完成，将 cur2 的右孩子恢复为 null。再 处理 cur1，并将 cur1 指向 cur1.right。</li>
+</ul>
+</li>
+</ul>
+<p>具体参考下方代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    TreeNode cur1 = root;   <span class="comment">// 指向当前遍历到的结点</span></span><br><span class="line">    TreeNode cur2 = <span class="keyword">null</span>;   <span class="comment">// 寻找当前遍历到的结点的 前驱结点</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (cur1 != <span class="keyword">null</span>) &#123;</span><br><span class="line">        cur2 = cur1.left;</span><br><span class="line">        <span class="comment">//构建 前驱结点到当前节点的 连接</span></span><br><span class="line">        <span class="keyword">if</span> (cur2 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 一直向右寻找，找到最右边的结点</span></span><br><span class="line">            <span class="keyword">while</span> (cur2.right != <span class="keyword">null</span> &amp;&amp; cur2.right != cur1) cur2 = cur2.right;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 两种情况：</span></span><br><span class="line">            <span class="comment">// 情况1：前驱结点右孩子为空，将该有孩子设为当前遍历节点 cur1，建立连接 </span></span><br><span class="line">            <span class="comment">// 建立连接后，调整 cur1 指针，指向 cur1.left</span></span><br><span class="line">            <span class="comment">// 情况2：前驱结点右孩子 为cur1，说明该结点的左子树已经遍历完，恢复前驱结点</span></span><br><span class="line">            <span class="keyword">if</span> (cur2.right == <span class="keyword">null</span>) &#123;</span><br><span class="line">                cur2.right = cur1;</span><br><span class="line">                cur1 = cur1.left;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> cur2.right = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        res.add(cur1.val);</span><br><span class="line">        cur1 = cur1.right;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>前序遍历</strong> 前序遍历基本借鉴了 中序遍历的思路，不同点有二：</p>
+<ul>
+<li>在 <code>cur2.right == null</code> 时，不仅建立连接，还同时处理结点。</li>
+<li>在 中序遍历中，如果 cur1 结点左子树全部遍历完毕，则 添加 cur1 结点的 val。前序遍历只有在 cur1 左子树为空的情况才添加 <code>cur1.val</code>。即 前序遍历 <code>if(cur2 != null)&#123;....&#125;else res.add(cur1.val);</code> 而中序遍历中，不需要添加 else。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line">    TreeNode cur1 = root;</span><br><span class="line">    TreeNode cur2 = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(cur1 != <span class="keyword">null</span>)&#123;</span><br><span class="line">        cur2 = cur1.left;</span><br><span class="line">        <span class="keyword">if</span>(cur2 != <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="comment">// 寻找左子树的最右边的结点 -- cur1 中序遍历的前驱结点</span></span><br><span class="line">            <span class="keyword">while</span>(cur2.right != <span class="keyword">null</span> &amp;&amp; cur2.right != cur1) cur2 = cur2.right;</span><br><span class="line">            <span class="comment">// 若 cur2.right 为 null： 添加 cur2 到当前节点的连接并且 处理 cur1 结点</span></span><br><span class="line">            <span class="keyword">if</span>(cur2.right == <span class="keyword">null</span>)&#123;</span><br><span class="line">                cur2.right = cur1;</span><br><span class="line">                res.add(cur1.val);</span><br><span class="line">                cur1 = cur1.left;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// 若 cur2.right 不为 null，恢复它为 null</span></span><br><span class="line">            &#125; <span class="keyword">else</span> cur2.right = <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">// 如果 cur1 左子树为空，直接处理 cur1</span></span><br><span class="line">        &#125;<span class="keyword">else</span> res.add(cur1.val);</span><br><span class="line">        cur1 = cur1.right;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>后序遍历</strong> 后序遍历相对复杂。前面的准备工作与 前序、中序比较类似，但遍历输出时，需要进行的改动较大。</p>
+<p>如下图所示，后序遍历时将结点的连续右节点当成一个单链表来看待。当cur 返回上层时，我们 <strong>逆序处理</strong> 下层的单链表。例如，返回到 <code>2</code> 时, 处理链表 <code>4</code> (该链表只有一个结点)； 返回到 <code>1</code> 时，处理链表 <code>5 -&gt; 2</code> 。</p>
+<img src="/images/MorriesPostOrder.png" width=50% heigth=50% alt="见参考文献3"/>
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//后序Morris</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Integer&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">        List&lt;Integer&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">if</span>(root == <span class="keyword">null</span>) <span class="keyword">return</span> res;</span><br><span class="line">        TreeNode cur1 = root;   <span class="comment">// 遍历时的指针变量</span></span><br><span class="line">        TreeNode cur2 = <span class="keyword">null</span>;   <span class="comment">// 当前节点的中序直接前驱结点 -- 当前结点左子树的最右结点</span></span><br><span class="line">        <span class="keyword">while</span>(cur1 != <span class="keyword">null</span>)&#123;</span><br><span class="line">            cur2 = cur1.left;</span><br><span class="line">            <span class="keyword">if</span>(cur2 != <span class="keyword">null</span>)&#123;</span><br><span class="line">                <span class="keyword">while</span>(cur2.right != <span class="keyword">null</span> &amp;&amp; cur2.right != cur1) cur2 = cur2.right;</span><br><span class="line">                <span class="keyword">if</span>(cur2.right == <span class="keyword">null</span>)&#123;</span><br><span class="line">                    cur2.right = cur1;</span><br><span class="line">                    cur1 = cur1.left;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    cur2.right = <span class="keyword">null</span>;</span><br><span class="line">                    res.addAll(reverseList(cur1.left)); <span class="comment">// 链表反序后加入 list</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            cur1 = cur1.right;</span><br><span class="line">        &#125;</span><br><span class="line">        res.addAll(reverseList(root));</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 翻转单链表</span></span><br><span class="line">    <span class="function">Deque&lt;Integer&gt; <span class="title">reverseList</span><span class="params">(TreeNode root)</span></span>&#123;</span><br><span class="line">        Deque&lt;Integer&gt; stack = <span class="keyword">new</span> ArrayDeque&lt;&gt;();  <span class="comment">// 使用 stack 来反序</span></span><br><span class="line">        <span class="keyword">if</span>(root != <span class="keyword">null</span>) stack.push(root.val);</span><br><span class="line">        <span class="keyword">while</span>((root = root.right) != <span class="keyword">null</span>) stack.push(root.val);</span><br><span class="line">        <span class="keyword">return</span> stack;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>参考</strong>: </p>
+<p>[1] <a target="_blank" rel="noopener" href="https://www.cnblogs.com/anniekim/archive/2013/06/15/morristraversal.html">https://www.cnblogs.com/anniekim/archive/2013/06/15/morristraversal.html</a><br>[2] <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/101321696">https://zhuanlan.zhihu.com/p/101321696</a><br>[3] <a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/binary-tree-preorder-traversal/solution/leetcodesuan-fa-xiu-lian-dong-hua-yan-shi-xbian-2/">https://leetcode-cn.com/problems/binary-tree-preorder-traversal/solution/leetcodesuan-fa-xiu-lian-dong-hua-yan-shi-xbian-2/</a><br>[4] <a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/binary-tree-preorder-traversal/solution/tu-jie-er-cha-shu-de-si-chong-bian-li-by-z1m/">https://leetcode-cn.com/problems/binary-tree-preorder-traversal/solution/tu-jie-er-cha-shu-de-si-chong-bian-li-by-z1m/</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A0%91/" rel="tag"># 树</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/02/BigData/InstallOnWindows/" rel="prev" title="Windows上安装Hadoop">
+                  <i class="fa fa-chevron-left"></i> Windows上安装Hadoop
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2021/02/05/Algorithm/TraverseTree/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

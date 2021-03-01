@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="本文对 hadoop 的基础背景知识 以及 hadoop集群的安装、基础配置进行了总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hadoop集群配置">
+<meta property="og:url" content="http://example.com/2021/03/01/BigData/hadoop_configuration/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="本文对 hadoop 的基础背景知识 以及 hadoop集群的安装、基础配置进行了总结。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-01T07:18:28.000Z">
+<meta property="article:modified_time" content="2021-03-01T13:12:38.730Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="Hadoop">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/03/01/BigData/hadoop_configuration/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>hadoop集群配置 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">60</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Hadoop-%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">1. Hadoop 架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Hadoop-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">2. Hadoop 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 虚拟机的安装配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7"><span class="nav-number">2.1.1.</span> <span class="nav-text">a. 添加用户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E8%AE%BE%E7%BD%AE%E7%BD%91%E7%BB%9C"><span class="nav-number">2.1.2.</span> <span class="nav-text">b. 设置网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-%E8%AE%BE%E7%BD%AE%E4%B8%BB%E6%9C%BA%E5%88%AB%E5%90%8D%E3%80%81%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">2.1.3.</span> <span class="nav-text">c. 设置主机别名、关闭防火墙</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-%E9%85%8D%E7%BD%AE-ssh-%E6%97%A0%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95"><span class="nav-number">2.1.4.</span> <span class="nav-text">d. 配置 ssh 无密码登录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-hadoop-%E7%9A%84%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 hadoop 的安装配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-hadoop-%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">2.2.1.</span> <span class="nav-text">a. hadoop 的安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E9%85%8D%E7%BD%AE-hadoop"><span class="nav-number">2.2.2.</span> <span class="nav-text">b. 配置 hadoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-%E5%90%AF%E5%8A%A8-hadoop"><span class="nav-number">2.2.3.</span> <span class="nav-text">c. 启动 hadoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">2.2.4.</span> <span class="nav-text">d. 运行程序</span></a></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/01/BigData/hadoop_configuration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          hadoop集群配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-01 15:18:28 / 修改时间：21:12:38" itemprop="dateCreated datePublished" datetime="2021-03-01T15:18:28+08:00">2021-03-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/01/BigData/hadoop_configuration/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/01/BigData/hadoop_configuration/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文对 hadoop 的基础背景知识 以及 hadoop集群的安装、基础配置进行了总结。</p>
+<a id="more"></a>
+
+<h1 id="1-Hadoop-架构"><a href="#1-Hadoop-架构" class="headerlink" title="1. Hadoop 架构"></a>1. Hadoop 架构</h1><p>hadoop 2.x 开始，hadoop 主要由下面4个部分组成：</p>
+<ul>
+<li>MapReduce - 用于计算；</li>
+<li>Yarn - 资源调度；</li>
+<li>HDFS - 数据存储；</li>
+<li>Common - 辅助工具。</li>
+</ul>
+<p>具体地，</p>
+<p><strong>HDFS</strong> 存储又可以分为两部分：</p>
+<ul>
+<li>NameNode(nn): 相当于目录，存储文件的文件名、文件目录结构、文件属性等元数据。</li>
+<li>Secondary NameNode(2nn): 辅助 namenode 的工作，监控 HDFS 状态，并进行 namenode 的备份（隔一段时间获取一次 namenode 的快照）。</li>
+<li>DataNode(dn): 存储具体的文件数据。</li>
+</ul>
+<p><strong>yarn</strong> 资源管理调度工具，从顶层到底层可以分为4个部分：</p>
+<ul>
+<li>Resource Manager<ul>
+<li>直接对接客户端的请求；监控 node manager；启动、监控 application master；</li>
+</ul>
+</li>
+<li>Node manager<ul>
+<li>管理每个节点（服务器）上的资源；处理来自 resource manager 的命令；处理来自 application master 的命令；</li>
+</ul>
+</li>
+<li>Application master<ul>
+<li>为每个单独的任务服务。具体负责数据的切分，为应用程序申请资源等。</li>
+</ul>
+</li>
+<li>Container<ul>
+<li>yarn 中资源的抽象，封装了结点上的例如内存、cpu、磁盘等资源。</li>
+</ul>
+</li>
+</ul>
+<p><strong>MapReduce</strong> 是具体的计算环节，主要包括两部分：</p>
+<ul>
+<li>Map 阶段：并行处理输入数据；</li>
+<li>Reduce 阶段：对 map 分析结果进行汇总。</li>
+</ul>
+<h1 id="2-Hadoop-配置"><a href="#2-Hadoop-配置" class="headerlink" title="2. Hadoop 配置"></a>2. Hadoop 配置</h1><p>为了模拟 hadoop 真是的工作环境，我们尝试在windows 上使用 vmware 安装3台 centos 的虚拟机，来构成一个 hadoop cluster。</p>
+<h2 id="2-1-虚拟机的安装配置"><a href="#2-1-虚拟机的安装配置" class="headerlink" title="2.1 虚拟机的安装配置"></a>2.1 虚拟机的安装配置</h2><p>使用 vmware 安装虚拟机，它有基础版和 pro 版之分，基础版是免费的，因此，我安装了基础版的，<a target="_blank" rel="noopener" href="https://www.vmware.com/cn/products/workstation-player/workstation-player-evaluation.html">连接</a>。相对来说，基础版缺少了直接的虚拟机拷贝镜像等高阶功能，在后续的配置中，稍麻烦一点的地方是需要安装系统3次，而pro版直接镜像拷贝即可。</p>
+<p>安装的 linux 系统为 <a target="_blank" rel="noopener" href="http://centos.uhost.hk/7.9.2009/isos/x86_64/">centos7</a>, 主要是为了和多数教程中一致。</p>
+<p>linux 安装过程中，基本全部默认即可，并同样的方法安装3台虚拟机。</p>
+<p>安装完成后，需要进行如下设置。</p>
+<h3 id="a-添加用户"><a href="#a-添加用户" class="headerlink" title="a. 添加用户"></a>a. 添加用户</h3><p>安装时配置了 root 用户，此时要在系统中添加一个额外的用户，用于处理具体的hadoop 工作事务。设置过程如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建用户</span></span><br><span class="line">adduser lab1 # 创建名为 lab1 的用户</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置密码</span></span><br><span class="line">passwd lab1  # 111111</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 授权</span></span><br><span class="line">whereis sudoers  # 可以查看 sudoers 文件在哪里</span><br><span class="line">ls -l /etc/sudoers   # 查看对应文件的权限</span><br><span class="line"><span class="meta">#</span><span class="bash"> -r--r----- 1 root root 4251 9月  25 15:08 /etc/sudoers 发现只有只读权限</span></span><br><span class="line">chmod -v u+w /etc/sudoers  # 添加 w 权限</span><br><span class="line">vim /etc/sudoers  # 修改文件</span><br><span class="line"><span class="meta">#</span><span class="bash"> 文件修改部分如下</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># Allow root to run any commands anywhere -- 在文档的接近最后面</span></span></span><br><span class="line">root    ALL=(ALL)   ALL</span><br><span class="line">lab1    ALL=(ALL)   ALL</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改完毕后，将 /etc/sudoers 文件的写权限收回</span></span><br><span class="line">chmod -v u-w /etc/sudoers</span><br></pre></td></tr></table></figure>
+
+<h3 id="b-设置网络"><a href="#b-设置网络" class="headerlink" title="b. 设置网络"></a>b. 设置网络</h3><p>hadoop 需要在多台机器间进行通讯，因此，欲让集群中的机器能够正确的找到对应的结点，需要让各台机器的 ip 地址固定。</p>
+<p>对于虚拟机设置来说，最方便的是使用 NAT 模式，使用 虚拟机提供的网卡 Vmnet8 作为子网的终端路由器，查询电脑上该块网卡的 ipv4 地址，我的为：<code>ip: 192.168.237.1, 子网掩码：255.255.255.0</code>。</p>
+<p>然后，我们配置虚拟机的 <code>/etc/sysconfig/network-scripts/ifcfg-ens33</code> 网络配置文件(note：ens33 为网卡名，有的centos上网卡名为 eth0, 可以通过 <code>ip add</code> 查看到系统的网卡信息，找到网卡名)。下面是文件中需要 修改 或添加的字段：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOTPROTO=static</span><br><span class="line">ONBOOT=yes</span><br><span class="line">PREFIX=24</span><br><span class="line">GATEWAY=192.168.237.2</span><br><span class="line">IPADDR=192.168.237.3</span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">DNS1=192.168.237.2</span><br></pre></td></tr></table></figure>
+
+<p><code>BOOTPROTO</code> 是 ip 分配方式，需要从原来的 DHCP 改为 static，DNS1 不能忘记配置，否则使用 yum 等安装软件时，无法用解析域名。最后，有的配置教程中还添加了 <code>HWADDR=00:0C:29:D8:CA:20</code> mac 地址字段，经测试，这一字段可以不写。</p>
+<p>配置完毕后，<code>service network restart</code> 重启网络即可。</p>
+<p><em>问题解决：</em> 用时候网络无法启动，可能是因为与 <code>NetworkManager</code> 服务冲突(<a target="_blank" rel="noopener" href="https://blog.csdn.net/weiyongle1996/article/details/75128239">ref</a>), 使用指令 <code>service NetworkManager stop</code> 关闭该服务，然后再重启网络即可。</p>
+<h3 id="c-设置主机别名、关闭防火墙"><a href="#c-设置主机别名、关闭防火墙" class="headerlink" title="c. 设置主机别名、关闭防火墙"></a>c. 设置主机别名、关闭防火墙</h3><p>为方便机器间的通讯，我们修改各个主机的 hostname，并在各个机器中修改 <code>/etc/hosts</code> 文件，来保存ip地址和 主机名称之间的映射关系。</p>
+<p>修改 hostname 的方法为：<code>hostnamectl set-hostname master</code> （设置 主机的 hostname 为 master）。然后，在 <code>/etc/hosts</code> 文件下添加 ip 与 hostname之间的关系：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">192.168.237.3</span> master</span><br><span class="line"><span class="number">192.168.237.4</span> slave1</span><br><span class="line"><span class="number">192.168.237.5</span> slave2</span><br></pre></td></tr></table></figure>
+
+<p>此外，为了方便 windows 使用网页访问 hadoop 的相关 log 页面，修改windows 上 <code>C:\WINDOWS\system32\drivers\etc</code> 文件，也添加相同的内容即可, <a target="_blank" rel="noopener" href="https://blog.csdn.net/u010234516/article/details/52963954">参考</a>.</p>
+<p>最后，为了方便 本地机访问，关闭centos虚拟机的防火墙：<code>sudo systemctl stop firewalld</code>。</p>
+<h3 id="d-配置-ssh-无密码登录"><a href="#d-配置-ssh-无密码登录" class="headerlink" title="d. 配置 ssh 无密码登录"></a>d. 配置 ssh 无密码登录</h3><p>为了方便后序hadoop 结点之间的互相访问，我们配置各个结点直接的 ssh 无密码访问。ssh 访问的原理是利用公钥和私钥进行加密通信，服务器 A 实现无密码安全访问服务器 B 的方法如下：</p>
+<ol>
+<li>在 A 服务器上，<code>ssh-key-gen</code> 生成一个秘钥对，包括一个 公钥 A 和 私钥 A。</li>
+<li>将 A 服务器的 公钥 A 拷贝到 B 服务器上，并授权该 key。</li>
+<li>服务器 A 使用 ssh 访问服务器 B，使用 服务器 A 的私钥进行加密。</li>
+<li>服务器 B 接收到数据后，去授权 key 中寻找到 服务器 A 的公钥，并解密数据。</li>
+<li>服务器 A 采用 A 的公钥加密数据后返回给 A 服务器。</li>
+<li>服务器 A 收到 B 发送的数据后，使用 私钥进行解密即可。</li>
+</ol>
+<p>具体操作是，若希望 master 机器能够无密码访问 slave1 和 slave2，执行下述指令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.ssh  # 切换到 .ssh 目录 -- 注意是当前用户 家目录下的 .ssh</span><br><span class="line">ssh-keygen -t rsa  # 生成 ssh 公钥私钥对</span><br><span class="line"><span class="meta">#</span><span class="bash"> 询问 passphrase 等内容，全部 默认回车跳过即可。</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 完毕后会生成两个文件：</span></span><br><span class="line">id_rsa</span><br><span class="line">id_rsa.pub </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 最后拷贝公钥 </span></span><br><span class="line">ssh-copy-id slave1  # 在 slave1 的 .ssh 目录下会添加一个 authoried_keys</span><br><span class="line">ssh-copy-id slave2</span><br><span class="line">ssh-copy-id master   # 可以免密登录自己 ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-hadoop-的安装配置"><a href="#2-2-hadoop-的安装配置" class="headerlink" title="2.2 hadoop 的安装配置"></a>2.2 hadoop 的安装配置</h2><p>hadoop 的安装配置参考官网: <a target="_blank" rel="noopener" href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html">单节点配置</a>, <a target="_blank" rel="noopener" href="https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html">集群配置</a>。</p>
+<h3 id="a-hadoop-的安装"><a href="#a-hadoop-的安装" class="headerlink" title="a. hadoop 的安装"></a>a. hadoop 的安装</h3><p>安装操作可以仅在一台虚拟机上进行配置，后序使用远程拷贝，远程分发功能进行拷贝即可。</p>
+<p>首先，我们在 centos 中新建文件夹 <code>/opt/software/</code> 用于放置待安装的安装包，以及 <code>/opt/module/</code> 文件夹用于放置安装的文件。</p>
+<p>新建这两个文件夹之后，为了方便读写，我们修改它们的读写权限，<code>sudo chown lab1:lab1 /opt/module/ /opt/software/</code>。</p>
+<p>hadoop 的运行需要 jdk 的支持，因此，我分别下载了 jdk 的安装包和 hadoop 的安装包，通过 xftp 从本地机传输到虚拟机，放置在了 software 文件夹下。</p>
+<p>安装过程参考下面的指令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">###############################################</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> java 安装</span></span><br><span class="line">tar -zxvf jdk-8u281-..... -C /opt/module  # 解压后放置到 module 文件夹下</span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">sudo vi /etc/profile </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在文档末尾添加如下内容。</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># JAVA_HOME</span></span></span><br><span class="line">export JAVA_HOME=/opt/module/jdkxx</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin  # 刚开始忘记加 $JAVA_HOME 前面的 $ 符号，source之后一直无效</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 让配置生效</span></span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看 java 安装情况</span></span><br><span class="line">java -version</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">###############################################</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> hadoop 安装</span></span><br><span class="line">tar -zxvf hadoop-2.8.3xxxx.tar.gz -C /opt/module/</span><br><span class="line"></span><br><span class="line">ll # 查看目录下的内容</span><br><span class="line">pwd # 查看当前目录</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 配置环境变量</span></span><br><span class="line">sudo vi /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 切换到最后一行，添加下述内容</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># HADOOP_HOME</span></span></span><br><span class="line">export HADOOP_HOME=/opt/module/hadoop-2.8.3</span><br><span class="line">export PATH=$PATH:$HADOOP_HOME/bin</span><br><span class="line">export PATH=$PATH:$HADOOP_HOME/sbin</span><br><span class="line"></span><br><span class="line">source /etc/profile</span><br><span class="line">hadoop # 查看安装情况</span><br></pre></td></tr></table></figure>
+
+<p>有一些教程中提到需要进行本地编译，一般是对于比较早先的 hadoop 版本来说，由于较早的hadoop 版本仅提供编译好的 32 位版本（主要是 <code>hadoopx.x.x/lib</code> 文件夹中的库文件）。但是较新的 hadoop 版本都开始提供64位版本的编译安装包了，因此不再需要通过编译源码来获得 64 位版本的 hadoop 了。查看自己的 hadoop 的版本的方法(<a target="_blank" rel="noopener" href="https://blog.csdn.net/sdujava2011/article/details/50856164">link</a>).</p>
+<h3 id="b-配置-hadoop"><a href="#b-配置-hadoop" class="headerlink" title="b. 配置 hadoop"></a>b. 配置 hadoop</h3><p>如最前面官方文档中所述，hadoop 有多种安装模式， 这里简单记录我使用虚拟机进行集群配置的步骤。</p>
+<p>配置之前，回顾前面 hadoop 的组成部分，我们首先规划各个结点服务器上的放置的内容：</p>
+<ul>
+<li>master: hdfs- datanode; yarn- resourceManager + nodeManager;</li>
+<li>slave1: hdfs- nameNode + datanode; yarn- nodeManager;</li>
+<li>slave2: hdfs- secondarynameNode + datanode; yarn- nodeManager;</li>
+</ul>
+<p>在上面的规划中，需要注意的是：nameNode 和 secondaryNameNode 以及 resourceManager 由于占用空间都比较大，应该分配在三台单独的服务器上。 </p>
+<p>规划完毕后，就开始修改 hadoop 中位于 <code>etc/hadoop/</code> 文件夹下的配置文件。</p>
+<p><strong>hdfs</strong>， 首先修改核心的 hadoop 配置文件，指定 hadoop 中 namenode 的位置，具体的，在 <code>core-site.xml</code> 文件中添加下述字段:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 指定HDFS中NameNode的地址 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.defaultFS<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://slave1:9000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 指定Hadoop运行时产生文件的存储目录 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.tmp.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/opt/module/hadoop-2.8.3/data/tmp<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>hdfs</strong>： 配置完毕了 namenode，secondarynamenode 的配置在 <code>hdfs-site.xml</code> 进行，添加下面的配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 指定文件的备份数，默认的就是3，所以这里也可以不配 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.replication<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 指定Hadoop辅助名称节点主机配置 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>slave2:50090<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>yarn</strong>: 首先指定 mapreduce 运算在 yarn 上。在 <code>mapred-site.xml</code> 文件中，添加下述配置项：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 指定MR运行在Yarn上 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.framework.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>yarn<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后，配置 yarn 的相关服务，在 <code>yarn-site.xml</code> 中进行设置，添加下列配置字段：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Reducer获取数据的方式 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 指定YARN的ResourceManager的地址 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>master<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>最后，我们需要修改 <code>mapred-env.sh, yarn-env.sh, hadoop-env.sh</code> 文件，在他们中修改 java path 为 前面安装的 java 的根目录（e.g. <code>export JAVA_HOME=/opt/module/jdk1.8.0_281</code>），保证指令执行时能够找到 jdk 的正确位置。</p>
+<p>此外，还可以配置历史服务器（log），日志聚集服务器 以及集群的时间同步功能等其他配置。</p>
+<h3 id="c-启动-hadoop"><a href="#c-启动-hadoop" class="headerlink" title="c. 启动 hadoop"></a>c. 启动 hadoop</h3><p><strong>准备工作</strong></p>
+<p>启动之前，我们首先要确保之前的 namenode 和 datanode 已经关闭，通过 jps 可以查询。然后，一般要删除之前的数据与 logs。<code>rm -rf data/ logs/</code>, 然后再重新格式化结点：<code>hdfs namenode -format</code>。</p>
+<p><strong>单节点启动</strong></p>
+<p>单结点启动是指单独启动每个结点，分别启动 namenode(以及secondarynamenode)，datanode，resourcemanager，nodemanager，具体指令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hadoop-daemon.sh start namenode</span><br><span class="line">hadoop-daemon.sh start datanode</span><br><span class="line">yarn-daemon.sh start resourcemanager</span><br><span class="line">yarn-daemon.sh strat nodemanager</span><br></pre></td></tr></table></figure>
+
+<p>但对于真是的集群来说，单结点启动太过麻烦，需要登录到每一台机器单独进行操作。</p>
+<p><strong>集群启动</strong></p>
+<p>通过配置 ssh 免密登录，我们可以方便的在某一台机器上启动整个集群。启动集群之前，需要修改 <code>etc/hadoop/slaves</code> 文件，在其中添加datanode所在的结点名称：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">master</span><br><span class="line">slave1</span><br><span class="line">slave2</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，修改时 不能有空格、空行。</p>
+<p>配置完毕后，就可以启动 hdfs 了，可以在 master 结点上执行: <code>sbin/start-dfs.sh</code>，log 显示如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">slave1: starting namenode, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;hadoop-lab1-namenode-slave1.out</span><br><span class="line">slave1: starting datanode, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;hadoop-lab1-datanode-slave1.out</span><br><span class="line">slave2: starting datanode, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;hadoop-lab1-datanode-slave2.out</span><br><span class="line">master: starting datanode, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;hadoop-lab1-datanode-master.out</span><br><span class="line">Starting secondary namenodes [slave2]</span><br><span class="line">slave2: starting secondarynamenode, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;hadoop-lab1-secondarynamenode-slave2.out</span><br></pre></td></tr></table></figure>
+
+<p>此外，还可以通过 jps 查询各结点启动是否正常。</p>
+<p>最后，我们通过指令 <code>sbin/start-yarn.sh</code> 来启动 yarn，log 如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">starting yarn daemons</span><br><span class="line">starting resourcemanager, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;yarn-lab1-resourcemanager-master.out</span><br><span class="line">slave2: starting nodemanager, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;yarn-lab1-nodemanager-slave2.out</span><br><span class="line">slave1: starting nodemanager, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;yarn-lab1-nodemanager-slave1.out</span><br><span class="line">master: starting nodemanager, logging to &#x2F;opt&#x2F;module&#x2F;hadoop-2.8.3&#x2F;logs&#x2F;yarn-lab1-nodemanager-master.out</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，启动 yarn 的时候，必须在 resourcemanager 所在的结点上启动，否则会报错。</p>
+<h3 id="d-运行程序"><a href="#d-运行程序" class="headerlink" title="d. 运行程序"></a>d. 运行程序</h3><p>集群配置启动完毕后，我们可以运行一些示例程序、上传一些文件验证配置的正确性。</p>
+<p><strong>上传文件</strong></p>
+<p>上传文件使用命令 <code>bin/hdfs dfs -put &#39;源文件地址&#39; &#39;hdfs系统中的地址&#39;</code>，例子如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 进行了两个文件的拷贝，一个大文件，一个小文件。都放在了 hdfs 根目录下</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在 http://slave1:50070/explorer.html<span class="comment">#/ 中我们可以看到，当文件大小超过 block size 128 M 时，文件会被分为两个块放置</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此外，由于设置了 replication 为3， 文件被 复制，分发存储到了3台服务器上， master, slave1, slave2</span></span><br><span class="line">[lab1@master hadoop-2.8.3]$ hdfs dfs -put wcinput/wc.input  /</span><br><span class="line">[lab1@master hadoop-2.8.3]$ hdfs dfs -put /opt/software/hadoop-2.8.3.tar.gz /</span><br></pre></td></tr></table></figure>
+
+<p><strong>单词计数</strong></p>
+<p>此外，我们还可以运行 一些 hadoop 自带的例子程序，这里以运行单词计数程序为例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> step1: 穿件文件夹</span></span><br><span class="line">mkdir wcinput</span><br><span class="line">cd wcinput</span><br><span class="line">touch wc.input</span><br><span class="line"><span class="meta">#</span><span class="bash"> 编辑 wc.input 中的内容</span></span><br><span class="line">vi wc.input  # 写一些单词</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 运行程序 /user/lab1/input 为输入数据；/user/lab1/output 为数据输出</span></span><br><span class="line">hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.3.jar wordcount /user/lab1/input /user/lab1/output</span><br></pre></td></tr></table></figure>
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/01/Algorithm/Bottom_up_binaryTree/" rel="prev" title="后序遍历-自底向上的思想">
+                  <i class="fa fa-chevron-left"></i> 后序遍历-自底向上的思想
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/01/BigData/distrib_script/" rel="next" title="linux文件分发工具">
+                  linux文件分发工具 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2021/03/01/BigData/hadoop_configuration/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

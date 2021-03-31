@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="之前虽然学过 Java，但时间比较久了，并且没有做好整理总结。所以，阅读这本 《Core Java SE 9 for the Impatient》来做一下整理回顾。这本书是两卷 《Core Java》 的精华版，具体的，它去除了历史介绍部分，以及很少使用的 Java 用户接口程序的内容。此外，还去除了单个特性多版本的介绍，全部内容都以 Java SE 9 为根据编写，并且仅突出语言的 “good">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-1-基础语法">
+<meta property="og:url" content="http://example.com/2020/11/04/Java/CoreJava_ch1_basic/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="之前虽然学过 Java，但时间比较久了，并且没有做好整理总结。所以，阅读这本 《Core Java SE 9 for the Impatient》来做一下整理回顾。这本书是两卷 《Core Java》 的精华版，具体的，它去除了历史介绍部分，以及很少使用的 Java 用户接口程序的内容。此外，还去除了单个特性多版本的介绍，全部内容都以 Java SE 9 为根据编写，并且仅突出语言的 “good">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-04T03:08:25.000Z">
+<meta property="article:modified_time" content="2021-01-10T12:06:55.516Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2020/11/04/Java/CoreJava_ch1_basic/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java-1-基础语法 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-Primitive-Type"><span class="nav-number">1.</span> <span class="nav-text">A. Primitive Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Variables"><span class="nav-number">2.</span> <span class="nav-text">B. Variables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-Arithmetic-operations"><span class="nav-number">3.</span> <span class="nav-text">C. Arithmetic operations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#D-Strings"><span class="nav-number">4.</span> <span class="nav-text">D. Strings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#E-Input-and-Output"><span class="nav-number">5.</span> <span class="nav-text">E. Input and Output</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#F-Control-Flow"><span class="nav-number">6.</span> <span class="nav-text">F. Control Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G-Arrays-and-Array-Lists"><span class="nav-number">7.</span> <span class="nav-text">G. Arrays and Array Lists</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/04/Java/CoreJava_ch1_basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java-1-基础语法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-04 11:08:25" itemprop="dateCreated datePublished" datetime="2020-11-04T11:08:25+08:00">2020-11-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-01-10 20:06:55" itemprop="dateModified" datetime="2021-01-10T20:06:55+08:00">2021-01-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/04/Java/CoreJava_ch1_basic/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/04/Java/CoreJava_ch1_basic/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>之前虽然学过 Java，但时间比较久了，并且没有做好整理总结。所以，阅读这本 《Core Java SE 9 for the Impatient》来做一下整理回顾。这本书是两卷 《Core Java》 的精华版，具体的，它去除了历史介绍部分，以及很少使用的 Java 用户接口程序的内容。此外，还去除了单个特性多版本的介绍，全部内容都以 Java SE 9 为根据编写，并且仅突出语言的 “good parts”。</p>
+<a id="more"></a>
+
+<p>本书要求读者有一定的编程基础和经验。具体内容部分，提到介绍了java concurrent programming 的新方法。使用 Java 新特性处理该问题，而不是使用传统的 “error-prone low-level constructs”. 最后，作者说这本书 “Not for college course and not for systems wizards.” 就是说书中会介绍应用工程师会使用遇到的一些技术问题，例如 logging ，working with file。但是不会介绍 实现链表，或者自己写一个 web server 之类的偏基础知识理解，练习的内容（造轮子）。</p>
+<h2 id="A-Primitive-Type"><a href="#A-Primitive-Type" class="headerlink" title="A. Primitive Type"></a>A. Primitive Type</h2><p>Java 共有8种基础数据类型：4种是有符号整型（default 为 int 型，为 4 byte）；2种浮点型（default 为 double，8 byte，有 15 significant decimal digits）；1种char型；1种boolean型。</p>
+<p><strong>有符号整数型</strong>：在 Java 中，一个很 nice 的性质是，int 型占用的位数与所使用的运行平台无关（C，C++与编译程序的 processor 有关），对于所有的 JVM int 的长度都是相同的，从而保证了 Java 优秀的兼容特性。最长的整型为 long 型，为 8 bytes，赋值时使用 suffix <code>L</code>, e.g. <code>400000000L</code>.</p>
+<p><strong>浮点数</strong>  由于 float型是是使用 binary number system，在计算除法时，会出现小数部分不准确的现象，例如： <code>2.0 - 1.1</code> 给出的结果是 <code>0.8999..</code> 。如果需要精确的数值计算而没有这种 roundoff error，可以使用 <code>BigDecimal</code> 类。<code>BigDecimal.valueOf(n,e)</code>, 会返回数 $n\times 10^{-e}$。例如上面 <code>2.0 - 1.1</code> 可以表达为 <code>BigDecimal.valueOf(2,0).subtract(BigDecimal.valueOf(11, 1))</code>. </p>
+<p>Double 类中有一些常数，处理一些特殊的运算结果，例如 1.0 / 0.0 的结果为 <code>Double.POSITIVE_INFINITY</code> 表示 $\infty$。而 0.0 / 0.0 的结果，以及负数的开方值为 <code>Double.NaN</code>， 表示 not a number。</p>
+<p><strong>布尔型</strong> 需要注意的是，对于 boolean type，他有两个值 true and false，boolean value 和 integers 0 和 1 之间没有联系。</p>
+<p><strong>字符型</strong>，Java 中的 char 为 UTF-16 编码的 ‘code units’。（具体参考 part “d. String”, and <a target="_blank" rel="noopener" href="https://blog.boileryao.com/2018/11/java-encoding-and-whats-codepoint/">refLink</a>）</p>
+<p><em>Line feed（\n） 和 carriage return (\r) 有啥区别？</em>  Line feed 意思是向前移动一行，而 carriage return 表示 将游标移动到行首。通常 windows 使用 <code>\r\n</code> 在文档中表示换行，而 unix 系统中则大多使用 <code>\n</code>。<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12747722/what-is-the-difference-between-a-line-feed-and-a-carriage-return">reflink</a></p>
+<h2 id="B-Variables"><a href="#B-Variables" class="headerlink" title="B. Variables"></a>B. Variables</h2><p><strong>变量声明</strong>：Convention：通常class 的名字首字母大写， methods 和 variables 的名字首字母小写。variables 的名字常常使用 “camel case”。（对于 python 习惯是使用下划线表示变量）</p>
+<p><strong>初始化</strong>：使用变量前必须先初始化。</p>
+<p><strong>Constant</strong>: <code>final</code> key word 表示一个变量给定后不能改变，即是一个 constant。通常 constant 的变量名全部大写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> DAYS_PER_WEEK = <span class="number">7</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="C-Arithmetic-operations"><a href="#C-Arithmetic-operations" class="headerlink" title="C. Arithmetic operations"></a>C. Arithmetic operations</h2><p><strong>基础运算</strong> 如果 operands 都是整型的话，那么对于除法，java 默认认为是 integer division，例如：17/5 = 3, 而 17.0/5 = 3.4。此外，一定要注意的是，integer 除0的会引发异常，是一个 exception 需要被 catch。（浮点数除0不会异常，结果是一个 无穷值 or NaN值）</p>
+<p><strong>Math类的方法</strong> 在 Java 的 Math 类中，提供了一些 static 的方法，处理数学问题。e.g. <code>Math.pow(x,y)</code> 表示 $x^y$。此外，使用 Math 类的好处还有它可以使得整数运算更加安全。例如：1’000‘000’000 * 3，如果赋值给一个 int，会因为溢出输出一个负值结果，而不报任何错误。但使用 <code>Math.multiplyExact(1000000000,3)</code>, 会产生一个异常。</p>
+<p><strong>Type conversion</strong>: 在数据的 type conversion 的时候，要注意是否有 loss of information。例如 float 类型，通常只有约7位小数位，如果小数部分多于7位，则可能丢失精度。</p>
+<p><strong>一些特别的运算符</strong> conditional operator: 如果条件为真，结果为第一个值，否则为第二个值。 <code>time &lt; 12 ? &quot;am&quot; : &quot;pm&quot;</code></p>
+<p>bitwise operator: 按位与：<code>&amp;</code>，按位或：<code>|</code>, 按位异或：<code>^</code>, 按位非：<code>~</code>，还有位位移等。</p>
+<h2 id="D-Strings"><a href="#D-Strings" class="headerlink" title="D. Strings"></a>D. Strings</h2><p>String 是字符的序列，a sequence of characters. 在 java 中，string 可以包含任意 Unicode characters。本节介绍了 字符串的拼接、子串、比较、数字与字符串之间的转换、String API、code points 和 code units 问题。</p>
+<p><strong>字符串的拼接</strong> 使用 <code>+</code> 完成两个 string 的 concatenation。如果拼接大量字符串，使用 <code>StringBuilder</code>.</p>
+<p><strong>子串</strong> String 类的 <code>subString(a,b)</code>方法，可以用于截取子串。<code>split(a)</code>可以根据字符 a 将 String 切割划分。</p>
+<p><strong>字符串比较</strong>： 使用 String 类的 <code>equals</code> 方法。（不要用 <code>==</code>! 作用 是比较对象是否为同一个）此外，String 类中的 <code>compareTo</code> 方法，可以比较两个字符串在字典中的顺序。</p>
+<p><strong>字符串与其他类型间的转换</strong>： 将数字转为字符串可以使用封装类的静态方法 <code>toString</code>, 将字符串转为数字则使用 <code>parseInt</code> 方法。e.g. </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> n = <span class="number">42</span>;</span><br><span class="line">String str = Integer.toString(n);   <span class="comment">//str 为 &quot;42&quot;</span></span><br><span class="line">String str2 = Integer.toString(n,<span class="number">2</span>);    <span class="comment">//转为2进制后化为字符串，str2 为&quot;101010&quot;</span></span><br><span class="line"><span class="keyword">int</span> n1 = Integer.parseInt(str);     <span class="comment">//n1 为 42</span></span><br><span class="line"><span class="keyword">int</span> n2 = Integer.parseInt(str2, <span class="number">2</span>); <span class="comment">//n2 为 42</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>String API</strong>：需要注意的是， String 类的方法，不改变操作对象本身，而是生成一个新的对象。</p>
+<p><strong>Code points and code units</strong>: 主要是编码长度的问题，最开始的 unicode 是 16位的（65535个），但后来发现仍然不够用（汉字），Unicode 也被扩到了 21bits。此外，还有 variable-length 的 utf-16 编码。因此，当处理包含汉字or特殊符号（emoji）的字符串时，需要使用 <code>codePointCount()</code> 方法来统计确切的字符数。这里的 “code point” 是字符对应的编码值，为一个整型数，一般的 Unicode 的字符，code Point 值在 0 到 65535之间。（<a target="_blank" rel="noopener" href="https://blog.boileryao.com/2018/11/java-encoding-and-whats-codepoint/">refLink</a>）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="string">&quot;Hello🐷&quot;</span>;</span><br><span class="line"><span class="keyword">int</span> len = str.length();</span><br><span class="line">System.out.println(len);    <span class="comment">//输出7</span></span><br><span class="line"><span class="keyword">int</span> len2 = str.codePointCount(<span class="number">0</span>, len);</span><br><span class="line">System.out.println(len2);       <span class="comment">//输出 6</span></span><br><span class="line"><span class="keyword">int</span> codePoint = str.codePointAt(str.offsetByCodePoints(<span class="number">0</span>, <span class="number">5</span>)); </span><br><span class="line">System.out.println(codePoint);  <span class="comment">//输出 128055，大于65535</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="E-Input-and-Output"><a href="#E-Input-and-Output" class="headerlink" title="E. Input and Output"></a>E. Input and Output</h2><p>从 Reading input, formatted output 两个角度分别简单介绍了数据的读写。</p>
+<p><strong>Reading input</strong> 需要构建一个 scanner 对象，然后调用它的 <code>nextLine()</code> 方法读取一行，<code>next()</code> 方法读取下一个单词（以 whitespace 作为分隔）。需要注意的是，如果读取 password 之类的，因为希望读取的内容不要显示在 terminal 上，推荐使用 <code>Console</code> 类，然后调用它的 <code>readPassword()</code> 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Scanner in = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">System.out.println(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">String t = in.nextLine();</span><br></pre></td></tr></table></figure>
+
+<p><strong>Formatted Output</strong>：可以使用 <code>System.out.printf()</code> 配合 “format specifiers” 来规定数字的格式，例如<code>%8.2f</code>, 表示“field width” 为8，也就是占据8个位置。<code>.2</code> 表示有两位小数。此外，还可以使用 <code>String</code> 类的静态方法 <code>format</code> 来实现规定格式输出。</p>
+<h2 id="F-Control-Flow"><a href="#F-Control-Flow" class="headerlink" title="F. Control Flow"></a>F. Control Flow</h2><p>介绍了程序基础中的分支选择（Branches），循环语句（loops）的相关技巧。</p>
+<p><strong>Branches</strong>: <code>if ... else ...</code>, <code>switch()&#123;case 0: ...break;&#125;</code></p>
+<p><strong>Loops</strong>: <code>while</code>, 此外，while 是先判定后执行，如果需要先执行后判定，则使用 <code>do&#123;...&#125; while(constraints)</code>. while 的 iteration 次数不是非常明显的显示，如果 iteration 次数确定的话，推荐使用 <code>for</code> loop, <code>for(initialization; test; update)</code>, 将初始化，判断，更新，放在一起，更加方便了解程序逻辑。</p>
+<p><strong>Breaking and continuing</strong>: 如果想在程序中间退出循环，可以使用 <code>break</code> 关键字。此外，还可以使用 <code>continue</code> 退出当次循环，强行进入下一轮循环。</p>
+<p><strong>Local variable scope</strong>: 变量的作用域通常以 <code>&#123; &#125;</code> 为界限，即从声明开始，到 <code>&#125;</code> 结束。注意相同名字的变量的作用域不能重复。</p>
+<h2 id="G-Arrays-and-Array-Lists"><a href="#G-Arrays-and-Array-Lists" class="headerlink" title="G. Arrays and Array Lists"></a>G. Arrays and Array Lists</h2><p>本节介绍了数组的基本操作，ArrayList 是一个泛型类，可以指定 list 中的对象的数据类型。</p>
+<p><strong>Arrays最简单形式</strong>: <code>int[]</code>, <code>String[]</code>, 分别表示整型数组，字符串数组。数组初始化可以使用 <code>new String[100]</code> 来实现。</p>
+<p><strong>Array construction</strong>：使用 new 关键字初始化数组时，数值型的初始值默认都为0，boolean 型默认都为 false，objects 的数组初始值默认都为 null。</p>
+<p><strong>ArrayList</strong>：为了获得更加自由的数组操作-数组构造完成后依然可以更改长度，可以使用 泛型类（“Generic class”）<code>ArrayList</code> 来操作数组。它的常用方法有 <code>add()</code>, <code>remove()</code>,<code>set()</code>… </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; fr;</span><br><span class="line">fr = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">//or: new ArrayList&lt;String&gt;();</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Wrapper classes for primitive types</strong>: 需要注意的是，generic class 不支持 primitive types 的数作为 type parameters，即 <code>ArrayList&lt;int&gt;</code> 是不允许的。解决方法是使用 基本数据类型的 包装类（wrapper class）。例如，<code>int</code> 的包装类为 <code>integer</code>. 将基础类型 和 包装类 之间的转换的过程是自动的，称为 “autoboxing” 和 “unboxed”. 但有一点需要注意的是对于对于包装类，<code>==</code> and <code>!=</code> 比较的是对象的引用是否相同，而不是比较对象的值，因此比较两个包装类对象的值是否相等必须使用 <code>equals</code> 方法。</p>
+<p><strong>Enhanced for loop</strong>: 如果你想遍历 array 中的元素，一个更加简洁的写法如下，它会从 number[] 开始遍历 numbers 数组中的元素，然后依次赋值给 n，一直到最后一个。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> n:numbers)&#123;</span><br><span class="line">    sum += n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Copying Arrays and Array Lists</strong>: Array 或者 ArrayList 声明的时候，<code>int[] a</code>, 实际上 a 是一个指针，如果再有 <code>int[] b = a;</code> 那么，a,b 都是指向同一个数组的指针，也就是说并不涉及一个值的复制。如果只希望进行值的复制，而不是将地址进行复制，我们需要使用静态方法 <code>Arrays.copyOf()</code> 进行复制。</p>
+<p><strong>Array Algorithm</strong>：我们 <code>Arrays</code> 中的静态方法处理基本数据类型的数组，使用 <code>Collections</code> 的静态方法处理 <code>ArrayList&lt;&gt;</code>。常用方法包括：<code>fill()</code>, <code>sort()</code>.</p>
+<p><strong>Command-line arguments</strong>: 程序的 main 函数，<code>public static void main(String[] args)</code> 中的 String 数组的用处是传入 command line 中给如的参数，i.e. <code>java Greeting -g cruel world</code>, 这里， Greeting 是一个编译好的java 程序，然后 <code>args[0] = &quot;-g&quot;, args[1] = &quot;cruel&quot;, args[2] = &quot;world&quot;</code>.</p>
+<p><strong>Multidimensional Arrays</strong>: java 没有真正意义上的多维数组，实际上是通过 “数组的数组” 的形式来实现的。二维数组可以表示如下，<code>square[1][2]</code> 表示第2行，第3列，也就是9(先行后列). 单独的 <code>square[1]</code> 表示第二行。此外，Arrays 类中也有一些静态方法可以处理二维数组，例如 <code>deepToString()</code> 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[][] square = &#123;</span><br><span class="line">    &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;,</span><br><span class="line">    &#123;<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>&#125;,</span><br><span class="line">    &#123;<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+<!--
+## 单词表
+invoke 引用
+primitive 原始的
+proficient 熟练的
+legacy code：老的代码，legacy 是遗产的意思
+wrestle with：努力解决，wrestle 有纠缠扭打的意思
+arithmetic operations：算术表达式
+chunk：块 - present the info in small chunks. 
+carriage return：回车符
+line feed: 换行
+leap year：闰年。
+hassle：麻烦。
+concatenation: 把 ... 串联起来。 使用 + 符号来 concatenate 两个 string。
+Chinese ideograph：中国的象形文字。
+pristine: 崭新的。
+prompt：（电脑屏幕上的）提示符，打字时的光标。
+remedy：改进措施。
+depressing：令人沮丧的。
+-->
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/02/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A4%A7%E8%AF%9D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%8415-%E6%80%BB%E7%BB%93/" rel="prev" title="大话数据结构15-总结">
+                  <i class="fa fa-chevron-left"></i> 大话数据结构15-总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/05/Java/CoreJava_ch2_class/" rel="next" title="Java-2-类的介绍">
+                  Java-2-类的介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/11/04/Java/CoreJava_ch1_basic/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

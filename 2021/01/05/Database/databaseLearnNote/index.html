@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="本篇博客对数据库的基础知识、相关操作，作简要的介绍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库知识点总结">
+<meta property="og:url" content="http://example.com/2021/01/05/Database/databaseLearnNote/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="本篇博客对数据库的基础知识、相关操作，作简要的介绍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-05T04:18:28.000Z">
+<meta property="article:modified_time" content="2021-03-31T14:06:06.403Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/01/05/Database/databaseLearnNote/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据库知识点总结 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-%E5%85%81%E8%AE%B8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">0. 允许的数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">1. 关系模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E4%B8%BB%E9%94%AE"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 主键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%A4%96%E9%94%AE"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 外键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.</span> <span class="nav-text">1.3 索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE"><span class="nav-number">3.</span> <span class="nav-text">2. 查询数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%8A%95%E5%BD%B1%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 投影查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%8E%92%E5%BA%8F"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E5%88%86%E9%A1%B5"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 分页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E8%81%9A%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.4.</span> <span class="nav-text">2.4 聚合查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E5%A4%9A%E8%A1%A8%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.5.</span> <span class="nav-text">2.5 多表查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.6.</span> <span class="nav-text">2.6 连接查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">3. 修改数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-INSERT"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 INSERT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-UPDATE"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 UPDATE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-DELETE"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 DELETE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-MySQL"><span class="nav-number">5.</span> <span class="nav-text">4. MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E5%BA%93%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 库相关操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E8%A1%A8%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 表相关操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E4%BD%BF%E7%94%A8%E8%AF%AD%E5%8F%A5%E6%8A%80%E5%B7%A7"><span class="nav-number">5.3.</span> <span class="nav-text">4.3 使用语句技巧</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E4%BA%8B%E5%8A%A1"><span class="nav-number">6.</span> <span class="nav-text">5. 事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E4%BA%8B%E5%8A%A1%E7%89%B9%E7%82%B9"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 事务特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 事务的隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-Read-Uncommitted"><span class="nav-number">6.2.1.</span> <span class="nav-text">a. Read Uncommitted</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-Read-committed"><span class="nav-number">6.2.2.</span> <span class="nav-text">b. Read committed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-Repeatable-Read"><span class="nav-number">6.2.3.</span> <span class="nav-text">c. Repeatable Read</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-Serializable"><span class="nav-number">6.2.4.</span> <span class="nav-text">d. Serializable</span></a></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/05/Database/databaseLearnNote/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库知识点总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-05 12:18:28" itemprop="dateCreated datePublished" datetime="2021-01-05T12:18:28+08:00">2021-01-05</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-31 22:06:06" itemprop="dateModified" datetime="2021-03-31T22:06:06+08:00">2021-03-31</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/05/Database/databaseLearnNote/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/05/Database/databaseLearnNote/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本篇博客对数据库的基础知识、相关操作，作简要的介绍。</p>
+<a id="more"></a>
+
+<h1 id="0-允许的数据类型"><a href="#0-允许的数据类型" class="headerlink" title="0. 允许的数据类型"></a>0. 允许的数据类型</h1><p>数据库的核心是数据，通常数据库拥有下列的数据类型：</p>
+<table>
+<thead>
+<tr><th>名称</th><th>类型</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>INT</td><td>整型</td><td>4字节整数类型，范围约+/-21亿</td></tr>
+<tr><td>BIGINT</td><td>长整型</td><td>8字节整数类型，范围约+/-922亿亿</td></tr>
+<tr><td>REAL</td><td>浮点型</td><td>4字节浮点数，范围约+/-10<sup>38</sup></td></tr>
+<tr><td>DOUBLE</td><td>浮点型</td><td>8字节浮点数，范围约+/-10<sup>308</sup></td></tr>
+<tr><td>DECIMAL(M,N)</td><td>高精度小数</td><td>由用户指定精度的小数，例如，DECIMAL(20,10)表示一共20位，其中小数10位，通常用于财务计算</td></tr>
+<tr><td>CHAR(N)</td><td>定长字符串</td><td>存储指定长度的字符串，例如，CHAR(100)总是存储100个字符的字符串</td></tr>
+<tr><td>VARCHAR(N)</td><td>变长字符串</td><td>存储可变长度的字符串，例如，VARCHAR(100)可以存储0~100个字符的字符串</td></tr>
+<tr><td>BOOLEAN</td><td>布尔类型</td><td>存储True或者False</td></tr>
+<tr><td>DATE</td><td>日期类型</td><td>存储日期，例如，2018-06-22</td></tr>
+<tr><td>TIME</td><td>时间类型</td><td>存储时间，例如，12:20:59</td></tr>
+<tr><td>DATETIME</td><td>日期和时间类型</td><td>存储日期+时间，例如，2018-06-22 12:20:59</td></tr>
+</tbody>
+</table>
+
+<p>选择数据类型的时候，要根据业务规则选择合适的类型。通常来说，<code>BIGINT</code> 能满足整数存储的需求，<code>VARCHAR(N)</code> 能满足字符串存储的需求，这两种类型是使用最广泛的。</p>
+<p>SQL - 结构化查询语言，用于访问和操作数据库。</p>
+<p>SQL 语言关键字不区分大小写。而不同数据库中的表名和列名，有的区分大小写有的不区分。因此，常常这样进行规范：SQL 关键字使用大写（以表示突出），表名和列名使用小写。</p>
+<h1 id="1-关系模型"><a href="#1-关系模型" class="headerlink" title="1. 关系模型"></a>1. 关系模型</h1><p>关系型数据库可以看作是若干个存储数据的二维表，表的每一行称为记录（record）。</p>
+<p>关系数据库中，表和表之间通常存在各种关系，包括：一对一；一对多；多对一 等。这些关系通常都使用 <strong>主键</strong> 和 <strong>外键</strong> 来维护。</p>
+<h2 id="1-1-主键"><a href="#1-1-主键" class="headerlink" title="1.1 主键"></a>1.1 主键</h2><p>在数据库表中，表中的每一行称为一条记录，每一条记录的 <strong>主键</strong> 必须唯一。</p>
+<p>对主键的要求，最关键的一点是：记录一旦插入到表中，主键最好不要再修改，因为主键是用来唯一定位记录的，修改了主键，会造成一系列的影响。</p>
+<p>通常，选取主键的原则是不要使用任何与业务相关的字段作为主键。一些建议的方式有:</p>
+<ol>
+<li>使用自增整数类型作为主键 - 数据库会在插入数据的时候自动为每个记录分配一个自增的整数；</li>
+<li>全局唯一 GUID 类型：使用一种全局唯一的字符串作为主键，类似<code>8f55d96b-8acc-4636-8cb8-76bf8abc2f57</code>。GUID算法通过网卡MAC地址、时间戳和随机数保证任意计算机在任意时间生成的字符串都是不同的，大部分编程语言都内置了GUID算法，可以自己预算出主键。</li>
+</ol>
+<h2 id="1-2-外键"><a href="#1-2-外键" class="headerlink" title="1.2 外键"></a>1.2 外键</h2><p>在某个表中，通过 某一字段，把数据与另一张表关联起来，这种列称为外键。</p>
+<p>需要注意的是，外键并不是通过列名实现的，而是通过定义外键约束来实现的(使用特定的SQL语句建立外键约束)。</p>
+<p>由于外键约束会降低数据库的性能，大部分互联网应用程序为了追求速度，并不设置外键约束，而是仅靠应用程序自身来保证逻辑的正确性。这种情况下，”外键” 对应的列 仅仅是一个普通的列，只是它起到了外键的作用而已。</p>
+<h2 id="1-3-索引"><a href="#1-3-索引" class="headerlink" title="1.3 索引"></a>1.3 索引</h2><p>当数据量特别大的时候，需要使用索引来提升查询速度。</p>
+<p>索引是关系数据库中对某一列或多个列的值进行预排序的数据结构。</p>
+<p>使用 <code>ADD INDEX &#39;索引名&#39;(&#39;字段名&#39;)</code> 的方式添加索引。</p>
+<p><strong>索引的效率</strong> 取决于索引列的值是否散列，即该列的值如果越互不相同，那么索引效率越高。</p>
+<p>可以对一张表创建多个索引。索引的优点是提高了 <strong>查询效率</strong>，缺点是在插入、更新和删除记录时，需要同时修改索引，因此，索引越多，插入、更新和删除记录的速度就越慢。</p>
+<p>对于主键，关系型数据库会自动对其创建 <strong>主键索引</strong>。</p>
+<p><strong>唯一索引</strong> 如果某个非 主键字段 对于每条记录也是唯一的，那么，可以为该列添加一个唯一索引。</p>
+<h1 id="2-查询数据"><a href="#2-查询数据" class="headerlink" title="2. 查询数据"></a>2. 查询数据</h1><p>SELECT：表示将要执行一个查询。</p>
+<p>FROM: 表示将从哪个表查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> &lt;表名&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 条件表达式可以使用逻辑运算符 AND、OR、NOT</span></span><br><span class="line"><span class="comment">-- NOT class_id = 2其实等价于class_id &lt;&gt; 2</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> &lt;表名&gt; <span class="keyword">WHERE</span> &lt;条件表达式&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果不加括号，条件运算按照 <code>NOT、AND、OR</code>的优先级进行。查询字符串时，需要使用 单引号 将待查询对象引起来。</p>
+<h2 id="2-1-投影查询"><a href="#2-1-投影查询" class="headerlink" title="2.1 投影查询"></a>2.1 投影查询</h2><p>如果希望查询的结果仅包含部分字段（列），使用投影查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> &lt;列名-使用逗号隔开&gt; <span class="keyword">FROM</span> &lt;表名&gt;</span><br><span class="line"><span class="comment">-- 还可以为选中的列起一个别名</span></span><br><span class="line"><span class="keyword">SELECT</span> 列<span class="number">1</span> 别名<span class="number">1</span>, 列<span class="number">2</span> 别名<span class="number">2</span>, 列<span class="number">3</span> 别名<span class="number">3</span> <span class="keyword">FROM</span> ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-排序"><a href="#2-2-排序" class="headerlink" title="2.2 排序"></a>2.2 排序</h2><p>默认的，我们的查询的结果都是按照 主键 的顺序进行排列的。</p>
+<p>我们可以通过 <code>ORDER BY</code> 来指定按照某列的值进行排序输出（默认是从低到高，使用 <code>DESC</code> 实现倒序）。</p>
+<p><code>ORDER BY</code> 需要放在 <code>WHERE</code> 后面(如果使用了 <code>WHERE</code> 的话)，因为这样可以减少不必要的排序，提升排序的速度。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> &lt;表名&gt; <span class="keyword">WHERE</span> xxx <span class="keyword">ORDER</span> <span class="keyword">BY</span> xxx <span class="keyword">DESC</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-分页"><a href="#2-3-分页" class="headerlink" title="2.3 分页"></a>2.3 分页</h2><p>如果数据量太大的话，可以使用 <code>LIMIT &lt;M&gt; OFFSET &lt;N&gt;</code> 选取第 N 到 M 条数据，来实现分页。</p>
+<p>如果省略 <code>OFFSET</code>, 则认为是从 0 开始选取 M 条记录。</p>
+<h2 id="2-4-聚合查询"><a href="#2-4-聚合查询" class="headerlink" title="2.4 聚合查询"></a>2.4 聚合查询</h2><p>如果需要获取查询到记录的数据，可以使用 SQL 的内置函数 <code>COUNT()</code> 进行查询。</p>
+<p>除了 <code>COUNT()</code> 外，SQL 还提供 <code>SUM, AVG, MAX, MIN</code> 分别用于求取一列的和、平均值、最大值、最小值。</p>
+<p>SQL 还提供了分组聚合功能，具体的是查询列中每个值对应的记录数目。使用 <code>GROUP BY 列名</code> 来实现。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 获取表中记录的数量，命名为 nums</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">COUNT</span>(*) nums <span class="keyword">FROM</span> &lt;表名&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> &lt;某一列名&gt;, <span class="keyword">COUNT</span>(*) <span class="keyword">num</span> <span class="keyword">FROM</span> &lt;表名&gt; <span class="keyword">GROUP</span> <span class="keyword">BY</span> &lt;同前面列名&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-5-多表查询"><a href="#2-5-多表查询" class="headerlink" title="2.5 多表查询"></a>2.5 多表查询</h2><p>可以直接 <code>SELECT * FROM &lt;表1&gt;, &lt;表2&gt;</code> 获得两个表的乘积- 即表1的每一列和表2 的每一列进行组合后的结果，共有 （表1记录数 * 表2记录数）条记录（这种多表查询也成为 笛卡尔查询）。</p>
+<h2 id="2-6-连接查询"><a href="#2-6-连接查询" class="headerlink" title="2.6 连接查询"></a>2.6 连接查询</h2><p>连接查询是另一种多表查询，它对多个表进行 JOIN 运算，<a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1177760294764384/1179610888796448">参考</a></p>
+<p><code>INNER JOIN</code>查询的写法是：</p>
+<ol>
+<li>先确定主表，仍然使用 <code>FROM &lt;表1&gt;</code>的语法；</li>
+<li>再确定需要连接的表，使用<code>INNER JOIN &lt;表2&gt;</code>的语法；</li>
+<li>然后确定连接条件，使用<code>ON &lt;条件...&gt;</code>，</li>
+<li>可选：加上 <code>WHERE</code>子句、<code>ORDER BY</code>等子句。</li>
+</ol>
+<p>除了 inner join，SQL 还有 outer join，它们的区别如下：</p>
+<ul>
+<li><code>INNER JOIN</code>只返回同时存在于两张表的行数据，-求交集。</li>
+<li><code>RIGHT OUTER JOIN</code>返回右表都存在的行。</li>
+<li><code>LEFT OUTER JOIN</code> 返回左表都存在的行。</li>
+<li><code>FULL OUTER JOIN</code>  返回两个表中所有的行，相当于求并集。</li>
+</ul>
+<h1 id="3-修改数据"><a href="#3-修改数据" class="headerlink" title="3. 修改数据"></a>3. 修改数据</h1><p>关系型数据库的基本操作包括增删改查（CRUD），Create，Retrieve，Update，Delete。查询（SELECT）相关的语法在上段进行了介绍。这里对增删改 进行介绍。</p>
+<h2 id="3-1-INSERT"><a href="#3-1-INSERT" class="headerlink" title="3.1 INSERT"></a>3.1 INSERT</h2><p>插入新数据使用 <code>INSERT</code> 语句。其基本语法是：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 向表中插入一个新的记录</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> &lt;表名&gt; (字段<span class="number">1</span>, 字段<span class="number">2</span>, ...) <span class="keyword">VALUES</span> (值<span class="number">1</span>, 值<span class="number">2</span>, ...);</span><br><span class="line"><span class="comment">-- 可以一次性添加多条记录</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> &lt;表名&gt; (字段<span class="number">1</span>, 字段<span class="number">2</span>, ...) <span class="keyword">VALUES</span> </span><br><span class="line">(值<span class="number">1</span>, 值<span class="number">2</span>, ...),</span><br><span class="line">(值<span class="number">1</span>, 值<span class="number">2</span>, ...);</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-UPDATE"><a href="#3-2-UPDATE" class="headerlink" title="3.2 UPDATE"></a>3.2 UPDATE</h2><p>修改数据使用 <code>UPDATE</code> 语句。其基本语法是：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 这里 set 是设置的意思（不是集合的意思）</span></span><br><span class="line"><span class="keyword">UPDATE</span> &lt;表名&gt; <span class="keyword">SET</span> 字段<span class="number">1</span>=值<span class="number">1</span>, 字段<span class="number">2</span>=值<span class="number">2</span>, ... <span class="keyword">WHERE</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>对于 UPDATE 语句，也可以不带有 WHERE 条件，这时候，会将整个表中所有的数据进行更新。</p>
+<p>通常，在 UPDATE 之前，需要通过 SELECT 语句测试一下 WHERE 条件是否正确在做 UPDATE。</p>
+<h2 id="3-3-DELETE"><a href="#3-3-DELETE" class="headerlink" title="3.3 DELETE"></a>3.3 DELETE</h2><p>删除数据使用 <code>DELETE</code> 语句。其基本语法为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> &lt;表名&gt; <span class="keyword">WHERE</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>类似的，DELETE 语句也可以不带 WHERE 参数，如果不带的话，就是删除整张表。</p>
+<h1 id="4-MySQL"><a href="#4-MySQL" class="headerlink" title="4. MySQL"></a>4. MySQL</h1><p>MySQL 是一个常用的 开源的、免费的数据库。安装完成MySQL 之后，可以通过其自带的 WorkBench 图形化界面操作数据库，（或者使用命令行工具：MySQL x.x Command Line Client）。通过命令行程序或者图形界面作为客户端，我们可以访问后台运行的服务器程序：<code>mysqld</code>。</p>
+<p>下面部分，介绍一些常用的数据库初始化操作与SQL语句技巧。</p>
+<h2 id="4-1-库相关操作"><a href="#4-1-库相关操作" class="headerlink" title="4.1 库相关操作"></a>4.1 库相关操作</h2><p>在 MySQL 中，使用 <code>SHOW DATABASES</code>, 展示库中所有的数据库。其中 <code>information_schema、 mysql、 performance_schema、 sys</code> 是系统库。不要去改动。</p>
+<p><strong>创建新库</strong>，使用命令 <code>CREATE DATABASE &lt;库名&gt;</code>。</p>
+<p><strong>删除一个库</strong>：使用命令 <code>DROP DATABASE &lt;库名&gt;</code>。</p>
+<p><strong>切换到对应库</strong>, 使用一个库之前，需要首先切换到这个库 <code>USE &lt;库名&gt;</code>。</p>
+<h2 id="4-2-表相关操作"><a href="#4-2-表相关操作" class="headerlink" title="4.2 表相关操作"></a>4.2 表相关操作</h2><p>列出库中所有的表：<code>SHOW TABLES</code>。</p>
+<p>查看一个表的结构：<code>DESC &lt;表名&gt;</code>。</p>
+<p>查看创建表的 SQL 语句：<code>SHOW CREATE TABLE &lt;表名&gt;</code>。</p>
+<p>创建和删除表：<code>CREATE TABLE</code>, <code>DROP TABLE</code></p>
+<p>修改表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 为表添加一个字段</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> &lt;表名&gt; <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> &lt;列名&gt; <span class="built_in">VARCHAR</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>;</span><br><span class="line"><span class="comment">-- 上面创建中， VARCHAR(10) 为类型名</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改列的参数</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> &lt;表名&gt; <span class="keyword">CHANGE</span> <span class="keyword">COLUMN</span> &lt;旧列名&gt; &lt;新列名&gt; <span class="built_in">VARCHAR</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除列</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> &lt;表名&gt; <span class="keyword">DROP</span> <span class="keyword">COLUMN</span> &lt;列名&gt;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-3-使用语句技巧"><a href="#4-3-使用语句技巧" class="headerlink" title="4.3 使用语句技巧"></a>4.3 使用语句技巧</h2><p>在插入新的记录时，可以使用不同的语句来定义不同的行为，参考下面的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 插入新记录：如果记录存在，删掉旧记录 再添加新纪录</span></span><br><span class="line"><span class="keyword">REPLACE</span> <span class="keyword">INTO</span> &lt;表名&gt; (列<span class="number">1</span>, 列<span class="number">2</span>, ...) <span class="keyword">VALUES</span> (X, X, ...);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入新记录：如果记录存在，更新该记录。</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> &lt;表名&gt; (列<span class="number">1</span>, 列<span class="number">2</span>, ...) <span class="keyword">VALUES</span> (X, X, ...) <span class="keyword">ON</span> <span class="keyword">DUPLICATE</span> <span class="keyword">KEY</span> <span class="keyword">UPDATE</span> 列<span class="number">1</span> = <span class="string">&#x27;新内容1&#x27;</span>, 列<span class="number">2</span> = <span class="string">&#x27;新内容2&#x27;</span>, 放入需要更新的内容; </span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入新记录，如果存在，则忽略</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">IGNORE</span> <span class="keyword">INTO</span> &lt;表名&gt; (列<span class="number">1</span>, 列<span class="number">2</span>, ...) <span class="keyword">VALUES</span> (X, X, ...);</span><br></pre></td></tr></table></figure>
+
+<p>创建一个表的快照：即复制一份当前表的数据到一个新的表，可以结合 <code>CREATE TABLE</code> 和 <code>SELECT</code> 语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 复制部分内容来创建一个新表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> &lt;新表名&gt; <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> &lt;旧表名&gt; <span class="keyword">WHERE</span> <span class="string">&#x27;筛选语句&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>写入查询的结果：可以配合使用 <code>INSERT</code> 和 <code>SELECT</code> 语句来实现直接将查询结果插入表中：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 后面选出的内容一定要和前面指定插入的列一一对应</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> &lt;表名&gt; (列名<span class="number">1</span>, 列名<span class="number">2</span>, ..) <span class="keyword">SELECT</span> 列名a, 列名b, ... <span class="keyword">FROM</span> &lt;表名&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-事务"><a href="#5-事务" class="headerlink" title="5. 事务"></a>5. 事务</h1><p>在执行 SQL 语句过程中，某些业务要求一系列操作必须全部执行而不能仅执行其中的一部分操作。例如 转账操作。</p>
+<p>这种将多条 SQL 语句作为一个整体进行操作的功能，被称为数据库的 <strong>事务</strong>。数据库可以确保事务范围内的所有操作都可以全部成功或者全部失败。</p>
+<h2 id="5-1-事务特点"><a href="#5-1-事务特点" class="headerlink" title="5.1 事务特点"></a>5.1 事务特点</h2><p>数据库事务具有如下4个特点（ACID）:</p>
+<ol>
+<li>Atomic: 原子性，将所有的 SQL 作为原子工作单元执行，要么全执行，要么都不执行；</li>
+<li>Consistent: 一致性，事务完成后，所有数据的状态都是一致的，例如 A 账户减去了 100元，B账户必定增加了 100元。</li>
+<li>Isolation: 隔离性。如果有多个事务并发执行，每个事务作出的修改必须与其他事务隔离；</li>
+<li>Duration: 持久性，即事务完成后，对数据库的修改被持久化存储。</li>
+</ol>
+<p>在SQL 中，我们使用 <code>BEGIN</code> 开启一个事务，<code>COMMIT</code> 提交事务。或者使用 <code>ROLLBACK</code> 指定事务执行失败回滚事务。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 以一个转账的动作为例</span></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> accounts <span class="keyword">SET</span> balance = balance - <span class="number">100</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> accounts <span class="keyword">SET</span> balance = balance + <span class="number">100</span> <span class="keyword">WHERE</span> <span class="keyword">id</span> = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-事务的隔离级别"><a href="#5-2-事务的隔离级别" class="headerlink" title="5.2 事务的隔离级别"></a>5.2 事务的隔离级别</h2><p>SQL 一共有 4种隔离级别，来用于处理多个并发事务处理同一条记录的时候可能出现的一致性问题。四种级别分别为: <code>Read Uncommitted</code>, <code>Read Committed</code>, <code>Repeatable Read</code>, <code>Serializable</code>。</p>
+<p>在数据库中，如果不特别指定隔离级别，会使用默认的隔离级别：Repeatable Read (对于 InnoDB 引擎)。</p>
+<p><em><a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1177760294764384/1179611198786848">具体例子参考</a></em></p>
+<h3 id="a-Read-Uncommitted"><a href="#a-Read-Uncommitted" class="headerlink" title="a. Read Uncommitted"></a>a. Read Uncommitted</h3><p>Read Uncommitted 是隔离级别最低的一种事务。在这种隔离级别下，一个事务可能会读到另一个事务更新但未提交的数据，如果另一个事务回滚，那么当前事务读到的数据就是 “脏数据”， 称为 “脏读”。</p>
+<h3 id="b-Read-committed"><a href="#b-Read-committed" class="headerlink" title="b. Read committed"></a>b. Read committed</h3><p>在 Read Committed 隔离级别下，一个事务可能遇到不可重复读（Non Repeatable Read）的问题。也就是说，在一个事务内，多次读同一个数据，在这个事务还没结束时，该数据可能被其他事务修改。从而导致前一个事务多次读取的数据内容不一致。</p>
+<h3 id="c-Repeatable-Read"><a href="#c-Repeatable-Read" class="headerlink" title="c. Repeatable Read"></a>c. Repeatable Read</h3><p>在 Repeatable Read 隔离级别下，一个事务可能遇到“幻读”（Phantom Read）的问题。幻读是指，在一个事务中，第一次查询某条记录，发现没有。但是试图更新这条不存在的记录，却可以 <strong>成功更新</strong>，并且再次读取时，该记录出现。</p>
+<h3 id="d-Serializable"><a href="#d-Serializable" class="headerlink" title="d. Serializable"></a>d. Serializable</h3><p>Serializable 是最严格的隔离级别。在Serializable 隔离级别下，所有事务按照次序依次执行，因此，脏读、不可重复读、幻读都不会出现。但由于事务是串行执行，所以效率会大大下降，故如非特别必要，一般不会使用 Serializable 隔离级别。</p>
+</br>
+</br>
+</br>
+
+<p><em>全文主要</em> <strong><em>Reference</em></strong>: <a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1177760294764384">廖雪峰SQL教程</a> </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/04/Algorithm/BitwiseOperation/" rel="prev" title="位运算">
+                  <i class="fa fa-chevron-left"></i> 位运算
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/01/06/tools/git_tutorial/" rel="next" title="git使用方法总结">
+                  git使用方法总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2021/01/05/Database/databaseLearnNote/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

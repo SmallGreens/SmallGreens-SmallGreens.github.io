@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="网络层的数据最终需要被封装到链路层的链路层帧中进行传输。本篇将介绍链路层的主要功能，并以以太网为例子，具体介绍了实际网络中使用的链路层协议。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="链路层概述">
+<meta property="og:url" content="http://example.com/2020/12/18/Network/LinkLayer_brief/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="网络层的数据最终需要被封装到链路层的链路层帧中进行传输。本篇将介绍链路层的主要功能，并以以太网为例子，具体介绍了实际网络中使用的链路层协议。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/switch.jpeg">
+<meta property="og:image" content="http://example.com/images/Ethernet.png">
+<meta property="og:image" content="http://example.com/images/Typical-datacenter-network-architecture.png">
+<meta property="article:published_time" content="2020-12-18T01:07:25.000Z">
+<meta property="article:modified_time" content="2021-01-10T11:46:55.526Z">
+<meta property="article:author" content="Matt Yin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/switch.jpeg">
+
+
+<link rel="canonical" href="http://example.com/2020/12/18/Network/LinkLayer_brief/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>链路层概述 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">25</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">1. 概述与基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.1 差错检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%A4%9A%E8%B7%AF%E8%AE%BF%E9%97%AE%E9%93%BE%E8%B7%AF%E5%92%8C%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.0.2.</span> <span class="nav-text">1.2 多路访问链路和协议</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BA%A4%E6%8D%A2%E5%B1%80%E5%9F%9F%E7%BD%91-%E4%BB%A5%E5%A4%AA%E7%BD%91"><span class="nav-number">2.</span> <span class="nav-text">2. 交换局域网-以太网</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E9%93%BE%E8%B7%AF%E5%B1%82%E5%AF%BB%E5%9D%80%E4%B8%8E-ARP"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 链路层寻址与 ARP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E9%93%BE%E8%B7%AF%E5%B1%82%E4%BA%A4%E6%8D%A2%E6%9C%BA"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 链路层交换机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E4%BB%A5%E5%A4%AA%E7%BD%91%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 以太网协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E7%BD%91%E7%BB%9C"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 数据中心网络</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">3. 小结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/18/Network/LinkLayer_brief/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          链路层概述
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-12-18 09:07:25" itemprop="dateCreated datePublished" datetime="2020-12-18T09:07:25+08:00">2020-12-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-01-10 19:46:55" itemprop="dateModified" datetime="2021-01-10T19:46:55+08:00">2021-01-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/18/Network/LinkLayer_brief/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/18/Network/LinkLayer_brief/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>网络层的数据最终需要被封装到链路层的链路层帧中进行传输。本篇将介绍链路层的主要功能，并以以太网为例子，具体介绍了实际网络中使用的链路层协议。</p>
+<a id="more"></a>
+
+<h1 id="1-概述与基础"><a href="#1-概述与基础" class="headerlink" title="1. 概述与基础"></a>1. 概述与基础</h1><p>我们将运行链路层协议的设备均称为结点（node），连接结点间的通信信道称为链路（link）。链路层所提供的服务就是将数据通过通信链路从一个结点传输到相邻结点。具体地，链路层协议提供下列服务：</p>
+<ol>
+<li>成帧（framing）- 将网络层数据封装成 链路层帧。</li>
+<li>链路接入- 媒体访问控制协议（medium access control, MAC - 网卡的mac 地址就是这个）规定了帧在链路上的传输规则，在多路访问时，提供重要的数据传输协调服务。</li>
+<li>可靠交付- 可靠交付服务不是必须的，经常用于易于产生高差错率的链路上，例如无线链路。</li>
+<li>差错检测和纠正- 通常使用硬件实现。</li>
+</ol>
+<p>链路层协议通常在网络适配器（network adapter）或称为 网络接口卡（Network Interface Card, NIC）中实现（也就是说链路层协议大多是硬件实现的）。</p>
+<h3 id="1-1-差错检测"><a href="#1-1-差错检测" class="headerlink" title="1.1 差错检测"></a>1.1 差错检测</h3><p>差错检测和纠正是链路层的一项重要工作，通常通过在原始数据后添加一段辅助字段- 差错检测和纠正比特（Error-Detection and correction, EDC）来增强数据D。常用的差错检测及纠错方法有：奇偶校验；检验和；循环冗余检测编码（使用最多，Cyclic Redundancy Check, CRC, 也叫 多项式编码Polynomial code）。</p>
+<h3 id="1-2-多路访问链路和协议"><a href="#1-2-多路访问链路和协议" class="headerlink" title="1.2 多路访问链路和协议"></a>1.2 多路访问链路和协议</h3><p>在计算机网络中，有两种类型的网络链路：点对点链路（point-to-point link）和广播链路(broadcast link)。</p>
+<p>在广播链路中，使用 多路访问协议（multiple access protocol）来协调多个发送和接收结点对一个共享广播信道的访问。共有三种类型的多路访问协议：信道划分协议（channel partitioning protocol）；随机接入协议（random access protocol）; 轮流协议（taking-turns protocol）。</p>
+<p>信道划分协议的原理是不同的结点间通信使用不同的信道，根据信道种类的不同，可以分为 时分多路复用（TDM）；频分多路复用（FDM）；码分多址（CDMA-code division multiple access）。</p>
+<p>随机接入协议：传输结点总是可以以信道的全部速率进行发送，常用的随机接入协议包括：ALOHA协议；载波侦听多路访问协议（CSMA-以太网基于此）。</p>
+<p>轮流协议：可以在M个结点活跃时，每个结点以总吞吐量的M分之一进行传输。包括：轮询协议（polling protocol）；令牌传递协议（token-passing protocol）。</p>
+<h1 id="2-交换局域网-以太网"><a href="#2-交换局域网-以太网" class="headerlink" title="2. 交换局域网-以太网"></a>2. 交换局域网-以太网</h1><p>以太网是使用最为广泛的局域网协议。我们首先介绍一些建立以太网的基础设施，然后对以太网的运作流程进行简介。</p>
+<h2 id="2-1-链路层寻址与-ARP"><a href="#2-1-链路层寻址与-ARP" class="headerlink" title="2.1 链路层寻址与 ARP"></a>2.1 链路层寻址与 ARP</h2><p>链路层中的网络结点（硬件上是网卡，路由器等）都会拥有一个 MAC 地址（<strong>注意</strong>：<mark>链路层交换机是没有MAC地址的 </mark>）。链路层中，使用 MAC 地址来确定链路层帧的传输。</p>
+<p>MAC 地址为6字节，通常用16进制数表示：xx-xx-xx-xx-xx-xx。任何设备的 MAC地址都是唯一的，且不会改变（实际上，也可以改变，通常前24位可以确定生产商）。</p>
+<p>因特网中，使用 <strong>地址解析协议</strong>（address resolution protocol- ARP）来确定对应IP地址设备的MAC地址。</p>
+<p>具体地，ARP协议报文作为链路层帧的数据部分，在网络中传输，网卡以 MAC 广播地址（FF-FF-FF-FF-FF-FF）广播这个查询信息。在同一个局域网中，ARP协议可以直接解析IP地址对应的MAC地址，而对于目的设备在不同局域网中时，则会先通过 ARP协议获取网关路由器的MAC地址，再由网关路由器直接与其他局域网的主机或网关路由器进行通信。 </p>
+<h2 id="2-2-链路层交换机"><a href="#2-2-链路层交换机" class="headerlink" title="2.2 链路层交换机"></a>2.2 链路层交换机</h2><p>交换机的任务是接收入链路层帧并将它们转发到出链路。具体地，它会过滤掉不需要转发到其他接口的帧 并且将需要转发的帧转发到对应接口上。交换机主要通过 <strong>交换机表</strong> 来实现过滤和转发功能。</p>
+<p>交换机表记录接口及对应的 MAC地址（还会包括记录添加的时间）。</p>
+<p><img src="/images/switch.jpeg" alt="https://www.sohu.com/a/276363593_99906077"></p>
+<p>交换机是即插即用的设备（plug-and-play device）, 可以通过自学习机制自动更新交换机表中的项。</p>
+<p>出于安全等考虑，交换机需要具有流量隔离功能；而层级式的交换机设置会导致一定程度的资源浪费。通过使用支持虚拟局域网（Virtual local network- VLAN）的交换机，可以解决上述问题。</p>
+<h2 id="2-3-以太网协议"><a href="#2-3-以太网协议" class="headerlink" title="2.3 以太网协议"></a>2.3 以太网协议</h2><p>以太网（Ethernet）是广泛使用局域网协议。早期以太网是以总线形式配置的广播局域网，后变为使用集线器（hub-物理层设备，仅实现信号放大）的星形拓扑进行局域网组网。21世纪以来，以太网演变为了 以交换机为中心的星形拓扑网络。</p>
+<p>以太网的帧结构如下：</p>
+<img src="/images/Ethernet.png" alt="https://www.cnblogs.com/fadewalk/p/10539628.html" width=60% height=60% style="text-align:center"/>
+
+<p>先导的8个字节主要用于进行时钟同步，从而将传输波特率调整一致。</p>
+<p>通过 MAC地址，可以经由路由器直接找到对应的目的网卡地址。2 Byte 的长度字段用于注明使用的网络层协议，即起到沟通链路层和网络层的作用。</p>
+<h2 id="2-4-数据中心网络"><a href="#2-4-数据中心网络" class="headerlink" title="2.4 数据中心网络"></a>2.4 <em>数据中心网络</em></h2><p><em>了解一下~</em> 随着移动互联网的不断普及，以及网络速度的不断提升，对于数据中心的要求在不断提高。对于数据中心来说，它们使用专用的数据中心网络（类似一个大的局域网），数据中心中的主机彼此互联并最终连至因特网。</p>
+<p>通常，在数据中心中，主机称为 <strong>blade</strong>（刀片），一般包括 CPU、内存和磁盘存储。主机被堆叠放置在机架上，每个机架一般堆放20-40个blade。每个机架顶部放置一台交换机，称为机架顶部交换机（TOR交换机，top of rack）。一个典型的数据中心网络如下：</p>
+<img src="/images/Typical-datacenter-network-architecture.png" alt="https://www.researchgate.net/figure/Typical-datacenter-network-architecture_fig1_324240075" width=60% height=60% style="text-align:center"/>
+
+
+<!-- ![](/images/Typical-datacenter-network-architecture.png) -->
+
+<p>当请求数据中心的一个服务时，请求首先抵达 负载均衡器(laod balancer), 再由它通过负载均衡算法将对应的应用交给对应的主机处理。它不仅可以使系统中主机的负荷均衡，还能起到隔离用户和主机，保障安全的作用。</p>
+<p>数据中心的网络结构包括传统的 路由器和交换机等级结构（hierarchy of router and switch）,以及较新的全连拓扑结构（fully connected topology）和 模块化数据中心（modular data center- MDC- 将数据中心模块化，放置到12米的船运集装箱内）。</p>
+<h1 id="3-小结"><a href="#3-小结" class="headerlink" title="3. 小结"></a>3. 小结</h1><p>至此，网络的主要基础设施学习完毕，通过一个实例来复习一下。思考A同学访问 baidu.com 的过程:</p>
+<ol>
+<li>加入网络：DHCP协议获取分配的IP地址等信息（DHCP-UDP-IP）；</li>
+<li>查询 baidu.com 的 IP地址：ARP协议 获取网关路由器MAC地址 以使得 从链路层角度能够连接至DNS服务器（DNS在校园网外）； DNS-UDP-IP, 向DNS服务器请求获取访问域名的 IP；</li>
+<li>访问最终网站：HTTP-TCP-IP。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/16/Network/NetworkLayer_brief/" rel="prev" title="网络层概述">
+                  <i class="fa fa-chevron-left"></i> 网络层概述
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/12/25/Java/JavaCollectionOverview/" rel="next" title="Java集合框架-宏观总结">
+                  Java集合框架-宏观总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2020/12/18/Network/LinkLayer_brief/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://example.com/images/methodOfReliableDataTransfer.png">
 <meta property="og:image" content="http://example.com/images/TCPSegmentHeader-1.png">
 <meta property="article:published_time" content="2020-12-12T01:07:25.000Z">
-<meta property="article:modified_time" content="2021-01-10T11:47:04.968Z">
+<meta property="article:modified_time" content="2021-04-01T15:16:34.022Z">
 <meta property="article:author" content="Matt Yin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/images/UDP-header.png">
@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-01-10 19:47:04" itemprop="dateModified" datetime="2021-01-10T19:47:04+08:00">2021-01-10</time>
+        <time title="修改时间：2021-04-01 23:16:34" itemprop="dateModified" datetime="2021-04-01T23:16:34+08:00">2021-04-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -353,7 +353,7 @@
 <p>其中，长度字段指明了UDP报文段包括头部在内的以字节为单位的长度。</p>
 <p>检验和字段提供一个对数据传输正确性的检验机制。使用下述算法：将UDP报文段中所有的数据以16个比特为单位相加（如果溢出的话，进行<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34902437/article/details/87938913">回卷</a>）,得到和之后，将该和取反码（按位取反），得到的结果即为检验和（checksum）。</p>
 <p>在接收方，可以将所有的16位字节包括检验和相加，如果数据传输过程中没有出现差错，则结果一定是 <code>1111111111111111</code>。</p>
-<p>在运输层添加差错检验，体现了计算机网络设计中的 端到端原则(end-end principle) <a target="_blank" rel="noopener" href="http://blog.sciencenet.cn/home.php?mod=space&uid=237587&do=blog&id=224869">RefLink</a>：也就是尽量保持网络传输层次（底层）的简洁，尽量将具体的实现功能放置到接近应用的层次（顶层）。</p>
+<p>在运输层添加差错检验，体现了计算机网络设计中的 端到端原则(end-end principle) <a target="_blank" rel="noopener" href="https://blog.csdn.net/collier/article/details/3547200">RefLink</a>：也就是尽量保持网络传输层次（底层）的简洁，尽量将具体的实现功能放置到接近应用的层次（顶层）。</p>
 <h1 id="4-面向连接的运输：TCP"><a href="#4-面向连接的运输：TCP" class="headerlink" title="4. 面向连接的运输：TCP"></a>4. 面向连接的运输：TCP</h1><p>首先从抽象层面上介绍实现数据可靠传输的方法<a target="_blank" rel="noopener" href="https://www.cnblogs.com/chz-blogs/p/9381010.html">RefLink</a>。</p>
 <p><img src="/images/methodOfReliableDataTransfer.png"></p>
 <p>TCP 协议被称为面向连接（connection-oriented）的协议，它通过三次握手建立客户端与服务器之间的连接，然后通过差错检测、重传、累积确认、定时器、序号和确认号等机制来实现数据的可靠传输。</p>
@@ -383,7 +383,7 @@
 <p>$$TimeoutInterval = EstimatedRTT + 4\cdot DevRTT$$</p>
 <p>通常推荐的 TimeoutInterval 初始值为1 秒，如果出现超时，会将该值进行加倍。当系统计算并更新 EstimatedRTT 后，TimeoutInterval 则由上述公式进行确认。</p>
 <p>具体的，在实际的系统中，TCP协议还有很多协调可靠传输和系统开销的优化细节。例如使用单一的重传定时器（而不是给所有的报文段各配置一个定时器）等。</p>
-<h2 id="4-3-TCP-的拥塞处理机制"><a href="#4-3-TCP-的拥塞处理机制" class="headerlink" title="4.3 TCP 的拥塞处理机制"></a>4.3 TCP 的拥塞处理机制</h2><p>网络拥塞可能导致数据的传输失败，TCP协议在网络拥塞时会对发送法进行遏制，来缓解网络拥塞情况。</p>
+<h2 id="4-3-TCP-的拥塞处理机制"><a href="#4-3-TCP-的拥塞处理机制" class="headerlink" title="4.3 TCP 的拥塞处理机制"></a>4.3 TCP 的拥塞处理机制</h2><p>网络拥塞可能导致数据的传输失败，TCP协议在网络拥塞时会对发送方进行遏制，来缓解网络拥塞情况。</p>
 <p>一般的讲，网络拥塞的控制分为两类：</p>
 <ol>
 <li>端到端拥塞控制。在这种方式中，网络层不会为运输层的拥塞控制提供支持，端系统只能通过对网络行为的观察（例如分组丢失和延迟）来判断是否出现拥塞。</li>

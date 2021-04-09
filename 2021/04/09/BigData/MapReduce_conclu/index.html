@@ -23,23 +23,23 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
-  <meta name="description" content="1. 概述MapReduce 是一个分布式运算程序的编程框架，是用户开发 “基于hadoop 的数据分析应用” 的核心框架。 MapReduce 核心功能是将 用户编写的业务逻辑代码 和 自带默认组件 整合成一个完整的分布式运算程序，并发运行在一个 Hadoop 集群上。 1.1 优缺点在项目技术选型阶段，我们需要根据各个技术的优缺点选择最匹配项目需求的技术实现路线。因此，这里总结 MapRedu">
+  <meta name="description" content="1. 概述MapReduce 是一个分布式运算程序的编程框架，是用户开发 “基于hadoop 的数据分析应用” 的核心框架。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MapReduce-hadoop的计算框架">
 <meta property="og:url" content="http://example.com/2021/04/09/BigData/MapReduce_conclu/index.html">
 <meta property="og:site_name" content="Ha$p^3$lanet">
-<meta property="og:description" content="1. 概述MapReduce 是一个分布式运算程序的编程框架，是用户开发 “基于hadoop 的数据分析应用” 的核心框架。 MapReduce 核心功能是将 用户编写的业务逻辑代码 和 自带默认组件 整合成一个完整的分布式运算程序，并发运行在一个 Hadoop 集群上。 1.1 优缺点在项目技术选型阶段，我们需要根据各个技术的优缺点选择最匹配项目需求的技术实现路线。因此，这里总结 MapRedu">
+<meta property="og:description" content="1. 概述MapReduce 是一个分布式运算程序的编程框架，是用户开发 “基于hadoop 的数据分析应用” 的核心框架。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2021/04/09/BigData/MapReduce_conclu/mapreduce_workFlow.jpg">
-<meta property="og:image" content="http://example.com/2021/04/09/BigData/MapReduce_conclu/mapreduce_workFlow2.jpg">
-<meta property="og:image" content="http://example.com/2021/04/09/BigData/MapReduce_conclu/Yarn-workflow.png">
-<meta property="og:image" content="http://example.com/2021/04/09/BigData/MapReduce_conclu/Yarn-workflow2.png">
+<meta property="og:image" content="http://example.com/images/mapreduce_workFlow.jpg">
+<meta property="og:image" content="http://example.com/images/mapreduce_workFlow2.jpg">
+<meta property="og:image" content="http://example.com/images/Yarn-workflow.png">
+<meta property="og:image" content="http://example.com/images/Yarn-workflow2.png">
 <meta property="article:published_time" content="2021-04-09T09:18:28.000Z">
-<meta property="article:modified_time" content="2021-04-09T09:12:47.542Z">
+<meta property="article:modified_time" content="2021-04-09T09:19:08.102Z">
 <meta property="article:author" content="Matt Yin">
 <meta property="article:tag" content="Hadoop">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2021/04/09/BigData/MapReduce_conclu/mapreduce_workFlow.jpg">
+<meta name="twitter:image" content="http://example.com/images/mapreduce_workFlow.jpg">
 
 
 <link rel="canonical" href="http://example.com/2021/04/09/BigData/MapReduce_conclu/">
@@ -277,7 +277,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-04-09 17:18:28 / 修改时间：17:12:47" itemprop="dateCreated datePublished" datetime="2021-04-09T17:18:28+08:00">2021-04-09</time>
+      <time title="创建时间：2021-04-09 17:18:28 / 修改时间：17:19:08" itemprop="dateCreated datePublished" datetime="2021-04-09T17:18:28+08:00">2021-04-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -325,6 +325,8 @@
     
     <div class="post-body" itemprop="articleBody">
         <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>MapReduce 是一个分布式运算程序的编程框架，是用户开发 “基于hadoop 的数据分析应用” 的核心框架。</p>
+<a id="more"></a>
+
 <p>MapReduce 核心功能是将 <strong>用户编写的业务逻辑代码</strong> 和 <strong>自带默认组件</strong> 整合成一个完整的分布式运算程序，并发运行在一个 Hadoop 集群上。</p>
 <h2 id="1-1-优缺点"><a href="#1-1-优缺点" class="headerlink" title="1.1 优缺点"></a>1.1 优缺点</h2><p>在项目技术选型阶段，我们需要根据各个技术的优缺点选择最匹配项目需求的技术实现路线。因此，这里总结 MapReduce 的优缺点如下：</p>
 <ul>
@@ -356,8 +358,8 @@
 <p>类似于 Java 中的 <code>Serializable</code> 接口，<code>Writable</code> 接口定义了 Hadoop 中的序列化方式。对于基本数据类型，Hadoop 提供一套自己的封装类，全部实现 <code>Writable</code> 接口，包括 <code>LongWritable(Long), IntWritable(Integer), Text(String)...</code> （Note: 除 <code>String</code> 外，各类型对象名就是在原数据类型后添加 <code>Writable</code>）。</p>
 <p>除了使用框架中提供的可序列化对象，通过实现 <code>Writable</code> 接口并重写 <code>write()</code> 和 <code>readFields()</code> 方法，我们可以实现自定义的序列化对象。<a target="_blank" rel="noopener" href="https://github.com/SmallGreens/hadoop_basic/blob/main/src/main/java/flowSum/FlowBean.java">例子参考</a>。</p>
 <h1 id="2-MapReduce-框架原理"><a href="#2-MapReduce-框架原理" class="headerlink" title="2. MapReduce 框架原理"></a>2. MapReduce 框架原理</h1><p>整个 MapReduce 程序的流程如下面两张图所示。</p>
-<p><img src="mapreduce_workFlow.jpg" alt="MapReduce工作流程1"></p>
-<p><img src="mapreduce_workFlow2.jpg" alt="MapReduce工作流程2"></p>
+<p><img src="/images/mapreduce_workFlow.jpg" alt="MapReduce工作流程1"></p>
+<p><img src="/images/mapreduce_workFlow2.jpg" alt="MapReduce工作流程2"></p>
 <p>下面我们就根据整个 MapReduce 程序执行的流程对各个部分进行更加细节的分析。</p>
 <h2 id="2-1-Job-提交与切片计算"><a href="#2-1-Job-提交与切片计算" class="headerlink" title="2.1 Job 提交与切片计算"></a>2.1 Job 提交与切片计算</h2><p>在程序代码中，Driver 部分获取 Job 对象，进行一系列的设置之后，会 <code>submit</code> 该 job。提交的信息主要包括三个部分：<strong>切片信息</strong>、<strong>jar包</strong>、<strong>xml 文件</strong>。</p>
 <p><strong>xml文件</strong> 主要是程序执行的相关设置，<strong>jar包</strong> 则为map 程序和 reduce 程序的具体计算逻辑以及程序所用到的相关依赖组件。<strong>切片信息</strong> 相对来说最为关键，在 MapReduce 计算框架中，分片的数量，决定了并行的 MapTask 的数量，即每个 split 切片会分配一个 MapTask 来处理。</p>
@@ -458,9 +460,9 @@
 <p><strong>Reducer 输出采用压缩</strong>: 在多级 mapreduce 任务中，在此阶段的输出可能会进行压缩。</p>
 <h1 id="5-Yarn-资源调度器"><a href="#5-Yarn-资源调度器" class="headerlink" title="5. Yarn 资源调度器"></a>5. Yarn 资源调度器</h1><p>Yarn 是一个资源调度平台，负责为运算程序提供服务运算资源，相当于一个分布式的操作系统平台，而 MapReduce 等运算程序则相当于运行于 该操作系统之上的应用程序。</p>
 <h2 id="5-1-组成与运行机制"><a href="#5-1-组成与运行机制" class="headerlink" title="5.1 组成与运行机制"></a>5.1 组成与运行机制</h2><p>Yarn 主要由 ResourceManager(整个集群的老大), NodeManager(管理单个结点的资源), ApplicationMaster(管理每个 job) 和 Container(yarn 上资源的抽象) 等组件构成。如下图所示：</p>
-<p><img src="Yarn-workflow.png"></p>
+<p><img src="/images/Yarn-workflow.png"></p>
 <p>Yarn 通过上述各组件对 MapReduce 程序进行管理，具体的操作流程如下图所示：</p>
-<p><img src="Yarn-workflow2.png"></p>
+<p><img src="/images/Yarn-workflow2.png"></p>
 <p>上图中，将一个 MapReduce 的任务分割为了 14 小步，这里可以根据他们</p>
 <ol>
 <li>申请 运行 ApplicationMaster 并提交相关资源（对应上图中的 0-4 步）：<ol>

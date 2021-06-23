@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://example.com/images/algorithm/karatsuba_multi.png">
 <meta property="og:image" content="http://example.com/images/algorithm/divide_conquer_closestPairs.png">
 <meta property="article:published_time" content="2021-06-23T04:18:28.000Z">
-<meta property="article:modified_time" content="2021-06-23T06:13:00.218Z">
+<meta property="article:modified_time" content="2021-06-23T06:26:01.244Z">
 <meta property="article:author" content="Matt Yin">
 <meta property="article:tag" content="分治算法">
 <meta name="twitter:card" content="summary">
@@ -275,7 +275,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-06-23 12:18:28 / 修改时间：14:13:00" itemprop="dateCreated datePublished" datetime="2021-06-23T12:18:28+08:00">2021-06-23</time>
+      <time title="创建时间：2021-06-23 12:18:28 / 修改时间：14:26:01" itemprop="dateCreated datePublished" datetime="2021-06-23T12:18:28+08:00">2021-06-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -370,8 +370,8 @@
 <li>求解 两个点集之间的最短距离（closet split pair）d3；</li>
 </ul>
 <p>取上述三者中的最小值，即为最短距离。</p>
-<p>上述过程中，核心难点是取两个点集之间的最短距离（即求解 splitPair）。这一步的具体做法是取 x 坐标为中间值的点 $p_m$，以他的 x 坐标为中心点，左边和右边各拓展 $min(d1, d2)$ 的宽度，形成一个 宽度为 $2 * min(d1, d2)$ 条形区域 $S_y$。</p>
-<p>然后，按照 y 坐标从小到大的顺序将 $S_y$ 区域中的点进行排序，最后依次 遍历 $S_y$ 中的点，每次分析时，比较 点 p 和 它后面的 7 个点，看他们的距离是否有小于 $min(d1, d2)$ 的。如果有，找到最小值，即为 该问题所寻找的最小距离。</p>
+<p>上述过程中，核心难点是取两个点集之间的最短距离（即求解 splitPair）。这一步的具体做法是取 x 坐标为中间值的点 $p_m$ (点集 A1 最右边的点)，以他的 x 坐标为中心点，左边和右边各拓展 $min(d1, d2)$ 的宽度，形成一个 宽度为 $2 * min(d1, d2)$ 条形区域 $S_y$。</p>
+<p>然后，按照 y 坐标从小到大的顺序将 $S_y$ 区域中的点进行排序，最后依次 遍历 $S_y$ 中的点，每次分析时，比较 点 p 和 它后面的 7 个点，看他们的距离是否有小于 $\delta = min(d1, d2)$ 的。如果有，找到最小值，即为 该问题所寻找的最小距离。</p>
 <p>为证明上述算法的正确性，我们证明下面两个辅助结论：</p>
 <ol>
 <li>如果 p、q 为分属于两个点集且他们间的距离小于 $min(d1, d2)$，则 p、q 一定在 $S_y$ 中。</li>

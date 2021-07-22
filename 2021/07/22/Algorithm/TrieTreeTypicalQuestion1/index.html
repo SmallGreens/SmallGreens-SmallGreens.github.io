@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="leetcode 周赛中遇到的一道需要使用 字典树的题目，总结分析一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字典树的应用-存储二进制信息">
+<meta property="og:url" content="http://example.com/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="leetcode 周赛中遇到的一道需要使用 字典树的题目，总结分析一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/algorithm/handWriting1.png">
+<meta property="og:image" content="http://example.com/images/algorithm/tireTreeStore.png">
+<meta property="article:published_time" content="2021-07-22T04:18:28.000Z">
+<meta property="article:modified_time" content="2021-07-22T02:26:00.235Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="字典树">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/algorithm/handWriting1.png">
+
+
+<link rel="canonical" href="http://example.com/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>字典树的应用-存储二进制信息 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">71</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">代码分析</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">71</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          字典树的应用-存储二进制信息
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-22 12:18:28 / 修改时间：10:26:00" itemprop="dateCreated datePublished" datetime="2021-07-22T12:18:28+08:00">2021-07-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>leetcode 周赛中遇到的一道需要使用 字典树的题目，总结分析一下。</p>
+<a id="more"></a>
+
+<p>题目：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-genetic-difference-query/">查询最大基因差</a>, 给你一棵 n 个节点的有根树，节点编号从 <code>0</code> 到 <code>n - 1</code>。每个节点的编号表示这个节点的 独一无二的基因值 （也就是说节点 x 的基因值为 x）。两个基因值的 基因差 是两者的 <strong>异或值</strong> 。给你整数数组 <code>parents</code> ，其中 <code>parents[i]</code> 是节点 i 的父节点。如果节点 x 是树的 根 ，那么 <code>parents[x] == -1</code> 。</p>
+<p>给你查询数组 <code>queries</code> ，其中 <code>queries[i] = [nodei, vali]</code> 。对于查询 i ，请你找到 <code>vali</code> 和 <code>pi</code> 的 最大基因差 ，其中 <code>pi</code> 是节点 <code>nodei</code> 到根之间的任意节点（包含 <code>nodei</code> 和根节点）。更正式的，你想要最大化 <code>vali XOR pi</code>。</p>
+<p>请你返回数组 <code>ans</code> ，其中 <code>ans[i]</code> 是第 i 个查询的答案。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>题目中，将结点之间的树形关系通过 parent 数组进行存储，对于该结构，我们可以从一个结点出发，非常方便的寻找到树的根部。因此，最简单的想法是，直接从 <code>nodei</code> 出发，遍历从 <code>nodei</code> 到根结点之间的所有结点，选取其中 与 <code>vali</code> 异或值最大的值作为查询的答案即可。该暴力解法代码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] maxGeneticDifference(<span class="keyword">int</span>[] parents, <span class="keyword">int</span>[][] queries) &#123;</span><br><span class="line">        <span class="keyword">int</span>[] res = <span class="keyword">new</span> <span class="keyword">int</span>[queries.length];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; queries.length; ++i)&#123;</span><br><span class="line">            <span class="keyword">int</span>[] query = queries[i];</span><br><span class="line">            <span class="keyword">int</span> node = query[<span class="number">0</span>];</span><br><span class="line">            <span class="keyword">int</span> val = query[<span class="number">1</span>];</span><br><span class="line">            <span class="keyword">while</span>(node != -<span class="number">1</span>)&#123;</span><br><span class="line">                res[i] = Math.max(res[i], val ^ node);</span><br><span class="line">                node = parents[node];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不出所料，暴力方法直接超过时间限制。那么如何降低算法的时间复杂度呢？</p>
+<p>一般地，对于这种比较型的题目，降低时间复杂度的方法是 在遍历比较的过程中，保存前面比较的一些信息，用于后续 使用（例如 kmp 算法）。对于这里的树形结构，结点与它的父结点之间是有重复信息的，如下图所示, 结点 4 需要遍历 蓝色部分包围的 4 个结点，而其父节点需要遍历的结点与结点4 有3个结点为重复的。</p>
+<p><img src="/images/algorithm/handWriting1.png"></p>
+<p>因此，一种想法是 使用 dfs 进行遍历，将遍历前序结点时的“信息“保存下来，后续结点只需要添加一些增加信息就可以进行判断。这里又有一个难点，就是该如何保存遍历到的结点的信息？字典树结构可以在这里派上用场。</p>
+<p>具体地，我们使用字典树来保存结点的二进制信息，将一个数字保存到 字典树的过程如下：字典树以 root 为起点，待添加的数字从其二进制最高位开始依次向低位进行遍历，如果该位上数字为1，则 root 的左节点加1，并将左节点设置为新的 root；如果该位上数字为0，则root 的右结点加1，并将右结点设置为新的root。如下图所示。</p>
+<img src="/images/algorithm/tireTreeStore.png" width = "300" height = "300" align=center />
+
+
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-genetic-difference-query/solution/ezi-zai-fei-hua-e-tu-jie-dfs-zi-dian-shu-bru4/">FigSource</a></p>
+<p>将结点信息存放到树中之后，求解与特定 val 值异或结果的最大值就非常简单了，具体的，我们设异或结果的最大值为 res，遵循下面的规则确定各二进制位上的数字即可：</p>
+<ul>
+<li>如果 val 当前二进制位上的值为 1：<ul>
+<li>若字典树中当前节点有 <strong>右子节点</strong>（有0），则 res 该位上为 1，root 结点变更为 右子结点；</li>
+<li>若字典树中当前节点无 <strong>右子节点</strong>，res 该位上为 0，root 结点变更为 左子结点；</li>
+</ul>
+</li>
+<li>如果 val 当前二进制位上的值为 0：<ul>
+<li>若字典树中当前节点有 <strong>左子节点</strong>（有1），则 res 该位上为 1，root 结点变更为 左子节点；</li>
+<li>若字典树中当前节点无 <strong>左子节点</strong>，res 该位上为 0，root 结点变更为 右子节点；</li>
+</ul>
+</li>
+</ul>
+<h2 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h2><p>整个的代码主要分为三个部分：</p>
+<p>首先是将题目中给定的信息重新组织，将parent 数组表示的树结构转换为根结点引出子结点的结构，可以使用 map 存储，key 值为根结点值，value 为一个 list，存放根结点的叶子结点。但由于这里的 node 是从0到 n-1 的确定的值，我们也可以使用 数组来存放 树信息，数组下标为 node 的值，数组中的内容为该 node 的子结点。此外，对于查询，我们将针对相同 node 的查询汇总起来，同样放置到一个 map 中，key 值为 node 值，value 为一个list，放置针对该node 的查询。具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] res;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] maxGeneticDifference(<span class="keyword">int</span>[] parents, <span class="keyword">int</span>[][] queries) &#123;</span><br><span class="line">        res = <span class="keyword">new</span> <span class="keyword">int</span>[queries.length];</span><br><span class="line">        <span class="keyword">int</span> root = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; parents.length; ++i)&#123;</span><br><span class="line">            <span class="keyword">if</span>(parents[i] == -<span class="number">1</span>)&#123;</span><br><span class="line">                root = i;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 放置树的信息。变为从根结点到子结点的结构</span></span><br><span class="line">        List&lt;Integer&gt;[] treeInfo = <span class="keyword">new</span> ArrayList[parents.length];</span><br><span class="line">        <span class="comment">// 错误写法！！Arrays.fill(treeInfo, new ArrayList&lt;&gt;());</span></span><br><span class="line">        <span class="comment">// 这样 ArrayList&lt;&gt;() 是同一个对象引用。</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; treeInfo.length; ++i)&#123;</span><br><span class="line">            treeInfo[i] = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; parents.length; ++i)&#123;</span><br><span class="line">            <span class="keyword">int</span> parent = parents[i];</span><br><span class="line">            <span class="keyword">if</span>(parent == -<span class="number">1</span>) <span class="keyword">continue</span>;</span><br><span class="line">            treeInfo[parent].add(i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将针对相同 node 的 queries 放置到一起</span></span><br><span class="line">        Map&lt;Integer, List&lt;Integer&gt;&gt; queryMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; queries.length; ++i)&#123;</span><br><span class="line">            <span class="keyword">int</span>[] query = queries[i];</span><br><span class="line">            List&lt;Integer&gt; list = queryMap.getOrDefault(query[<span class="number">0</span>], <span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">            list.add(i);</span><br><span class="line">            queryMap.put(query[<span class="number">0</span>], list);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        TrieTree tt = <span class="keyword">new</span> TrieTree();</span><br><span class="line">        <span class="comment">// dfs 寻找</span></span><br><span class="line">        dfs(treeInfo, queryMap, queries, tt, root);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(List&lt;Integer&gt;[] treeInfo, Map&lt;Integer, List&lt;Integer&gt;&gt; queryMap, <span class="keyword">int</span>[][] queries,TrieTree tt, <span class="keyword">int</span> root)</span></span>&#123;</span><br><span class="line">        <span class="comment">// TODO</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二部分，是进行树的 dfs 遍历，具体就是以经典的递归方式实现使用程序栈进行遍历。需要注意的是，在遍历的过程中，有一个回溯的过程，因为当前结点仅和他的子结点们公用一些信息，而与其他的结点并不公用信息。因此，完成一个结点的所有子结点的遍历后，需要将该结点的信息从 trie tree 中删除。具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(List&lt;Integer&gt;[] treeInfo, Map&lt;Integer, List&lt;Integer&gt;&gt; queryMap, <span class="keyword">int</span>[][] queries,TrieTree tt, <span class="keyword">int</span> root)</span></span>&#123;</span><br><span class="line">    <span class="comment">// step1: 将 root 对应的值放入 trie tree</span></span><br><span class="line">    tt.insert(root);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// step2: 遍历查询。计算各个查询的结果</span></span><br><span class="line">    <span class="keyword">if</span>(queryMap.containsKey(root))&#123;</span><br><span class="line">        <span class="keyword">for</span>(Integer queryIndex : queryMap.get(root))&#123;</span><br><span class="line">            <span class="keyword">int</span>[] query = queries[queryIndex];</span><br><span class="line">            res[queryIndex] = tt.search(query[<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// step3: dfs, 遍历 root 的子节点。</span></span><br><span class="line">    <span class="keyword">if</span>(treeInfo[root] != <span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">for</span>(Integer node : treeInfo[root])&#123;</span><br><span class="line">            dfs(treeInfo, queryMap, queries, tt, node);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// step4: 将 root 的值从 trie tree 中删除</span></span><br><span class="line">    tt.delete(root);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，就是实现一个 trie tree 来从二进制位的角度，将结点值进行存储。我们使用一个单独的类来封装这个结构，并且提供 insert 结点值，delete 结点值，以及查询目标值与当前存储的元素的最大异或值的函数 search。具体代码实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrieTree</span> </span>&#123;</span><br><span class="line">    TrieTree left = <span class="keyword">null</span>;</span><br><span class="line">    TrieTree right = <span class="keyword">null</span>;</span><br><span class="line">    TrieTree cur = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// 记录当前 trie tree 结点出现的次数</span></span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> val)</span></span>&#123;</span><br><span class="line">        cur = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">31</span>; i &gt;= <span class="number">0</span>; --i)&#123;</span><br><span class="line">            <span class="keyword">if</span>(((val &gt;&gt; i) &amp; <span class="number">0x1</span>) == <span class="number">0x1</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(cur.left == <span class="keyword">null</span>) cur.left = <span class="keyword">new</span> TrieTree();</span><br><span class="line">                cur = cur.left;</span><br><span class="line">                cur.count++;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(cur.right == <span class="keyword">null</span>) cur.right = <span class="keyword">new</span> TrieTree();</span><br><span class="line">                cur = cur.right;</span><br><span class="line">                cur.count++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(<span class="keyword">int</span> val)</span></span>&#123;</span><br><span class="line">        cur = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">31</span>; i &gt;= <span class="number">0</span>; --i)&#123;</span><br><span class="line">            <span class="keyword">if</span>(((val &gt;&gt; i) &amp; <span class="number">1</span>) == <span class="number">1</span>)&#123;</span><br><span class="line">                cur = cur.left;</span><br><span class="line">                cur.count--;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                cur = cur.right;</span><br><span class="line">                cur.count--;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="keyword">int</span> val)</span></span>&#123;</span><br><span class="line">        cur = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">int</span> res = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">31</span>; i &gt;= <span class="number">0</span>; --i)&#123;</span><br><span class="line">            <span class="keyword">if</span>(((val &gt;&gt; i) &amp; <span class="number">0x1</span>) == <span class="number">0x1</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(cur.right != <span class="keyword">null</span> &amp;&amp; cur.right.count &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                    res += (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">                    cur = cur.right;</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    cur = cur.left;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(cur.left != <span class="keyword">null</span> &amp;&amp; cur.left.count &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                    res += (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">                    cur = cur.left;</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    cur = cur.right;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%97%E5%85%B8%E6%A0%91/" rel="tag"># 字典树</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/20/Algorithm/HashMapApplication/" rel="prev" title="HashMap的应用">
+                  <i class="fa fa-chevron-left"></i> HashMap的应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

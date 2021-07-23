@@ -23,21 +23,21 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
-  <meta name="description" content="动机首先说说外因，电力电子专业主要分为两个大的方向，第一是偏向硬件的方向，例如拓扑结构的更新，EMC问题的处理；另一个则是控制方向，包括电机控制，电池充电控制，新能源并网电流控制等。虽然说由于行业的特点，在偏强电领域，人们更加关注可靠性和稳定性，最为传统的PID算法仍然在工业中广泛使用，但对于学术研究而言，初等的传统控制早已经玩不出什么新鲜花样了，因此，更先进的一些现代控制算法大受学术界追捧。然而">
+  <meta name="description" content="Top k 问题是一个经典的算法问题，要求求解数组中第 k 大（or 第k小的元素）。最简单的，该问题可以通过排序来解决，算法的时间复杂度为 O(nlogn)。有没有效率更高的算法呢？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="抽象代数自学笔记1：基础">
-<meta property="og:url" content="http://example.com/2020/10/19/Math/AbstractAlgebra_1/index.html">
+<meta property="og:title" content="Top-k 问题">
+<meta property="og:url" content="http://example.com/2021/07/23/Algorithm/TopK/index.html">
 <meta property="og:site_name" content="Ha$p^3$lanet">
-<meta property="og:description" content="动机首先说说外因，电力电子专业主要分为两个大的方向，第一是偏向硬件的方向，例如拓扑结构的更新，EMC问题的处理；另一个则是控制方向，包括电机控制，电池充电控制，新能源并网电流控制等。虽然说由于行业的特点，在偏强电领域，人们更加关注可靠性和稳定性，最为传统的PID算法仍然在工业中广泛使用，但对于学术研究而言，初等的传统控制早已经玩不出什么新鲜花样了，因此，更先进的一些现代控制算法大受学术界追捧。然而">
+<meta property="og:description" content="Top k 问题是一个经典的算法问题，要求求解数组中第 k 大（or 第k小的元素）。最简单的，该问题可以通过排序来解决，算法的时间复杂度为 O(nlogn)。有没有效率更高的算法呢？">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-10-19T07:20:25.000Z">
-<meta property="article:modified_time" content="2021-01-10T11:47:51.131Z">
+<meta property="article:published_time" content="2021-07-23T04:18:28.000Z">
+<meta property="article:modified_time" content="2021-07-23T06:36:52.142Z">
 <meta property="article:author" content="Matt Yin">
-<meta property="article:tag" content="抽象代数">
+<meta property="article:tag" content="排序">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2020/10/19/Math/AbstractAlgebra_1/">
+<link rel="canonical" href="http://example.com/2021/07/23/Algorithm/TopK/">
 
 
 <script class="page-configurations">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>抽象代数自学笔记1：基础 | Ha$p^3$lanet</title>
+  <title>Top-k 问题 | Ha$p^3$lanet</title>
   
 
 
@@ -166,7 +166,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -178,7 +178,6 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%9C%BA"><span class="nav-number">1.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%A6%E7%B1%8D%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">书籍选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">基础介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%9F"><span class="nav-number">3.0.1.</span> <span class="nav-text">域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF"><span class="nav-number">3.0.2.</span> <span class="nav-text">环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BE%A4"><span class="nav-number">3.0.3.</span> <span class="nav-text">群</span></a></li></ol></li></ol></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -247,7 +246,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/19/Math/AbstractAlgebra_1/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/23/Algorithm/TopK/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -260,7 +259,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          抽象代数自学笔记1：基础
+          Top-k 问题
         </h1>
 
         <div class="post-meta-container">
@@ -270,27 +269,21 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2020-10-19 15:20:25" itemprop="dateCreated datePublished" datetime="2020-10-19T15:20:25+08:00">2020-10-19</time>
+      <time title="创建时间：2021-07-23 12:18:28 / 修改时间：14:36:52" itemprop="dateCreated datePublished" datetime="2021-07-23T12:18:28+08:00">2021-07-23</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-01-10 19:47:51" itemprop="dateModified" datetime="2021-01-10T19:47:51+08:00">2021-01-10</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/2-%E6%95%B0%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">2- 数学</span></a>
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/2-%E6%95%B0%E5%AD%A6/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" itemprop="url" rel="index"><span itemprop="name">抽象代数</span></a>
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
         </span>
     </span>
 
@@ -310,8 +303,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/10/19/Math/AbstractAlgebra_1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/19/Math/AbstractAlgebra_1/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/07/23/Algorithm/TopK/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/07/23/Algorithm/TopK/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -325,68 +318,36 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>首先说说外因，电力电子专业主要分为两个大的方向，第一是偏向硬件的方向，例如拓扑结构的更新，EMC问题的处理；另一个则是控制方向，包括电机控制，电池充电控制，新能源并网电流控制等。虽然说由于行业的特点，在偏强电领域，人们更加关注可靠性和稳定性，最为传统的PID算法仍然在工业中广泛使用，但对于学术研究而言，初等的传统控制早已经玩不出什么新鲜花样了，因此，更先进的一些现代控制算法大受学术界追捧。然而，控制理论作为数学领域的一个分支，在描述、研究多维动态系统的运动特性、稳定性的过程中，一定会使用到例如泛函分析，李群李代数等较为高级的数学工具。然而，这部分工具对于普通的工科学生来说通常是不具备的, 因此我一直希望有机会可以深入的研究一下这部分内容。</p>
+        <p>Top k 问题是一个经典的算法问题，要求求解数组中第 k 大（or 第k小的元素）。最简单的，该问题可以通过排序来解决，算法的时间复杂度为 O(nlogn)。有没有效率更高的算法呢？</p>
 <a id="more"></a>
 
-<p>当然，对我自己而言，也一直希望能够沉下心来学习一些现代的数学工具，如龚昇老师（可以看看龚老先生的<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Wx411k7Zh">数学基础选讲</a>）所讲，高级的东西，应该反而是更加简单的，因为它们常常是更高层次的总结与归纳。我相信通过学习更近代的一些数学，开拓自己的一些视野，可以给自己提供一些不同的思维角度。抽象代数，作为现代代数学的入门知识，虽然相对没有特别直接的应用，但作为很多后续知识的重要基础，我觉得还是非常有必要学习一下的。</p>
-<p>最后，看了一篇介绍数学体系的文章，<a target="_blank" rel="noopener" href="http://sparkandshine.net/mit-mathematical-formalism/">MIT牛人解说数学体系</a> 感觉很不错，从一个工程人的角度宏观的看了一下当代的数学框架。我认为这种更加宏观的认识，对一个人顺利形成自己的知识体系非常重要。但在当下的高校教育中（尤其是工科），我们通常很少强调这种知识体系的形成，老师学生都太过被动的教与学，没有有意识的去把这些知识串联成一个框架。实际上，这种结构化、系统化的思维方法，无论在什么领域、行业都是非常重要的，所以也希望自己在以后的学习中多加注重这一点。</p>
-<h1 id="书籍选择"><a href="#书籍选择" class="headerlink" title="书籍选择"></a>书籍选择</h1><p>这次的学习对于书籍的选择太过匆忙，我首先是搜了b站上相关的课程视频，找到了石生明老师的近世代数课程（<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av67246836/">link</a>）,然后找到了他对应的书籍 《近世代数初步》(石生明)，想着一般看视频一般看书的。但是在办公室看视频也不方便，视频时间也确实比较长，因此就仅看了书，我认为，这本书对于自学并不是十分友好。首先，书的章节安排顺序与教授的顺序是不同的（我看了前面几节课），讲课是从域的部分引出，但是书籍确是按照群、环域的顺序讲解（or 或许是我的书籍版本不对？）。此外，就是书比较短小精炼，这是国内书籍的好处，但是也相对的，对于理解的支撑内容相对较少，对于自学、初学者压力较大。因此，选择一本适合自己学习的书还是非常重要的。</p>
-<h1 id="基础介绍"><a href="#基础介绍" class="headerlink" title="基础介绍"></a>基础介绍</h1><p>抽象代数实际上研究的是一个 <strong>集合 + 运算规则</strong> 的代数系统，具体的，分为三个典型的代数结构：</p>
-<h3 id="域"><a href="#域" class="headerlink" title="域"></a>域</h3><p>域上面定义有两套运算规则，分别称为 “乘法” 和 “加法”，且域对于这些运算规则封闭。运算规则具有的特性具体定义如下：</p>
-<ul>
-<li>加法：<ul>
-<li>交换律。</li>
-<li>结合律。</li>
-<li>零元素，使得 $a + 0 = a$.</li>
-<li>负元素，对于任意 $a\in F$ , 存在$b$，使得 $a + b = 0$。</li>
-</ul>
+<p>实际上，我们可以使用类似快排的思想，来降低时间复杂度。这里，我们使用 leetcode 中的题目作为例子（便于测试）<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">215. 数组中的第K个最大元素</a>。具体做法是：</p>
+<ol>
+<li>在数组区间 <code>[0,len)</code> 中随机选择一个 pivot 值，然后遍历数组，如果数值大于 pivot 的值，则将这个数放置到数组的前半部分，否则放置到数组的后半部分。</li>
+<li>完成第一步后，我们得到有 <code>x</code> 个元素大于 pivot 值，与 k 进行比较，如下三种情况：<ol>
+<li>情况1：如果 <code>x == k-1</code>, 则说明 pivot 为第 k 个最大的元素，直接返回 pivot。</li>
+<li>情况2：如果 <code>x &lt; k-1</code>, 则说明 第k大的元素大于等于 pivot 值，调整区间 左边界 <code>left</code> 等于 pivot 的下标加1，右边界不动；</li>
+<li>情况3：如果 <code>x &gt; k-1</code>, 则说明 第k大的元素小于 pivot 值，调整区间的右边界 <code>right</code> 等于 pivot 的下标。</li>
+<li>重复循环，分析 <code>[left, right)</code> 区间的情况。</li>
+</ol>
 </li>
-<li>乘法：<ul>
-<li>交换律。</li>
-<li>结合律。</li>
-<li>单位元素，1， $1a = a$;</li>
-<li>逆元素，对于集合中非零元素a，集合中一定有b，使得：$ab = 1$。</li>
-</ul>
-</li>
-<li>乘法对加法的分配律。$a (b + c) = ab + ac$.</li>
-</ul>
-<p>此外，对于域，它的上述零元素，负元素，单位元，逆元都唯一。且加法有消去律，乘法消去律需改为：$ab = ac$, 若 $a \neq 0$, 则 $b = c$。</p>
-<h3 id="环"><a href="#环" class="headerlink" title="环"></a>环</h3><p>类似于域，当我们把一个集合称之为环，它的上面也定义两套运算系统 “乘法” 和 “加法”，只是它的乘法相比域要弱一些，不一定满足交换律且元素不一定有逆元。环也对于这些运算封闭，具体的：</p>
+</ol>
+<p>实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">findKthLargest</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> k)</span> </span>&#123;</span><br><span class="line">        Random rand = <span class="keyword">new</span> Random();</span><br><span class="line">        <span class="keyword">int</span> left = <span class="number">0</span>, right = nums.length;</span><br><span class="line">        <span class="keyword">int</span> pivot, cur = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span>(cur != k-<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="comment">// 将大于 nums[pivot] 的元素放置在 左边，小于 nums[pivot] 的元素放置在右边</span></span><br><span class="line">            cur = left-<span class="number">1</span>;</span><br><span class="line">            pivot = left + rand.nextInt(right-left);</span><br><span class="line">            <span class="comment">// 先将选定的 枢值 放置到区间的最后</span></span><br><span class="line">            swap(nums, pivot, right-<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">int</span> val = nums[right-<span class="number">1</span>];</span><br><span class="line">            <span class="comment">// 将大于枢值的值调到区间的最前面，cur 记录大于 枢值部分的最后一个元素</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = left; i &lt; right; ++i)&#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[i] &gt; val)&#123;</span><br><span class="line">                    cur++;</span><br><span class="line">                    swap(nums, cur, i);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 将枢值调到 cur 后面的一个位置，从而枢值前面的数字都大于枢值，后面的都小于等于 枢值</span></span><br><span class="line">            cur++;</span><br><span class="line">            swap(nums, cur, right-<span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span>(cur &lt; k)&#123;</span><br><span class="line">                left = cur + <span class="number">1</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                right = cur;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums[cur];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> tmp = nums[x];</span><br><span class="line">        nums[x] = nums[y];</span><br><span class="line">        nums[y] = tmp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中，需要考虑一个特殊的情况，即如果 kth 元素在一个重复数字的区间段内，是否能够正确的返回。通过分析，发现是可以的，这种特殊的情况与 分析中的情况2 是一致，即遍历到最后时，会有大于 枢值的元素个数为 0，即 <code>x == 0</code>，这时候，枢轴元素会被移动到最左边，即 left 指向的位置。最后，左区间会基于枢轴位置向右调整1格，即到 left + 1。因此，不会进入死循环，cur 会不断移动，直到等于 k-1 为止。</p>
+<p>对于上述的算法，它的实际时间复杂度是与 pivot 值的选择有关的，在最坏的情况下，时间复杂度可能达到 O(n^2)。但通过 随机选择枢轴，从概率的角度来说，该算法的平均时间复杂度为 O(n)。具体的数学证明在这里省略了，我们可以通过 <a target="_blank" rel="noopener" href="https://smallgreens.github.io/2021/06/23/Algorithm/divideAndConquer/">主定理</a> 粗略的进行分析（因为主定理要求子问题规模相同，而这里并不满足，所以是说是粗略分析）：</p>
 <ul>
-<li>加法：<ul>
-<li>交换律。</li>
-<li>结合律。</li>
-<li>零元素，使得 $a + 0 = a$.</li>
-<li>负元素，对于任意 $a \in F$ , 存在b，使得 $a + b = 0$。</li>
+<li>子问题的个数a 为 1个，因为我们将区间划分为两块，而最后只需要分析其中一块即可；</li>
+<li>输入数据规模虽小的因子b 为2，假设枢轴恰好位于数组中间；</li>
+<li>除递归操作额外所需要的操作耗时为 O(n), 即 d = 1。</li>
 </ul>
-</li>
-<li>乘法：<ul>
-<li>结合律。</li>
-<li>单位元素，1， $1a = a$;</li>
-</ul>
-</li>
-<li>乘法对加法的分配律（改）。$a (b + c) = ab + ac$ 及 $(b + c)a = ba + ca$. </li>
-</ul>
-<p><strong>注意</strong>：1- 环中不一定要多于两个元素，2- 环的乘法不要求满足交换律，3- 不一定对所有非零元素都有逆元素。例子：零环-环中只有一个元素0；全体n阶方阵。<br>对于环，它的零元素，负元素，单位元唯一。且有加法消去律，但乘法没有消去律。（例如矩阵：$AB = A0$, 0为0矩阵，不满足消去律）</p>
-<p>此外，环上还定义有 <strong>零因子</strong>:</p>
-<ul>
-<li>R 是环，$a\in R$ 且 $a \neq 0$,若有 $b\neq 0$, 使得 $ab = 0$ (或 $ba = 0$), 则称 a 是 R 中的一个左（或右）<strong>零因子</strong>。</li>
-<li>而域不存在零因子。</li>
-</ul>
-<h3 id="群"><a href="#群" class="headerlink" title="群"></a>群</h3><p>群是最为基本的一个代数结构，它在定义的集合上只有一个运算，称之为“乘法”，且对该运算封闭，它的乘法运算满足：</p>
-<ul>
-<li>乘法结合律。</li>
-<li>有单位元e，使得 ae = ea = a. </li>
-<li>有逆元素，对每个 $a\in G$，有$b\in G$，使得 ab = ba = e, 称b为a的一个逆元素。</li>
-</ul>
-<p>对于群，它的单位元，逆元唯一；且它群满足乘法消去律。</p>
-<p>此外，对于基础的群，添加或者去除一些群的运算性质，我们有一些其他的“群”:</p>
-<ul>
-<li><strong>交换群</strong>：群 G 满足交换律时，称 G 为<strong>交换群</strong>，这是也可以把乘法运算记为加法，并称 G 为加法群。</li>
-<li><strong>半群</strong>：非空集合 <strong>S</strong> 上的乘法满足结合律，则称为<strong>半群</strong>；</li>
-<li><strong>幺半群</strong>：非空集合 <strong>S</strong> 上的乘法满足结合律，且有单位元，则称为<strong>幺半群</strong>。</li>
-</ul>
-<p>对于群，环域更多的详细内容，会在系列 2，3中介绍。</p>
+<p>因此 $a&lt;b^d$, 算法的时间复杂度为 O(n^d) = O(n)。</p>
+<p>类似这个类型的题目还有 <a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/top-k-frequent-elements/">347. 前 K 个高频元素</a>。对于寻找前 k 个高频元素，首先需要将各个元素出现的次数统计到一个以元素值为 key，出现次数为 value 的 map 中。然后通过上述 方法查到前 k 个元素（前k个元素之间不需要按顺序排列！）。</p>
+<p><em>一些阅读材料</em>：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://serhatgiydiren.github.io/system-design-interview-top-k-problem-heavy-hitters">System Design Interview - Top K Problem (Heavy Hitters)</a></li>
+</ol>
 
     </div>
 
@@ -396,21 +357,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%8A%BD%E8%B1%A1%E4%BB%A3%E6%95%B0/" rel="tag"># 抽象代数</a>
+              <a href="/tags/%E6%8E%92%E5%BA%8F/" rel="tag"># 排序</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/10/19/Math/AbstractAlgebra_2/" rel="prev" title="抽象代数自学笔记2：群">
-                  <i class="fa fa-chevron-left"></i> 抽象代数自学笔记2：群
+                <a href="/2021/07/22/Algorithm/TrieTreeTypicalQuestion1/" rel="prev" title="字典树的应用-存储二进制信息">
+                  <i class="fa fa-chevron-left"></i> 字典树的应用-存储二进制信息
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/10/19/Equations%20and%20Figures%20for%20Hexo/" rel="next" title="NexT技巧：公式显示+图片点击弹出+浏览量统计">
-                  NexT技巧：公式显示+图片点击弹出+浏览量统计 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -579,7 +537,7 @@ NexT.utils.loadComments('#valine-comments', () => {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
       el: '#valine-comments',
-      path: "/2020/10/19/Math/AbstractAlgebra_1/",
+      path: "/2021/07/23/Algorithm/TopK/",
       serverURLs: "https://k2seiob3.api.lncldglobal.com"
     }));
   }, window.Valine);

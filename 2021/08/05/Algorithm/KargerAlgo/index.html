@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"8.0.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="前面介绍了两种使用随机算法（快速排序 和 随机选择算法），特点是每次执行的 时间复杂度不确定，但能够确定的得到正确的解。本篇中同样介绍一种随机算法 - Karger 算法， 用于求解 “最小割问题”。与前面几种随机算法不同的是，Karger 算法的时间复杂度是确定的，但得到的解不一定是正确的，然而，我们可以通过 多次 调用的方法，来提升得到正确解的概率。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法课程笔记-最小割问题">
+<meta property="og:url" content="http://example.com/2021/08/05/Algorithm/KargerAlgo/index.html">
+<meta property="og:site_name" content="Ha$p^3$lanet">
+<meta property="og:description" content="前面介绍了两种使用随机算法（快速排序 和 随机选择算法），特点是每次执行的 时间复杂度不确定，但能够确定的得到正确的解。本篇中同样介绍一种随机算法 - Karger 算法， 用于求解 “最小割问题”。与前面几种随机算法不同的是，Karger 算法的时间复杂度是确定的，但得到的解不一定是正确的，然而，我们可以通过 多次 调用的方法，来提升得到正确解的概率。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/algorithm/Min_cut_example.svg">
+<meta property="og:image" content="http://example.com/images/algorithm/karger-algo.png">
+<meta property="article:published_time" content="2021-08-05T04:18:28.000Z">
+<meta property="article:modified_time" content="2021-08-05T13:41:59.569Z">
+<meta property="article:author" content="Matt Yin">
+<meta property="article:tag" content="随机算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/algorithm/Min_cut_example.svg">
+
+
+<link rel="canonical" href="http://example.com/2021/08/05/Algorithm/KargerAlgo/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>算法课程笔记-最小割问题 | Ha$p^3$lanet</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Ha$p^3$lanet</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Journey before Destination</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">34</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">77</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%9C%80%E5%B0%8F%E5%89%B2%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">1. 最小割问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Karger-%E7%AE%97%E6%B3%95%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">2. Karger 算法描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Karger-%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">3. Karger 算法分析</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Matt Yin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Matt Yin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/05/Algorithm/KargerAlgo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Matt Yin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ha$p^3$lanet">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法课程笔记-最小割问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-08-05 12:18:28 / 修改时间：21:41:59" itemprop="dateCreated datePublished" datetime="2021-08-05T12:18:28+08:00">2021-08-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">1- 编程相关</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/1-%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/08/05/Algorithm/KargerAlgo/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/05/Algorithm/KargerAlgo/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>前面介绍了两种使用随机算法（快速排序 和 随机选择算法），特点是每次执行的 时间复杂度不确定，但能够确定的得到正确的解。本篇中同样介绍一种随机算法 - Karger 算法， 用于求解 “最小割问题”。与前面几种随机算法不同的是，Karger 算法的时间复杂度是确定的，但得到的解不一定是正确的，然而，我们可以通过 多次 调用的方法，来提升得到正确解的概率。</p>
+<a id="more"></a>
+
+<h2 id="1-最小割问题"><a href="#1-最小割问题" class="headerlink" title="1. 最小割问题"></a>1. 最小割问题</h2><p>对于最小割问题，我们首先定义 “割（cut）”：割是指在 图 $G=(V, E)$ 中，分割出一个子节点集合 $S$, 满足$S \subset V, S \neq \emptyset, S \neq V$。一个 割的大小是指，完成上述区间分割，需要切断的 边的数量。所谓最小割问题，也就是在所有的 图的划分方案中，切割最少边的 划分方式。</p>
+<p>如下面的图中，绿色线对应的 cut 大小为 2， 而红色线对应的 cut 大小为 3，分析整个图，我们可以发现，该图中 cut 最小值为 2，因此绿色线对应了该图中的一个 最小割。需要注意的是，最小割的方案不是唯一的，例如下图中，割出左下角一个结点也是一种 最小割 的方案。</p>
+<p><img src="/images/algorithm/Min_cut_example.svg" alt="由Kilom691，CC BY-SA 3.0，https://commons.wikimedia.org/w/index.php?curid=25997273"></p>
+<h2 id="2-Karger-算法描述"><a href="#2-Karger-算法描述" class="headerlink" title="2. Karger 算法描述"></a>2. Karger 算法描述</h2><p>对于最小割问题，如果使用暴力枚举的方案，总的时间复杂度为指数级别：$O(2^n)$ (因为 $C_n^1 + C_n^2 + …. C_n^{n-1} = 2^n - 2$)。为降低算法的时间复杂度， Karger 算法是一种可行的方案。具体的，Karger 算法的流程如下：</p>
+<p><strong>Step1</strong>: 在图中随机选择 一条边 $E_{u,v}$ 将其删除, 并将它两端的 结点 $u, v$ 收缩为一个 大的结点 $w$，$u$ 和 $v$ 与 $V/\{u,v\}$ 中结点相连的边全部修改为与 $w$ 相连。</p>
+<p><strong>step2</strong>: 重复执行 step1 中的步骤，直到图中仅剩余两个超级结点，这两个超级结点 确定一个割，两节点之间的 边的数量确定这个割的大小。</p>
+<p>一个例子如下：</p>
+<p><img src="/images/algorithm/karger-algo.png" alt="https://medium.com/@dev.elect.iitd/kargers-algorithm-d8067eb1b790"></p>
+<h2 id="3-Karger-算法分析"><a href="#3-Karger-算法分析" class="headerlink" title="3. Karger 算法分析"></a>3. Karger 算法分析</h2><p>Karger 算法收缩时，选择的边是随机的，那么执行一次该算法，恰好得到 最小割 的概率是多少呢？分析这个复杂问题之前，我们首先考虑，首次 收缩时，我们选择的边 为 min-cut 经过的边的概率。这里，我们假设 min-cut 的大小为 k，图中结点的数量为 n。由于 min-cut 为k，因此每个结点至少有 k 个边与之相连（反证，如果不这样，这个结点单独可以作为一个 cut，大小小于 k），因此总的边的数量为 $\frac{n\cdot k}{2}$，在这 $\frac{n \cdot k}{2}$ 条边中恰好选择到 最小割的 k 条边的概率为 $\frac{2}{n}$。</p>
+<p>经过多次删除后，最终留下 min-cut 对应的 k 条边的 概率，可以通过条件概率的方式进行求解。这里，我们以最简单的情况举例，即 $P[\neg S_1 \land \neg S_2] = P[\neg S_2 | \neg S_1] \cdot P[\neg S_1]$, 这里的 $S_i$ 表示 第i次收缩，所选择的边，$\neg S_i$ 则表示 第 i 次收缩，没有选择 min-cut 对应的 k 条边， 因此，我们有 $P[\neg S_1] = 1-\frac{2}{n}$， 而 $S_2$ 在 $S_1$ 的前提下发生的概率为 $P[\neg S_2 | \neg S_1] = 1- \frac{2}{n-1}$。</p>
+<p>因此，一次 Karger 操作，恰好得到最小割的概率为：</p>
+<p>$$P[\neg S_1 \land \neg S_2 \land … \neg S_{n-2}] $$</p>
+<p>$$= (1-\frac{2}{n})\times (1-\frac{2}{n-1}) \times (1 - \frac{2}{n-2}) \times …. \times (1-\frac{2}{n-(n-3)}) = \frac{2}{n(n-1)} \geq \frac{2}{n^2}$$</p>
+<p>可以发现，一次 Karger 操作，恰好得到最小割的概率是很低的。为了提升得到 最小割的概率，我们的处理方法是 多次独立重复运行 Karger 算法，并记录得到的割的大小。当 重复次数达到一定数量时，得到最小割的概率就会非常高。</p>
+<p>典型的重复次数 为 $Cn^2ln(n)$，此时，多次执行，一次都没有进行 min-cut 的概率为(note: $1+x &lt; e^x$)：</p>
+<p>$$P[not-min-cut] = (1-\frac{2}{n^2})^{C\cdot n^2 ln(n)} \leq e^{-2 C ln(n)} = \frac{1}{n^{2C}}$$</p>
+<p>通过调整上面的常数 C，我们可使得无法得到 min-cut 的概率非常的小。即，通过多次的重复执行，Karger 算法得到正确 min-cut 的概率可以非常高。算法总的时间复杂度为 $O(n^4ln(n))$, (一次 Karger 操作的时间复杂度为 $O(n^2)$)，相比指数级的时间复杂度，得到了大大的优化。</p>
+<p>Ref: <a target="_blank" rel="noopener" href="http://web.stanford.edu/class/archive/cs/cs161/cs161.1166/lectures/lecture15.pdf">http://web.stanford.edu/class/archive/cs/cs161/cs161.1166/lectures/lecture15.pdf</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9A%8F%E6%9C%BA%E7%AE%97%E6%B3%95/" rel="tag"># 随机算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/29/Algorithm/QuickSortAnalysis/" rel="prev" title="算法课程笔记-快速排序时间复杂度分析">
+                  <i class="fa fa-chevron-left"></i> 算法课程笔记-快速排序时间复杂度分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Matt Yin</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+  
+
+  
+      <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = '//cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+NexT.utils.loadComments('#valine-comments', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
+    new Valine(Object.assign({"enable":true,"appId":"k2sEIOb3zYiWCB2PDVhHsp1y-MdYXbMMI","appKey":"kgxrBrtFbe83dXfCFnYkplkY","serverURLs":null,"placeholder":"欢迎留言~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-cn","visitor":false,"comment_count":false,"recordIP":false,"enableQQ":false,"requiredFields":[]}, {
+      el: '#valine-comments',
+      path: "/2021/08/05/Algorithm/KargerAlgo/",
+      serverURLs: "https://k2seiob3.api.lncldglobal.com"
+    }));
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
